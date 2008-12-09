@@ -41,11 +41,12 @@ $_COOKIE = utf8::clean($_COOKIE);
 $_SERVER = utf8::clean($_SERVER);
 
 
-/*
 $route = Route::factory('(:controller(/:method(/:id)))')
 	->defaults(array('controller' => 'welcome', 'method' => 'index'));
-*/
 
 $route = Route::factory('(:path/):file(.:format)', array('path' => '.*'));
 
 echo Kohana::debug($route->matches('uploads/doc/foo.xml'));
+
+// Shutdown the environment
+Kohana::shutdown();
