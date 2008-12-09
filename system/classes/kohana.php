@@ -16,13 +16,22 @@
  */
 final class Kohana {
 
+	// Command line instance
+	public static $cli_mode = FALSE;
+
+	// Client request method
+	public static $request_method = 'GET';
+
+	// Default charset for all requests
+	public static $charset = 'UTF-8';
+
 	// Has the environment been initialized?
 	private static $init = FALSE;
 
 	// Include paths that are used to find files
 	private static $include_paths = array(APPPATH, SYSPATH);
 
-	// Cache for class methods
+	// Cache for resource location
 	private static $cache = array();
 
 	/**
@@ -39,7 +48,31 @@ final class Kohana {
 		if (self::$init === TRUE)
 			return;
 
+		// Enable auto-loading of classes
 		spl_autoload_register(array(__CLASS__, 'auto_load'));
+
+		if (PHP_SAPI === 'cli')
+		{
+			// The current instance is being run via the command line
+			self::$cli_mode = TRUE;
+		}
+		else
+		{
+			if (isset($_SERVER['REQUEST_METHOD']))
+			{
+				// Let the server determine the request method
+				self::$request_method = strtoupper($_SERVER['REQUEST_METHOD']);
+			}
+		}
+
+		if ($hooks = self::find_file('hooks'))
+		{
+			foreach ($hooks as $hook)
+			{
+				// Load each hook in the order they appear
+				require $hook;
+			}
+		}
 
 		// The system has been initialized
 		self::$init = TRUE;
@@ -66,11 +99,12 @@ final class Kohana {
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
 
-		// Full (relative) path name
+		// Create a partial path of the filename
 		$file = $dir.'/'.$file.$ext;
 
 		if (isset(self::$cache[__FUNCTION__][$file]))
 		{
+			// The path to this file has already been found
 			return self::$cache[__FUNCTION__][$file];
 		}
 
@@ -78,11 +112,26 @@ final class Kohana {
 		{
 			if (file_exists($path.$file))
 			{
+				// Cache and return the path to this file
 				return self::$cache[__FUNCTION__][$file] = $path.$file;
 			}
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * Loads a file within a totally empty scope and returns the output:
+	 * 
+	 *     $foo = Kohana::load_file('foo.php');
+	 * 
+	 * @param   string
+	 * @return  mixed
+	 */
+	public function load_file($file)
+	{
+		// Return the output of the file
+		return include $file;
 	}
 
 	/**
@@ -93,7 +142,7 @@ final class Kohana {
 	 * lowercase and converting underscores to slashes:
 	 *
 	 *     // Loads classes/my/class/name.php
-	 *     Kohana::auto_load('My_Class_Name')
+	 *     Kohana::auto_load('My_Class_Name');
 	 *
 	 * @param   string   class name
 	 * @param   string   file extensions to use
@@ -101,10 +150,12 @@ final class Kohana {
 	 */
 	public static function auto_load($class)
 	{
+		// Transform the class name into a path
 		$file = str_replace('_', '/', strtolower($class));
 
 		if ($path = self::find_file('classes', $file))
 		{
+			// Load the class file
 			require $path;
 		}
 		else
@@ -114,6 +165,7 @@ final class Kohana {
 
 		if ($path = self::find_file('extensions', $file))
 		{
+			// Load the extension file
 			require $path;
 		}
 		elseif (class_exists($class.'_Core', FALSE))
@@ -131,7 +183,7 @@ final class Kohana {
 			}
 
 			// Transparent class extensions are possible using eval. Not very
-			// clean, but it can be avoided by creating empty extensions.
+			// clean, but it can be avoided by creating empty extension files.
 			eval($extension);
 		}
 
@@ -154,13 +206,13 @@ final class Kohana {
 		if (func_num_args() === 0)
 			return;
 
-		// Get params
-		$params = func_get_args();
-		$output = array();
+		// Get all passed variables
+		$variables = func_get_args();
 
-		foreach ($params as $var)
+		$output = array();
+		foreach ($variables as $var)
 		{
-			$output[] = '<pre>('.gettype($var).') '.htmlspecialchars(print_r($var, TRUE)).'</pre>';
+			$output[] = '<pre>('.gettype($var).') '.htmlspecialchars(print_r($var, TRUE), ENT_QUOTES, self::$charset, TRUE).'</pre>';
 		}
 
 		return implode("\n", $output);

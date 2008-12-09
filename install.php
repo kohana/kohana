@@ -8,9 +8,9 @@
 	<title>Kohana Installation</title>
 
 	<style type="text/css">
-	body { width: 42em; margin: 0 auto; font-family: sans-serif; }
-	h1 { letter-spacing: -0.05em; }
-	h1 + p { width: 75%; margin: 0 0 2em; color: #666; font-style: italic; font-size:90%; }
+	body { width: 42em; margin: 0 auto; font-family: sans-serif; background: #fff; font-size: 1em; }
+	h1 { letter-spacing: -0.04em; }
+	h1 + p { margin: 0 0 2em; color: #333; font-size: 90%; font-style: italic; }
 	code { font-family: monaco, monospace; }
 	table { border-collapse: collapse; width: 100%; }
 		table th,
@@ -127,7 +127,8 @@
 	<?php if ($failed === TRUE): ?>
 		<p id="results" class="fail">✘ Kohana may not work correctly with your environment.</p>
 	<?php else: ?>
-		<p id="results" class="pass">✔ Your environment passed all requirements.<br />Remove or rename the <code>install<?php echo EXT ?></code> file now.</p>
+		<p id="results" class="pass">✔ Your environment passed all requirements.<br />
+			Remove or rename the <code>install<?php echo EXT ?></code> file now.</p>
 	<?php endif ?>
 
 </body>

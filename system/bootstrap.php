@@ -28,9 +28,6 @@ else
 	define('SERVER_UTF8', FALSE);
 }
 
-// Default output type is UTF-8 text/html
-header('Content-Type: text/html; charset=UTF-8');
-
 // Load the main Kohana class
 require SYSPATH.'classes/kohana'.EXT;
 
@@ -47,12 +44,8 @@ $_SERVER = utf8::clean($_SERVER);
 /*
 $route = Route::factory('(:controller(/:method(/:id)))')
 	->defaults(array('controller' => 'welcome', 'method' => 'index'));
-
-
-echo Kohana::debug($route->matches('uploads/doc/foo.xml'));
 */
+
 $route = Route::factory('(:path/):file(.:format)', array('path' => '.*'));
 
-$view = View::factory('test');
-
-echo $view->render();
+echo Kohana::debug($route->matches('uploads/doc/foo.xml'));
