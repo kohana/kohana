@@ -32,7 +32,7 @@ final class Kohana {
 	private static $include_paths = array(APPPATH, SYSPATH);
 
 	// Cache for resource location
-	private static $cache = array();
+	private static $file_path;
 
 	/**
 	 * Initializes the environment:
@@ -51,6 +51,9 @@ final class Kohana {
 		// Enable auto-loading of classes
 		spl_autoload_register(array(__CLASS__, 'auto_load'));
 
+		// Load the file path cache
+		self::$file_path = Kohana::cache('kohana_file_paths');
+
 		if (PHP_SAPI === 'cli')
 		{
 			// The current instance is being run via the command line
@@ -65,6 +68,7 @@ final class Kohana {
 			}
 		}
 
+		/*
 		if ($hooks = self::find_file('hooks'))
 		{
 			foreach ($hooks as $hook)
@@ -73,9 +77,23 @@ final class Kohana {
 				require $hook;
 			}
 		}
+		*/
+
 
 		// The system has been initialized
 		self::$init = TRUE;
+	}
+
+	/**
+	 * The last method before Kohana stops processing the request:
+	 *
+	 * - Saves the file path cache
+	 *
+	 * @return  void
+	 */
+	public function shutdown()
+	{
+		Kohana::cache('kohana_file_paths', self::$file_path);
 	}
 
 	/**
@@ -102,10 +120,10 @@ final class Kohana {
 		// Create a partial path of the filename
 		$file = $dir.'/'.$file.$ext;
 
-		if (isset(self::$cache[__FUNCTION__][$file]))
+		if (isset(self::$file_path[$file]))
 		{
 			// The path to this file has already been found
-			return self::$cache[__FUNCTION__][$file];
+			return self::$file_path[$file];
 		}
 
 		foreach (self::$include_paths as $path)
@@ -113,7 +131,7 @@ final class Kohana {
 			if (file_exists($path.$file))
 			{
 				// Cache and return the path to this file
-				return self::$cache[__FUNCTION__][$file] = $path.$file;
+				return self::$file_path[$file] = $path.$file;
 			}
 		}
 
@@ -122,9 +140,9 @@ final class Kohana {
 
 	/**
 	 * Loads a file within a totally empty scope and returns the output:
-	 * 
+	 *
 	 *     $foo = Kohana::load_file('foo.php');
-	 * 
+	 *
 	 * @param   string
 	 * @return  mixed
 	 */
@@ -188,6 +206,60 @@ final class Kohana {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Provides simple file-based caching. All caches are serialized and
+	 * stored as a hash.
+	 *
+	 *     // Set the "foo" cache
+	 *     Kohana::cache('foo', 'hello, world');
+	 *
+	 *     // Get the "foo" cache
+	 *     $foo = Kohana::cache('foo');
+	 *
+	 * @param   string   name of the cache
+	 * @param   mixed    data to cache
+	 * @param   integer  number of seconds the cache is valid for
+	 * @return  mixed    for getting
+	 * @return  boolean  for setting
+	 */
+	public function cache($name, $data = NULL, $lifetime = 60)
+	{
+		// Cache file is a hash of the name
+		$file = sha1($name);
+
+		// Cache directories are split by keys
+		$dir = APPPATH.'cache/'.$file[0].'/';
+
+		if ($data === NULL)
+		{
+			if (is_file($dir.$file))
+			{
+				if ((time() - filemtime($dir.$file)) < $lifetime)
+				{
+					// Return the cache
+					return unserialize(file_get_contents($dir.$file));
+				}
+				else
+				{
+					// Cache has expired
+					unlink($dir.$file);
+				}
+			}
+
+			// Cache not found
+			return NULL;
+		}
+
+		if ( ! is_dir($dir))
+		{
+			// Create the cache directory
+			mkdir($dir, 0777);
+		}
+
+		// Serialize the data and create the cache
+		return (bool) file_put_contents($dir.$file, serialize($data));
 	}
 
 	/**
