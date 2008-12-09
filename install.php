@@ -8,9 +8,9 @@
 	<title>Kohana Installation</title>
 
 	<style type="text/css">
-	body { width: 42em; margin: 0 auto; font-family: sans-serif; }
-	h1 { letter-spacing: -0.05em; }
-	h1 + p { width: 75%; margin: 0 0 2em; color: #666; font-style: italic; font-size:90%; }
+	body { width: 42em; margin: 0 auto; font-family: sans-serif; background: #fff; font-size: 1em; }
+	h1 { letter-spacing: -0.04em; }
+	h1 + p { margin: 0 0 2em; color: #333; font-size: 90%; font-style: italic; }
 	code { font-family: monaco, monospace; }
 	table { border-collapse: collapse; width: 100%; }
 		table th,
@@ -71,6 +71,14 @@
 			<?php endif ?>
 		</tr>
 		<tr>
+			<th>Cache Directory</th>
+			<?php if (is_dir(APPPATH) AND is_dir(APPPATH.'cache') AND is_writable(APPPATH.'cache')): ?>
+				<td class="pass"><?php echo APPPATH.'cache' ?></td>
+			<?php else: $failed = TRUE ?>
+				<td class="fail">The <code><?php echo APPPATH.'cache' ?></code> directory is not writable.</td>
+			<?php endif ?>
+		</tr>
+		<tr>
 			<th>PCRE UTF-8</th>
 			<?php if ( ! @preg_match('/^.$/u', 'ñ')): $failed = TRUE ?>
 				<td class="fail"><a href="http://php.net/pcre">PCRE</a> has not been compiled with UTF-8 support.</td>
@@ -127,7 +135,8 @@
 	<?php if ($failed === TRUE): ?>
 		<p id="results" class="fail">✘ Kohana may not work correctly with your environment.</p>
 	<?php else: ?>
-		<p id="results" class="pass">✔ Your environment passed all requirements.<br />Remove or rename the <code>install<?php echo EXT ?></code> file now.</p>
+		<p id="results" class="pass">✔ Your environment passed all requirements.<br />
+			Remove or rename the <code>install<?php echo EXT ?></code> file now.</p>
 	<?php endif ?>
 
 </body>

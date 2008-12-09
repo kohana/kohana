@@ -82,6 +82,13 @@ class Route_Core {
 		{
 			$this->regex = $regex;
 		}
+
+		// Attempt to load the cached regex
+		if (($this->compiled = Kohana::cache('route:'.$uri)) === NULL)
+		{
+			// Compile and cache the compiled regex
+			Kohana::cache('route:'.$uri, $this->compiled = $this->compile());
+		}
 	}
 
 	/**
@@ -132,10 +139,7 @@ class Route_Core {
 	 */
 	public function matches($uri)
 	{
-		// Get the compiled regex
-		$regex = $this->compile();
-
-		if (preg_match('#'.$regex.'#', $uri, $matches))
+		if (preg_match('#'.$this->compiled.'#', $uri, $matches))
 		{
 			$params = array();
 			foreach ($matches as $key => $value)
@@ -168,19 +172,13 @@ class Route_Core {
 	}
 
 	/**
-	 * Returns the compiled regular expression for the route. The generated
-	 * pattern will be cached after it is compiled.
+	 * Returns the compiled regular expression for the route. This translates
+	 * keys and optional groups to a proper PCRE regular expression.
 	 *
 	 * @return  string
 	 */
 	protected function compile()
 	{
-		if (isset($this->cache[$this->uri]))
-		{
-			// The regex has already been compiled
-			return $this->cache[$this->uri];
-		}
-
 		// The URI should be considered literal except for keys and optional parts
 		// Escape everything preg_quote would escape except for : ( )
 		$this->uri = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $this->uri);
@@ -205,19 +203,24 @@ class Route_Core {
 			$regex = strtr($regex, $replace);
 		}
 
-		// Add anchors and cache the compiled regex
-		return $this->compiled = '^'.$regex.'$';
+		return '^'.$regex.'$';
 	}
 
+	/**
+	 * Compile a segment keys into a regular expression patterns.
+	 * 
+	 * @param   array   array of keys
+	 * @return  array
+	 */
 	protected function compile_keys(array $keys)
 	{
 		$groups = array();
 		foreach ($keys as $key)
 		{
-			// Get the key name
+			// Remove the colon from the key to get the name
 			$name = substr($key, 1);
 
-			// Name the matched segment
+			// Create a named regex match
 			$regex = '(?P<'.$name.'>';
 
 			if (isset($this->regex[$name]))
