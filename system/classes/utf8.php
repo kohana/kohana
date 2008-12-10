@@ -33,13 +33,14 @@ final class utf8 {
 
 	/**
 	 * Recursively cleans arrays, objects, and strings. Removes ASCII control
-	 * codes and converts to UTF-8 while silently discarding incompatible
-	 * UTF-8 characters.
+	 * codes and converts to the requested charset while silently discarding
+	 * incompatible characters.
 	 *
 	 * @param   mixed   variable to clean
+	 * @param   string  character set, defaults to UTF-8
 	 * @return  mixed
 	 */
-	public static function clean($var)
+	public static function clean($var, $charset = 'UTF-8')
 	{
 		if (is_array($var) OR is_object($var))
 		{
@@ -60,7 +61,7 @@ final class utf8 {
 				$ER = error_reporting(~E_NOTICE);
 
 				// iconv is expensive, so it is only used when needed
-				$var = iconv('UTF-8', 'UTF-8//IGNORE', $var);
+				$var = iconv($charset, $charset.'//IGNORE', $var);
 
 				// Turn notices back on
 				error_reporting($ER);
