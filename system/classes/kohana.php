@@ -38,6 +38,7 @@ final class Kohana {
 
 	// Cache for resource location
 	private static $file_path;
+	private static $file_path_changed = FALSE;
 
 	/**
 	 * Initializes the environment:
@@ -58,18 +59,6 @@ final class Kohana {
 		if (self::$init === TRUE)
 			return;
 
-		// Enable auto-loading of classes
-		spl_autoload_register(array(__CLASS__, 'auto_load'));
-
-		// Enable the exception handler
-		// set_exception_handler(array(__CLASS__, 'exception_handler'));
-
-		// Enable the error-to-exception handler
-		set_error_handler(array(__CLASS__, 'error_handler'));
-
-		// Load the file path cache
-		self::$file_path = Kohana::cache('kohana_file_paths');
-
 		if (PHP_SAPI === 'cli')
 		{
 			// The current instance is being run via the command line
@@ -83,6 +72,15 @@ final class Kohana {
 				self::$request_method = strtoupper($_SERVER['REQUEST_METHOD']);
 			}
 		}
+
+		// Enable auto-loading of classes
+		spl_autoload_register(array(__CLASS__, 'auto_load'));
+
+		// Enable the exception handler
+		// set_exception_handler(array(__CLASS__, 'exception_handler'));
+
+		// Enable the error-to-exception handler
+		set_error_handler(array(__CLASS__, 'error_handler'));
 
 		// Load main configuration
 		$config = Kohana::load_file(APPPATH.'config/kohana'.EXT);
@@ -99,6 +97,9 @@ final class Kohana {
 		// Load module paths
 		self::modules($config['modules']);
 
+		// Load the file path cache
+		self::$file_path = Kohana::cache('kohana_file_paths');
+
 		if ($hooks = self::list_files('hooks', TRUE))
 		{
 			foreach ($hooks as $hook)
@@ -107,7 +108,6 @@ final class Kohana {
 				require $hook;
 			}
 		}
-
 
 		// The system has been initialized
 		self::$init = TRUE;
@@ -124,7 +124,10 @@ final class Kohana {
 	{
 		if (self::$save_cache === TRUE)
 		{
-			Kohana::cache('kohana_file_paths', self::$file_path);
+			if (self::$file_path_changed === TRUE)
+			{
+				Kohana::cache('kohana_file_paths', self::$file_path);
+			}
 		}
 	}
 
@@ -248,6 +251,9 @@ final class Kohana {
 		{
 			if (file_exists($dir.$path))
 			{
+				// Cache is about to change
+				self::$file_path_changed = TRUE;
+
 				// Cache and return the path to this file
 				return self::$file_path[$path] = $dir.$path;
 			}
@@ -267,6 +273,12 @@ final class Kohana {
 	 */
 	public function list_files($directory, $recursive = FALSE)
 	{
+		if (isset(self::$file_path[$directory.'/*']))
+		{
+			// The files in this path have already been found
+			return self::$file_path[$directory.'/*'];
+		}
+
 		// Reverse the paths so that lower entries are overwritten
 		$paths = array_reverse(self::$include_paths);
 
@@ -303,7 +315,11 @@ final class Kohana {
 			}
 		}
 
-		return $files;
+		// Cache is about to change
+		self::$file_path_changed = TRUE;
+
+		// Cache and return the files
+		return self::$file_path[$directory.'/*'] = $files;
 	}
 
 	/**
