@@ -35,18 +35,17 @@ require SYSPATH.'classes/kohana'.EXT;
 Kohana::init();
 
 // Convert global variables to UTF-8
-$_GET    = utf8::clean($_GET);
-$_POST   = utf8::clean($_POST);
-$_COOKIE = utf8::clean($_COOKIE);
-$_SERVER = utf8::clean($_SERVER);
-
+$_GET    = utf8::clean($_GET, Kohana::$charset);
+$_POST   = utf8::clean($_POST, Kohana::$charset);
+$_COOKIE = utf8::clean($_COOKIE, Kohana::$charset);
+$_SERVER = utf8::clean($_SERVER, Kohana::$charset);
 
 $route = Route::factory('(:controller(/:method(/:id)))')
 	->defaults(array('controller' => 'welcome', 'method' => 'index'));
 
 $route = Route::factory('(:path/):file(.:format)', array('path' => '.*'));
 
-echo Kohana::debug($route->matches('uploads/doc/foo.xml'));
+echo Kohana::debug($route->matches('templates/awesome.haml'));
 
 // Shutdown the environment
 Kohana::shutdown();

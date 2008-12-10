@@ -7,14 +7,18 @@
  * - Auto-loading and transparent extension of classes
  * - Variable and path debugging
  *
- * $Id: kohana.php 3733 2008-11-27 01:12:41Z Shadowhand $
- *
  * @package    Core
  * @author     Kohana Team
  * @copyright  (c) 2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 final class Kohana {
+
+	// Has the environment been initialized?
+	private static $init = FALSE;
+
+	// Save the cache on shutdown?
+	public static $save_cache = FALSE;
 
 	// Command line instance
 	public static $cli_mode = FALSE;
@@ -23,10 +27,11 @@ final class Kohana {
 	public static $request_method = 'GET';
 
 	// Default charset for all requests
-	public static $charset = 'UTF-8';
+	public static $charset;
 
-	// Has the environment been initialized?
-	private static $init = FALSE;
+	// Current locale and timezone
+	public static $locale;
+	public static $timezone;
 
 	// Include paths that are used to find files
 	private static $include_paths = array(APPPATH, SYSPATH);
@@ -40,6 +45,11 @@ final class Kohana {
 	 * - Enables the auto-loader
 	 * - Enables the exception handler
 	 * - Enables error-to-exception handler
+	 * - Determines if the application was started from the command line
+	 * - Determines the HTTP request method, if possible
+	 * - Sets the environment locale and timezone
+	 * - Enables modules
+	 * - Loads hooks
 	 *
 	 * @return  void
 	 */
@@ -50,6 +60,12 @@ final class Kohana {
 
 		// Enable auto-loading of classes
 		spl_autoload_register(array(__CLASS__, 'auto_load'));
+
+		// Enable the exception handler
+		// set_exception_handler(array(__CLASS__, 'exception_handler'));
+
+		// Enable the error-to-exception handler
+		set_error_handler(array(__CLASS__, 'error_handler'));
 
 		// Load the file path cache
 		self::$file_path = Kohana::cache('kohana_file_paths');
@@ -68,8 +84,22 @@ final class Kohana {
 			}
 		}
 
-		/*
-		if ($hooks = self::find_file('hooks'))
+		// Load main configuration
+		$config = Kohana::load_file(APPPATH.'config/kohana'.EXT);
+
+		// Toggle cache saving
+		self::$save_cache = $config['save_cache'];
+
+		// Localize the application
+		self::locale($config['locale']);
+
+		// Localize the timezone
+		self::timezone($config['timezone']);
+
+		// Load module paths
+		self::modules($config['modules']);
+
+		if ($hooks = self::list_files('hooks', TRUE))
 		{
 			foreach ($hooks as $hook)
 			{
@@ -77,7 +107,6 @@ final class Kohana {
 				require $hook;
 			}
 		}
-		*/
 
 
 		// The system has been initialized
@@ -93,7 +122,96 @@ final class Kohana {
 	 */
 	public function shutdown()
 	{
-		Kohana::cache('kohana_file_paths', self::$file_path);
+		if (self::$save_cache === TRUE)
+		{
+			Kohana::cache('kohana_file_paths', self::$file_path);
+		}
+	}
+
+	/**
+	 * Sets the environment locale. The first locale must always be a valid
+	 * `xx_XX` locale name to be used for i18n:
+	 * 
+	 *     Kohana::locale(array('de_DE@euro.UTF-8', 'de_DE.UTF-8', 'german'));
+	 * 
+	 * When using this method, it is a good idea to provide many variations, as
+	 * locale availability on different systems is very unpredictable.
+	 * 
+	 * @param   array   locale choices
+	 * @return  void
+	 */
+	public static function locale(array $locales)
+	{
+		if (setlocale(LC_ALL, $locales) !== FALSE)
+		{
+			// Set the system locale
+			self::$locale = substr($locales[0], 0, 5);
+		}
+	}
+
+	/**
+	 * Sets the environment timezone. Any timezone supported by PHP cane be
+	 * used here:
+	 * 
+	 *     Kohana::timezone('Arctic/Longyearbyen');
+	 * 
+	 * @param   string   timezone name
+	 * @return  string
+	 */
+	public static function timezone($timezone)
+	{
+		if ($timezone === NULL)
+		{
+			// Disable notices when using date_default_timezone_get
+			$ER = error_reporting(~E_NOTICE);
+
+			$timezone = date_default_timezone_get();
+
+			// Restore error reporting
+			error_reporting($ER);
+		}
+
+		if (date_default_timezone_set($timezone) === TRUE)
+		{
+			// Set the system timezone
+			self::$timezone = $timezone;
+		}
+	}
+
+	/**
+	 * Changes the currently enabled modules. Module paths may be relative
+	 * or absolute, but must point to a directory:
+	 * 
+	 *     Kohana::modules(array('modules/foo', MODPATH.'bar'));
+	 * 
+	 * @param   array   module paths
+	 * @return  void
+	 */
+	public static function modules(array $modules)
+	{
+		// Start a new set of include paths, APPPATH first
+		$paths = array(APPPATH);
+
+		foreach ($modules as $module)
+		{
+			if ($module = realpath($module) AND is_dir($module))
+			{
+				if (KOHANA_IS_WIN)
+				{
+					// Remove backslashes
+					$module = str_replace('\\', '/', $module);
+				}
+
+				// Add the module to include paths
+				$paths[] = $module.'/';
+			}
+		}
+
+		// Finish the include paths by adding SYSPATH
+		$paths[] = SYSPATH;
+
+		// Set the new include paths
+		self::$include_paths = $paths;
 	}
 
 	/**
@@ -118,24 +236,74 @@ final class Kohana {
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
 
 		// Create a partial path of the filename
-		$file = $dir.'/'.$file.$ext;
+		$path = $dir.'/'.$file.$ext;
 
-		if (isset(self::$file_path[$file]))
+		if (isset(self::$file_path[$path]))
 		{
 			// The path to this file has already been found
-			return self::$file_path[$file];
+			return self::$file_path[$path];
 		}
 
-		foreach (self::$include_paths as $path)
+		foreach (self::$include_paths as $dir)
 		{
-			if (file_exists($path.$file))
+			if (file_exists($dir.$path))
 			{
 				// Cache and return the path to this file
-				return self::$file_path[$file] = $path.$file;
+				return self::$file_path[$path] = $dir.$path;
 			}
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * Find all of the files in a directory:
+	 * 
+	 *     $configs = Kohana::list_files('config');
+	 * 
+	 * @param   string   directory name
+	 * @param   boolean  list files recursively
+	 * @return  array
+	 */
+	public function list_files($directory, $recursive = FALSE)
+	{
+		// Reverse the paths so that lower entries are overwritten
+		$paths = array_reverse(self::$include_paths);
+
+		// Start the list of files
+		$files = array();
+
+		foreach ($paths as $path)
+		{
+			if (is_dir($path.$directory))
+			{
+				$dir = new DirectoryIterator($path.$directory);
+
+				foreach ($dir as $file)
+				{
+					$filename = $file->getFilename();
+
+					if ($filename[0] === '.')
+						continue;
+
+					if ($file->isDir())
+					{
+						if ($recursive === TRUE)
+						{
+							// Recursively add files
+							$files = array_merge($files, self::list_files($directory.'/'.$filename, TRUE));
+						}
+					}
+					else
+					{
+						// Add the file to the files
+						$files[$directory.'/'.$filename] = realpath($file->getPathname());
+					}
+				}
+			}
+		}
+
+		return $files;
 	}
 
 	/**
@@ -148,7 +316,6 @@ final class Kohana {
 	 */
 	public function load_file($file)
 	{
-		// Return the output of the file
 		return include $file;
 	}
 
@@ -263,6 +430,25 @@ final class Kohana {
 	}
 
 	/**
+	 * PHP error handler, converts all errors into ErrorExceptions. This handler
+	 * respects error_reporting settings.
+	 *
+	 * @throws   ErrorException
+	 * @return   TRUE
+	 */
+	public static function error_handler($code, $error, $file = NULL, $line = NULL)
+	{
+		if ((error_reporting() & $code) !== 0)
+		{
+			// This error is not suppressed by current error reporting settings
+			throw new ErrorException($error, $code, 0, $file, $line);
+		}
+
+		// Do not execute the PHP error handler
+		return TRUE;
+	}
+
+	/**
 	 * Returns an HTML string of debugging information about any number of
 	 * variables, each wrapped in a <pre> tag:
 	 *
@@ -284,7 +470,19 @@ final class Kohana {
 		$output = array();
 		foreach ($variables as $var)
 		{
-			$output[] = '<pre>('.gettype($var).') '.htmlspecialchars(print_r($var, TRUE), ENT_QUOTES, self::$charset, TRUE).'</pre>';
+			$type = gettype($var);
+
+			switch ($type)
+			{
+				case 'boolean':
+					$var = $var ? 'TRUE' : 'FALSE';
+				break;
+				default:
+					$var = htmlspecialchars(print_r($var, TRUE), NULL, self::$charset, TRUE);
+				break;
+			}
+
+			$output[] = '<pre>('.$type.') '.$var.'</pre>';
 		}
 
 		return implode("\n", $output);
