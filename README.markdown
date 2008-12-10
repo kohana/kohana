@@ -2,23 +2,31 @@
 
 This is the current development version of [Kohana](http://kohanaphp.com/).
 
-## Forking, Merging, and Tracking Origin
+## Distributed Source Control Management
 
-With git, there is no central repository. In order to keep your local fork in sync with "origin",
-you will to set up the main repository as a remote:
+Unlike SVN, git does not used a central repository. This is why git is "distributed" and SVN is
+"centralized". Although this makes git an extremely powerful system for collaborators, tracking
+changes between various collaborators can quickly become difficult as multiple forks are created.
+
+### Managing Remote Repositories
+
+First, you will need to tell git about the remote repository:
 
     git remote add shadowhand git://github.com/shadowhand/kohana.git
 
-This adds "shadowhand" as a remote repository that can be pulled from. (Only do this once!)
+This adds "shadowhand" as a remote repository that can be pulled from.
 
     git checkout -b shadowhand/master
 
-This creates a local branch "shadowhand/master" of the master branch of the "shadowhand" respository.
-(Only do this once!)
+This creates a local branch "shadowhand/master" of the master branch of the "shadowhand" repository.
+
+### Merging Changes from Remote Repositories
+
+Now that you have a remote repository, you can pull changes into your local repository:
 
     git checkout shadowhand/master
 
-This switches to your new "shadowhand/master" branch.
+This switches to the previously created "shadowhand/master" branch.
 
     git pull shadowhand master
 
