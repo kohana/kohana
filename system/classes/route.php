@@ -53,6 +53,23 @@ class Route_Core {
 		return new Route($uri, $regex);
 	}
 
+	/**
+	 * Called when the object is re-constructed from the cache.
+	 * 
+	 * @param   array   cached values
+	 * @return  Route
+	 */
+	public static function __set_state(array $values)
+	{
+		// Reconstruct the route
+		$route = new Route($values['uri'], $values['regex']);
+
+		// Set defaults
+		$route->defaults = $values['defaults'];
+
+		return $route;
+	}
+
 	// Route URI string
 	protected $uri = '';
 
@@ -65,9 +82,6 @@ class Route_Core {
 	// Compiled regex cache
 	protected $compiled;
 
-	// Matched URI keys
-	protected $keys = array();
-
 	/**
 	 * Creates a new route. Sets the URI and regular expressions for keys.
 	 *
@@ -76,19 +90,25 @@ class Route_Core {
 	 */
 	public function __construct($uri, array $regex = array())
 	{
-		$this->uri = $uri;
-
 		if ( ! empty($regex))
 		{
 			$this->regex = $regex;
 		}
 
-		// Attempt to load the cached regex
-		if (($this->compiled = Kohana::cache('route:'.$uri)) === NULL)
+		// Store the routed URI
+		$this->uri = $uri;
+
+		if (($regex = Kohana::cache('kohana_route_regex_'.$uri)) === NULL)
 		{
-			// Compile and cache the compiled regex
-			Kohana::cache('route:'.$uri, $this->compiled = $this->compile());
+			// Compile the complete regex for this uri
+			$regex = $this->compile();
+
+			// Cache the compiled regex
+			Kohana::cache('kohana_route_regex_'.$uri, $regex);
 		}
+
+		// Store the compiled regex locally
+		$this->compiled = $regex;
 	}
 
 	/**
