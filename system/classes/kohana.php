@@ -14,24 +14,38 @@
  */
 final class Kohana {
 
-	// Has the environment been initialized?
-	private static $init = FALSE;
+	const VERSION   = '3.0';
+	const CODENAME  = 'renaissance';
 
 	// Save the cache on shutdown?
 	public static $save_cache = FALSE;
 
-	// Command line instance
-	public static $cli_mode = FALSE;
+	// Current server is Windows?
+	public static $is_windows = FALSE;
+
+	// Current request is command line?
+	public static $is_cli = FALSE;
 
 	// Client request method
 	public static $request_method = 'GET';
 
-	// Default charset for all requests
-	public static $charset;
+	// Default character set of input and output
+	public static $charset = 'UTF-8';
 
-	// Current locale and timezone
+	// Default locale of your application
+	public static $default_locale = 'en_US';
+
+	// Current configuration
+	public static $config;
+
+	// Current locale
 	public static $locale;
+
+	// Current timezone
 	public static $timezone;
+
+	// Environment has been initialized?
+	private static $init = FALSE;
 
 	// Include paths that are used to find files
 	private static $include_paths = array(APPPATH, SYSPATH);
@@ -40,17 +54,14 @@ final class Kohana {
 	private static $file_path;
 	private static $file_path_changed = FALSE;
 
+	// Cache of current language messages
+	private static $language;
+
 	/**
 	 * Initializes the environment:
 	 *
-	 * - Enables the auto-loader
-	 * - Enables the exception handler
-	 * - Enables error-to-exception handler
-	 * - Determines if the application was started from the command line
-	 * - Determines the HTTP request method, if possible
-	 * - Sets the environment locale and timezone
-	 * - Enables modules
 	 * - Loads hooks
+	 * - Converts all input variables to the configured character set
 	 *
 	 * @return  void
 	 */
@@ -59,46 +70,34 @@ final class Kohana {
 		if (self::$init === TRUE)
 			return;
 
-		if (PHP_SAPI === 'cli')
-		{
-			// The current instance is being run via the command line
-			self::$cli_mode = TRUE;
-		}
-		else
-		{
-			if (isset($_SERVER['REQUEST_METHOD']))
-			{
-				// Let the server determine the request method
-				self::$request_method = strtoupper($_SERVER['REQUEST_METHOD']);
-			}
-		}
+		// Test if the current environment is command-line
+		self::$is_cli = (PHP_SAPI === 'cli');
 
-		// Enable auto-loading of classes
-		spl_autoload_register(array(__CLASS__, 'auto_load'));
+		// Test if the current evironment is Windows
+		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
-		// Enable the exception handler
-		// set_exception_handler(array(__CLASS__, 'exception_handler'));
-
-		// Enable the error-to-exception handler
-		set_error_handler(array(__CLASS__, 'error_handler'));
-
-		// Load main configuration
-		$config = Kohana::load_file(APPPATH.'config/kohana'.EXT);
-
-		// Toggle cache saving
-		self::$save_cache = $config['save_cache'];
-
-		// Localize the application
-		self::locale($config['locale']);
-
-		// Localize the timezone
-		self::timezone($config['timezone']);
-
-		// Load module paths
-		self::modules($config['modules']);
+		// Determine if the server supports UTF-8 natively
+		utf8::$server_utf8 = extension_loaded('mbstring');
 
 		// Load the file path cache
 		self::$file_path = Kohana::cache('kohana_file_paths');
+
+		// Load the configuration loader
+		self::$config = new Kohana_Config_Loader;
+
+		// Import the main configuration locally
+		$config = self::$config->kohana;
+
+		// Set the default locale
+		self::$default_locale = $config->default_locale;
+		self::$save_cache     = $config->save_cache;
+		self::$charset        = $config->charset;
+
+		// Localize the environment
+		self::locale($config->locale);
+
+		// Set the enviroment time
+		self::timezone($config->timezone);
 
 		if ($hooks = self::list_files('hooks', TRUE))
 		{
@@ -109,8 +108,18 @@ final class Kohana {
 			}
 		}
 
+		// Convert global variables to current charset.
+		$_GET    = utf8::clean($_GET, self::$charset);
+		$_POST   = utf8::clean($_POST, self::$charset);
+		$_SERVER = utf8::clean($_SERVER, self::$charset);
+
 		// The system has been initialized
 		self::$init = TRUE;
+	}
+
+	public static function instance()
+	{
+		echo Kohana::debug(__METHOD__.' reporting for duty!');
 	}
 
 	/**
@@ -124,11 +133,123 @@ final class Kohana {
 	{
 		if (self::$save_cache === TRUE)
 		{
+			// Save the configuration
+			self::$config->save();
+
 			if (self::$file_path_changed === TRUE)
 			{
+				// Save the file found file paths
 				Kohana::cache('kohana_file_paths', self::$file_path);
 			}
 		}
+	}
+
+	/**
+	 * Provides auto-loading support of Kohana classes, as well as transparent
+	 * extension of classes that have a _Core suffix.
+	 *
+	 * Class names are converted to file names by making the class name
+	 * lowercase and converting underscores to slashes:
+	 *
+	 *     // Loads classes/my/class/name.php
+	 *     Kohana::auto_load('My_Class_Name');
+	 *
+	 * @param   string   class name
+	 * @param   string   file extensions to use
+	 * @return  boolean
+	 */
+	public static function auto_load($class)
+	{
+		// Transform the class name into a path
+		$file = str_replace('_', '/', strtolower($class));
+
+		if ($path = self::find_file('classes', $file))
+		{
+			// Load the class file
+			require $path;
+		}
+		else
+		{
+			return FALSE;
+		}
+
+		if ($path = self::find_file('extensions', $file))
+		{
+			// Load the extension file
+			require $path;
+		}
+		elseif (class_exists($class.'_Core', FALSE))
+		{
+			if (($extension = Kohana::cache('kohana_auto_extension '.$class)) === NULL)
+			{
+				// Class extension to be evaluated
+				$extension = 'class '.$class.' extends '.$class.'_Core { }';
+
+				// Use reflection to find out of the class is abstract
+				$class = new ReflectionClass($class.'_Core');
+
+				if ($class->isAbstract())
+				{
+					// Make the extension abstract, too
+					$extension = 'abstract '.$extension;
+				}
+
+				// Cache the extension string to that Reflection will be avoided
+				Kohana::cache('kohana_auto_extension '.$class, $extension);
+			}
+
+			// Transparent class extensions are possible using eval. Not very
+			// clean, but it can be avoided by creating empty extension files.
+			eval($extension);
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * PHP error handler, converts all errors into ErrorExceptions. This handler
+	 * respects error_reporting settings.
+	 *
+	 * @throws   ErrorException
+	 * @return   TRUE
+	 */
+	public static function error_handler($code, $error, $file = NULL, $line = NULL)
+	{
+		if ((error_reporting() & $code) !== 0)
+		{
+			// This error is not suppressed by current error reporting settings
+			throw new ErrorException($error, $code, 0, $file, $line);
+		}
+
+		// Do not execute the PHP error handler
+		return TRUE;
+	}
+
+	/**
+	 * Retrieves a language string, optionally with arguments.
+	 * 
+	 * @param   string  message to translate
+	 * @param   array   replacements for placeholders
+	 * @return  string
+	 */
+	public function i18n($string, array $args = NULL)
+	{
+		if (self::$locale !== self::$default_locale)
+		{
+			if ( ! isset(self::$language[$string]))
+			{
+				// Let the user know that this message needs to be translated
+				throw new Exception('The requested string ['.$string.'] has not been translated to '.self::$locale);
+			}
+
+			// Get the message translation
+			$string = self::$language[$string];
+		}
+
+		if ($args === NULL)
+			return $string;
+
+		return strtr($string, $args);
 	}
 
 	/**
@@ -149,6 +270,25 @@ final class Kohana {
 		{
 			// Set the system locale
 			self::$locale = substr($locales[0], 0, 5);
+
+			if (($messages = Kohana::cache('kohana_i18n_'.self::$locale)) === NULL)
+			{
+				// Find all this languages translation files
+				$files = self::find_file('i18n', self::$locale);
+
+				$messages = array();
+				foreach ($files as $file)
+				{
+					// Load the messages in this file
+					$messages = array_merge($messages, include $file);
+				}
+
+				// Cache the combined messages
+				Kohana::cache('kohana_i18n_'.self::$locale, $messages);
+			}
+
+			// Load the language internally
+			self::$language = $messages;
 		}
 	}
 
@@ -197,9 +337,12 @@ final class Kohana {
 
 		foreach ($modules as $module)
 		{
-			if ($module = realpath($module) AND is_dir($module))
+			if (is_dir($module))
 			{
-				if (KOHANA_IS_WIN)
+				// Get the absolute path to the module
+				$module = realpath($module);
+
+				if (Kohana::$is_windows === TRUE)
 				{
 					// Remove backslashes
 					$module = str_replace('\\', '/', $module);
@@ -247,19 +390,51 @@ final class Kohana {
 			return self::$file_path[$path];
 		}
 
-		foreach (self::$include_paths as $dir)
+		if ($dir === 'i18n' OR $dir === 'config')
 		{
-			if (file_exists($dir.$path))
-			{
-				// Cache is about to change
-				self::$file_path_changed = TRUE;
+			// Include paths must be searched in reverse
+			$paths = array_reverse(self::$include_paths);
 
-				// Cache and return the path to this file
-				return self::$file_path[$path] = $dir.$path;
+			// Array of files that have been found
+			$found = array();
+
+			foreach ($paths as $dir)
+			{
+				if (file_exists($dir.$path))
+				{
+					// This path has a file, add it to the list
+					$found[] = $dir.$path;
+				}
+			}
+		}
+		else
+		{
+			// The file has not been found yet
+			$found = FALSE;
+
+			foreach (self::$include_paths as $dir)
+			{
+				if (file_exists($dir.$path))
+				{
+					// A path has been found
+					$found = $dir.$path;
+
+					// Stop searching
+					break;
+				}
 			}
 		}
 
-		return FALSE;
+		if ( ! empty($found))
+		{
+			// Cache is about to change
+			self::$file_path_changed = TRUE;
+
+			// Cache path to this file
+			self::$file_path[$path] = $found;
+		}
+
+		return $found;
 	}
 
 	/**
@@ -273,10 +448,13 @@ final class Kohana {
 	 */
 	public function list_files($directory, $recursive = FALSE)
 	{
-		if (isset(self::$file_path[$directory.'/*']))
+		// Cache key, double wildcard for recursive
+		$key = $directory.'/*'.($recursive === TRUE ? '*' : '');
+
+		if (isset(self::$file_path[$key]))
 		{
 			// The files in this path have already been found
-			return self::$file_path[$directory.'/*'];
+			return self::$file_path[$key];
 		}
 
 		// Reverse the paths so that lower entries are overwritten
@@ -306,7 +484,11 @@ final class Kohana {
 							$files = array_merge($files, self::list_files($directory.'/'.$filename, TRUE));
 						}
 					}
-					else
+					elseif ($directory === 'i18n')
+					{
+						// Files in i18n/ do not get overwritten, as all of them must be loaded
+						$files[] = realpath($file->getPathname());
+					}
 					{
 						// Add the file to the files
 						$files[$directory.'/'.$filename] = realpath($file->getPathname());
@@ -319,7 +501,7 @@ final class Kohana {
 		self::$file_path_changed = TRUE;
 
 		// Cache and return the files
-		return self::$file_path[$directory.'/*'] = $files;
+		return self::$file_path[$key] = $files;
 	}
 
 	/**
@@ -336,64 +518,7 @@ final class Kohana {
 	}
 
 	/**
-	 * Provides auto-loading support of Kohana classes, as well as transparent
-	 * extension of classes that have a _Core suffix.
-	 *
-	 * Class names are converted to file names by making the class name
-	 * lowercase and converting underscores to slashes:
-	 *
-	 *     // Loads classes/my/class/name.php
-	 *     Kohana::auto_load('My_Class_Name');
-	 *
-	 * @param   string   class name
-	 * @param   string   file extensions to use
-	 * @return  boolean
-	 */
-	public static function auto_load($class)
-	{
-		// Transform the class name into a path
-		$file = str_replace('_', '/', strtolower($class));
-
-		if ($path = self::find_file('classes', $file))
-		{
-			// Load the class file
-			require $path;
-		}
-		else
-		{
-			return FALSE;
-		}
-
-		if ($path = self::find_file('extensions', $file))
-		{
-			// Load the extension file
-			require $path;
-		}
-		elseif (class_exists($class.'_Core', FALSE))
-		{
-			// Class extension to be evaluated
-			$extension = 'class '.$class.' extends '.$class.'_Core { }';
-
-			// Use reflection to find out of the class is abstract
-			$class = new ReflectionClass($class.'_Core');
-
-			if ($class->isAbstract())
-			{
-				// Make the extension abstract, too
-				$extension = 'abstract '.$extension;
-			}
-
-			// Transparent class extensions are possible using eval. Not very
-			// clean, but it can be avoided by creating empty extension files.
-			eval($extension);
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Provides simple file-based caching. All caches are serialized and
-	 * stored as a hash.
+	 * Provides simple file-based caching for strings and arrays: 
 	 *
 	 *     // Set the "foo" cache
 	 *     Kohana::cache('foo', 'hello, world');
@@ -401,6 +526,12 @@ final class Kohana {
 	 *     // Get the "foo" cache
 	 *     $foo = Kohana::cache('foo');
 	 *
+	 * All caches are stored as PHP code, generated with [var_export][ref-var].
+	 * Caching objects may not work as expected. Storing references or an
+	 * object or array that has recursion will cause an E_FATAL.
+	 * 
+	 * [ref-var]: http://php.net/var_export
+	 * 
 	 * @param   string   name of the cache
 	 * @param   mixed    data to cache
 	 * @param   integer  number of seconds the cache is valid for
@@ -410,7 +541,7 @@ final class Kohana {
 	public function cache($name, $data = NULL, $lifetime = 60)
 	{
 		// Cache file is a hash of the name
-		$file = sha1($name);
+		$file = sha1($name).EXT;
 
 		// Cache directories are split by keys
 		$dir = APPPATH.'cache/'.$file[0].'/';
@@ -422,7 +553,7 @@ final class Kohana {
 				if ((time() - filemtime($dir.$file)) < $lifetime)
 				{
 					// Return the cache
-					return unserialize(file_get_contents($dir.$file));
+					return include $dir.$file;
 				}
 				else
 				{
@@ -442,26 +573,50 @@ final class Kohana {
 		}
 
 		// Serialize the data and create the cache
-		return (bool) file_put_contents($dir.$file, serialize($data));
+		return (bool) file_put_contents($dir.$file, '<?php return '.var_export($data, TRUE).';');
 	}
 
-	/**
-	 * PHP error handler, converts all errors into ErrorExceptions. This handler
-	 * respects error_reporting settings.
-	 *
-	 * @throws   ErrorException
-	 * @return   TRUE
-	 */
-	public static function error_handler($code, $error, $file = NULL, $line = NULL)
+	public function array_get($key, array $array, $default = NULL)
 	{
-		if ((error_reporting() & $code) !== 0)
+		if (empty($array))
+			return $default;
+
+		if (strpos($key, '.') === FALSE)
 		{
-			// This error is not suppressed by current error reporting settings
-			throw new ErrorException($error, $code, 0, $file, $line);
+			// This is a quick shortcut that optimizes single-level keys
+			return isset($array[$key]) ? $array[$key] : $default;
 		}
 
-		// Do not execute the PHP error handler
-		return TRUE;
+		// Split the key
+		$keys = explode('.', $key);
+
+		do
+		{
+			// Get the next key
+			$key = array_shift($keys);
+
+			if (isset($array[$key]))
+			{
+				if (is_array($array[$key]) AND ! empty($keys))
+				{
+					// Dig down to prepare the next loop
+					$array = $array[$key];
+				}
+				else
+				{
+					// Requested key was found
+					return $array[$key];
+				}
+			}
+			else
+			{
+				// Requested key is not set
+				break;
+			}
+		}
+		while ( ! empty($keys));
+
+		return $default;
 	}
 
 	/**

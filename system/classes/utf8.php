@@ -28,8 +28,11 @@
  */
 final class utf8 {
 
+	// Does the server support UTF-8 natively?
+	public static $server_utf8 = FALSE;
+
 	// Called methods
-	static $called = array();
+	public static $called = array();
 
 	/**
 	 * Recursively cleans arrays, objects, and strings. Removes ASCII control
@@ -137,7 +140,7 @@ final class utf8 {
 	 */
 	public static function strlen($str)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return mb_strlen($str);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -165,7 +168,7 @@ final class utf8 {
 	 */
 	public static function strpos($str, $search, $offset = 0)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return mb_strpos($str, $search, $offset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -193,7 +196,7 @@ final class utf8 {
 	 */
 	public static function strrpos($str, $search, $offset = 0)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return mb_strrpos($str, $search, $offset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -220,7 +223,7 @@ final class utf8 {
 	 */
 	public static function substr($str, $offset, $length = NULL)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return ($length === NULL) ? mb_substr($str, $offset) : mb_substr($str, $offset, $length);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -269,7 +272,7 @@ final class utf8 {
 	 */
 	public static function strtolower($str)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return mb_strtolower($str);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -294,7 +297,7 @@ final class utf8 {
 	 */
 	public static function strtoupper($str)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return mb_strtoupper($str);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -341,7 +344,7 @@ final class utf8 {
 	 */
 	public static function ucwords($str)
 	{
-		if (SERVER_UTF8)
+		if (utf8::$server_utf8)
 			return mb_convert_case($str, MB_CASE_TITLE);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
