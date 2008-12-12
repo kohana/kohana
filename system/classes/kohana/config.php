@@ -55,8 +55,9 @@ class Kohana_Config extends ArrayObject {
 	{
 		foreach ($array as $key => $value)
 		{
-			if (is_array($value))
+			if (is_array($value) AND ! isset($value[0]))
 			{
+				// Convert all non-numerically indexed arrays to config objects
 				$array[$key] = new Kohana_Config($value, $this->parent);
 			}
 		}
@@ -93,36 +94,6 @@ class Kohana_Config extends ArrayObject {
 	}
 
 	/**
-	 * ArrayObject::offsetExists, forces missing indexes to filled with NULL.
-	 * 
-	 * @param   string   array key name
-	 * @return  boolean
-	 */
-	public function offsetExists($index)
-	{
-		if ( ! parent::offsetExists($index))
-		{
-			$this->offsetSet($index, NULL);
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * ArrayObject::offsetGet, checks if offsets exists before returning them.
-	 * 
-	 * @param   string   array key name
-	 * @return  mixed
-	 */
-	public function offsetGet($index)
-	{
-		// This will force missing values to
-		$this->offsetExists($index);
-
-		return parent::offsetGet($index);
-	}
-
-	/**
 	 * ArrayObject::offsetSet, converts array values to config objects.
 	 * 
 	 * @param   string   array key name
@@ -137,7 +108,7 @@ class Kohana_Config extends ArrayObject {
 			$newval = $newval->getArrayCopy();
 		}
 
-		if (is_array($newval))
+		if (is_array($newval) AND ! isset($newval[0]))
 		{
 			// Convert the array into a config object
 			$newval = new Kohana_Config($newval, $this->parent);

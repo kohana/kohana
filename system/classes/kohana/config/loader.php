@@ -13,8 +13,6 @@ class Kohana_Config_Loader_Core extends ArrayObject {
 		{
 			if ($config->changed())
 			{
-				echo Kohana::debug("$group config was changed during the request");
-
 				// Cache the group
 				Kohana::cache('kohana_config_'.$group, $config->getArrayCopy());
 			}
