@@ -48,7 +48,7 @@
 		</tr>
 		<tr>
 			<th>System Directory</th>
-			<?php if (is_dir(SYSPATH) AND is_file(SYSPATH.'bootstrap'.EXT)): ?>
+			<?php if (is_dir(SYSPATH) AND is_file(SYSPATH.'classes/kohana'.EXT)): ?>
 				<td class="pass"><?php echo SYSPATH ?></td>
 			<?php else: $failed = TRUE ?>
 				<td class="fail">The configured <code>system</code> directory does not exist or does not contain required files.</td>
@@ -56,18 +56,10 @@
 		</tr>
 		<tr>
 			<th>Application Directory</th>
-			<?php if (is_dir(APPPATH) AND is_file(APPPATH.'config/kohana'.EXT)): ?>
+			<?php if (is_dir(APPPATH) AND is_dir(APPPATH.'cache')): ?>
 				<td class="pass"><?php echo APPPATH ?></td>
 			<?php else: $failed = TRUE ?>
 				<td class="fail">The configured <code>application</code> directory does not exist or does not contain required files.</td>
-			<?php endif ?>
-		</tr>
-		<tr>
-			<th>Modules Directory</th>
-			<?php if (is_dir(MODPATH)): ?>
-				<td class="pass"><?php echo MODPATH ?></td>
-			<?php else: $failed = TRUE ?>
-				<td class="fail">The configured <code>modules</code> directory does not exist or does not contain required files.</td>
 			<?php endif ?>
 		</tr>
 		<tr>
