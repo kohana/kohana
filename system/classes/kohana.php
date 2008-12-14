@@ -336,12 +336,12 @@ final class Kohana {
 	 * @param   array   module paths
 	 * @return  void
 	 */
-	public static function modules(array $modules = NULL)
+	public static function modules($modules = NULL)
 	{
 		if ($modules === NULL)
-			return $modules;
+			return self::$modules;
 
-		// Start a new set of include paths, APPPATH first
+		// Start a new list of include paths, APPPATH first
 		$include_paths = array(APPPATH);
 
 		foreach ($modules as $name => $path)
@@ -362,18 +362,19 @@ final class Kohana {
 			}
 			else
 			{
+				// This module is invalid, remove it
 				unset($modules[$name]);
 			}
 		}
-
-		// Set the current module list
-		self::$modules = $modules;
 
 		// Finish the include paths by adding SYSPATH
 		$include_paths[] = SYSPATH;
 
 		// Set the new include paths
 		self::$include_paths = $include_paths;
+
+		// Set the current module list
+		return self::$modules = $modules;
 	}
 
 	/**
