@@ -47,6 +47,9 @@ final class Kohana {
 	// Environment has been initialized?
 	private static $init = FALSE;
 
+	// Current modules
+	private static $modules = array();
+
 	// Include paths that are used to find files
 	private static $include_paths = array(APPPATH, SYSPATH);
 
@@ -98,6 +101,9 @@ final class Kohana {
 
 		// Set the enviroment time
 		self::timezone($config->timezone);
+
+		// Enable modules
+		self::modules($config->modules);
 
 		if ($hooks = self::list_files('hooks', TRUE))
 		{
@@ -330,34 +336,44 @@ final class Kohana {
 	 * @param   array   module paths
 	 * @return  void
 	 */
-	public static function modules(array $modules)
+	public static function modules(array $modules = NULL)
 	{
-		// Start a new set of include paths, APPPATH first
-		$paths = array(APPPATH);
+		if ($modules === NULL)
+			return $modules;
 
-		foreach ($modules as $module)
+		// Start a new set of include paths, APPPATH first
+		$include_paths = array(APPPATH);
+
+		foreach ($modules as $name => $path)
 		{
-			if (is_dir($module))
+			if (is_dir($path))
 			{
 				// Get the absolute path to the module
-				$module = realpath($module);
+				$path = realpath($path);
 
 				if (Kohana::$is_windows === TRUE)
 				{
 					// Remove backslashes
-					$module = str_replace('\\', '/', $module);
+					$path = str_replace('\\', '/', $path);
 				}
 
 				// Add the module to include paths
-				$paths[] = $module.'/';
+				$include_paths[] = $path.'/';
+			}
+			else
+			{
+				unset($modules[$name]);
 			}
 		}
 
+		// Set the current module list
+		self::$modules = $modules;
+
 		// Finish the include paths by adding SYSPATH
-		$paths[] = SYSPATH;
+		$include_paths[] = SYSPATH;
 
 		// Set the new include paths
-		self::$include_paths = $paths;
+		self::$include_paths = $include_paths;
 	}
 
 	/**

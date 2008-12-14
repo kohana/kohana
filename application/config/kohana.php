@@ -1,9 +1,28 @@
 <?php
 /**
+ * Main application configuration for preparing the environment. Modules are
+ * configured here, as well as l10n and i18n settings.
  * 
+ * @package  Core
  */
 return array
 (
+	/**
+	 * Modules are additional resource paths. Any file that can be placed within
+	 * the application or system directories can also be placed in a module.
+	 * All modules are relative or absolute paths to directories.
+	 *
+	 * @see  http://docs.kohanaphp.com/modules
+	 */
+	'modules' => array
+	(
+		'documentation' => MODPATH,
+		'html'          => MODPATH,
+		'database'      => MODPATH,
+		// 'orm'           => MODPATH,
+		// 'email'         => MODPATH,
+	),
+	
 	/**
 	 * Locale of your application. Note that even if you are not using a POSIX
 	 * system, the first locale must be POSIX `xx_XX` locale name for internal i18n
@@ -18,6 +37,7 @@ return array
 	/**
 	 * Time zone of your application. Use NULL to use the default system time zone.
 	 *
+	 * @see  http://docs.kohanaphp.com/i18n
 	 * @see  http://php.net/manual/timezones.php
 	 * @see  http://php.net/manual/datetime.configuration.php
 	 */
@@ -34,8 +54,8 @@ return array
 	'save_cache' => FALSE,
 
 	/**
-	 * Default locale of your application. Change this to the POSXI locale of the
-	 * language that is used as the default text in views.
+	 * Default locale of your application. Change this to the POSIX locale of the
+	 * language that is used as the primary development language.
 	 *
 	 * @see  http://docs.kohanaphp.com/i18n
 	 */
