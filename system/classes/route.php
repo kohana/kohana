@@ -214,51 +214,22 @@ class Route_Core {
 			$regex = str_replace(array('(', ')'), array('(?:', ')?'), $this->uri);
 		}
 
-		if (preg_match_all('#'.Route::REGEX_KEY.'#', $regex, $keys))
-		{
-			// Compile every :key into its regex equivalent
-			$replace = $this->compile_keys($keys[0]);
+		// Insert default regex for keys
+		$regex = str_replace(array('<', '>'), array('(?P<', '>'.self::REGEX_SEGMENT.')'), $regex);
 
-			// Replace each :key with with <key>PATTERN
+		// Replace default regex patterns with user-specified patterns
+		if (count($this->regex))
+		{
+			$replace = array();
+			foreach ($this->regex as $key => $value)
+			{
+				$search = "<$key>".self::REGEX_SEGMENT;
+				$replace[$search] = "<$key>$value";
+			}
 			$regex = strtr($regex, $replace);
 		}
 
 		return '^'.$regex.'$';
-	}
-
-	/**
-	 * Compile a segment keys into a regular expression patterns.
-	 * 
-	 * @param   array   array of keys
-	 * @return  array
-	 */
-	protected function compile_keys(array $keys)
-	{
-		$groups = array();
-		foreach ($keys as $key)
-		{
-			// Remove the colon from the key to get the name
-			$name = substr($key, 1);
-
-			// Create a named regex match
-			$regex = '(?P<'.$name.'>';
-
-			if (isset($this->regex[$name]))
-			{
-				// Use the pre-defined pattern
-				$regex .= $this->regex[$name];
-			}
-			else
-			{
-				// Use the default pattern
-				$regex .= Route::REGEX_SEGMENT;
-			}
-
-			// Add the regex group with its key
-			$groups[$key] = $regex.')';
-		}
-
-		return $groups;
 	}
 
 } // End Kohana_Route
