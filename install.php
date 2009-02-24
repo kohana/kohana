@@ -56,7 +56,7 @@
 		</tr>
 		<tr>
 			<th>Application Directory</th>
-			<?php if (is_dir(APPPATH) AND is_dir(APPPATH.'cache')): ?>
+			<?php if (is_dir(APPPATH) AND is_file(APPPATH.'bootstrap'.EXT)): ?>
 				<td class="pass"><?php echo APPPATH ?></td>
 			<?php else: $failed = TRUE ?>
 				<td class="fail">The configured <code>application</code> directory does not exist or does not contain required files.</td>

@@ -39,14 +39,25 @@ define('EXT', '.php');
  * ----------------------------------------------------------------------------
  */
 
-// Define the name of the front controller index
-define('FCINDEX', basename(__FILE__));
+// Set the full path to the docroot
+define('DOCROOT', realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
+
+// Make the application relative to the docroot
+if ( ! is_dir($application) AND is_dir(DOCROOT.$application))
+	$application = DOCROOT.$application;
+
+// Make the modules relative to the docroot
+if ( ! is_dir($modules) AND is_dir(DOCROOT.$modules))
+	$modules = DOCROOT.$modules;
+
+// Make the system relative to the docroot
+if ( ! is_dir($system) AND is_dir(DOCROOT.$system))
+	$modules = DOCROOT.$system;
 
 // Define the absolute paths for configured directories
-define('DOCROOT', str_replace('\\', '/', realpath(getcwd())).'/');
-define('APPPATH', str_replace('\\', '/', realpath($application)).'/');
-define('MODPATH', str_replace('\\', '/', realpath($modules)).'/');
-define('SYSPATH', str_replace('\\', '/', realpath($system)).'/');
+define('APPPATH', realpath($application).DIRECTORY_SEPARATOR);
+define('MODPATH', realpath($modules).DIRECTORY_SEPARATOR);
+define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
 
 // Clean up the configuration vars
 unset($application, $modules, $system);
@@ -67,13 +78,7 @@ spl_autoload_register(array('Kohana', 'auto_load'));
 // set_exception_handler(array('Kohana', 'exception_handler'));
 
 // Enable the error-to-exception handler
-set_error_handler(array('Kohana', 'error_handler'));
+// set_error_handler(array('Kohana', 'error_handler'));
 
-// Initialize the environment
-Kohana::init();
-
-// Create the main instance
-Kohana::instance();
-
-// Shutdown the environment
-Kohana::shutdown();
+// Bootstrap the application
+require APPPATH.'bootstrap'.EXT;
