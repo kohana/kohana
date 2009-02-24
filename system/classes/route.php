@@ -36,26 +36,15 @@
  */
 class Route_Core {
 
-	const REGEX_KEY     = ':[a-zA-Z0-9_]++';
+	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
 	const REGEX_SEGMENT = '[^/.,;?]++';
-	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!<>|]';
+	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
-	/**
-	 * Returns a new Route object.
-	 *
-	 * @chainable
-	 * @param   string  route URI
-	 * @param   array   regular expressions for keys
-	 * @return  Route
-	 */
-	public static function factory($uri, array $regex = array())
-	{
-		return new Route($uri, $regex);
-	}
+	protected static $_routes = array();
 
 	/**
 	 * Called when the object is re-constructed from the cache.
-	 * 
+	 *
 	 * @param   array   cached values
 	 * @return  Route
 	 */
@@ -70,17 +59,52 @@ class Route_Core {
 		return $route;
 	}
 
+	/**
+	 * Stores a named route and returns it.
+	 * 
+	 * @param   string   route name
+	 * @param   string   URI pattern
+	 * @param   array    regex patterns for route keys
+	 * @return  Route
+	 */
+	public static function set($name, $uri, array $regex = NULL)
+	{
+		return Route::$_routes[$name] = new Route($uri, $regex);
+	}
+
+	/**
+	 * Retrieves a named route.
+	 * 
+	 * @param   string  route name
+	 * @return  Route
+	 * @return  FALSE   when no route is found
+	 */
+	public static function get($name)
+	{
+		return isset(Route::$_routes[$name]) ? Route::$_routes[$name] : FALSE;
+	}
+
+	/**
+	 * Retrieves all named routes, with the default route last.
+	 * 
+	 * @return  array  named routes
+	 */
+	public function all()
+	{
+		return Route::$_routes;
+	}
+
 	// Route URI string
-	protected $uri = '';
+	protected $_uri = '';
 
 	// Regular expressions for route keys
-	protected $regex = array();
+	protected $_regex = array();
 
 	// Default values for route keys
-	protected $defaults = array('method' => 'index');
+	protected $_defaults = array('method' => 'index');
 
 	// Compiled regex cache
-	protected $compiled;
+	protected $_route_regex;
 
 	/**
 	 * Creates a new route. Sets the URI and regular expressions for keys.
@@ -88,27 +112,25 @@ class Route_Core {
 	 * @param   string   route URI pattern
 	 * @param   array    key patterns
 	 */
-	public function __construct($uri, array $regex = array())
+	public function __construct($uri, array $regex = NULL)
 	{
 		if ( ! empty($regex))
-		{
-			$this->regex = $regex;
-		}
+			$this->_regex = $regex;
 
-		// Store the routed URI
-		$this->uri = $uri;
+		// Store the URI that this route will match
+		$this->_uri = $uri;
 
-		if (($regex = Kohana::cache('kohana_route_regex_'.$uri)) === NULL)
+		if (($regex = Kohana::cache('kohana_route:'.$uri)) === NULL)
 		{
 			// Compile the complete regex for this uri
-			$regex = $this->compile();
+			$regex = $this->_compile();
 
 			// Cache the compiled regex
-			Kohana::cache('kohana_route_regex_'.$uri, $regex);
+			Kohana::cache('kohana_route:'.$uri, $regex);
 		}
 
 		// Store the compiled regex locally
-		$this->compiled = $regex;
+		$this->_route_regex = $regex;
 	}
 
 	/**
@@ -121,14 +143,14 @@ class Route_Core {
 	 * @param   array  key values
 	 * @return  Route
 	 */
-	public function defaults(array $defaults)
+	public function defaults(array $defaults = NULL)
 	{
-		if (empty($defaults['method']))
+		if (empty($defaults['action']))
 		{
-			$defaults['method'] = 'index';
+			$defaults['action'] = 'index';
 		}
 
-		$this->defaults = $defaults;
+		$this->_defaults = $defaults;
 
 		return $this;
 	}
@@ -139,7 +161,7 @@ class Route_Core {
 	 * boolean FALSE.
 	 *
 	 *     // This route will only match if the :controller, :method, and :id exist
-	 *     $params = Route::factory(':controller/:method/:id', array('id' => '\d+'))
+	 *     $params = Route::factory('<controller>/<method>/<id>', array('id' => '\d+'))
 	 *         ->match('users/edit/10');
 	 *     // The parameters are now:
 	 *     // controller = users
@@ -159,36 +181,83 @@ class Route_Core {
 	 */
 	public function matches($uri)
 	{
-		if (preg_match('#'.$this->compiled.'#', $uri, $matches))
-		{
-			$params = array();
-			foreach ($matches as $key => $value)
-			{
-				if (is_int($key))
-				{
-					// Skip all unnamed keys
-					continue;
-				}
+		if ( ! preg_match($this->_route_regex, $uri, $matches))
+			return FALSE;
 
-				// Set the value for all matched keys
+		$params = array();
+		foreach ($matches as $key => $value)
+		{
+			if (is_int($key))
+			{
+				// Skip all unnamed keys
+				continue;
+			}
+
+			// Set the value for all matched keys
+			$params[$key] = $value;
+		}
+
+		foreach ($this->_defaults as $key => $value)
+		{
+			if ( ! isset($params[$key]))
+			{
+				// Set default values for any key that was not matched
 				$params[$key] = $value;
 			}
+		}
 
-			foreach ($this->defaults as $key => $value)
+		return $params;
+	}
+
+	/**
+	 * Generates a URI for the current route based on the parameters given.
+	 *
+	 * @param   array   URI parameters
+	 * @return  string
+	 * @throws  Kohana_Exception  when the URI will not match the current route
+	 */
+	public function uri(array $params = NULL)
+	{
+		if ($params === NULL)
+			$params = $this->_defaults;
+
+		// Start with the routed URI
+		$uri = $this->_uri;
+
+		if (strpos($uri, '<') === FALSE AND strpos('(', $this->uri) === FALSE)
+		{
+			// This is a static route, no need to replace anything
+			return $uri;
+		}
+
+		if (preg_match_all('#'.Route::REGEX_KEY.'#', $uri, $keys))
+		{
+			foreach ($keys[1] as $key)
 			{
-				if ( ! isset($params[$key]))
-				{
-					// Set default values for any key that was not matched
-					$params[$key] = $value;
-				}
+				$search[]  = "<$key>";
+				$replace[] = isset($params[$key]) ? $params[$key] : '';
 			}
 
-			return $params;
+			// Replace all the variable keys in the URI
+			$uri = str_replace($search, $replace, $uri);
 		}
-		else
+
+		if (strpos($uri, '(') !== FALSE)
 		{
-			return FALSE;
+			// Remove all groupings from the URI
+			$uri = str_replace(array('(', ')'), '', $uri);
 		}
+
+		// Trim off extra slashes
+		$uri = rtrim($uri, '/');
+
+		if ( ! preg_match($this->_route_regex, $uri))
+		{
+			// This will generally happen with the user supplies invalid parameters
+			throw new Exception('The generated URI "'.$uri.'" will not be matched by "'.$this->_uri.'"');
+		}
+
+		return $uri;
 	}
 
 	/**
@@ -197,39 +266,35 @@ class Route_Core {
 	 *
 	 * @return  string
 	 */
-	protected function compile()
+	protected function _compile()
 	{
 		// The URI should be considered literal except for keys and optional parts
-		// Escape everything preg_quote would escape except for : ( )
-		$this->uri = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $this->uri);
+		// Escape everything preg_quote would escape except for : ( ) < >
+		$regex = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $this->_uri);
 
-		if (strpos($this->uri, '(') === FALSE)
-		{
-			// No optional parts of the URI
-			$regex = $this->uri;
-		}
-		else
+		if (strpos($regex, '(') !== FALSE)
 		{
 			// Make optional parts of the URI non-capturing and optional
-			$regex = str_replace(array('(', ')'), array('(?:', ')?'), $this->uri);
+			$regex = str_replace(array('(', ')'), array('(?:', ')?'), $regex);
 		}
 
 		// Insert default regex for keys
-		$regex = str_replace(array('<', '>'), array('(?P<', '>'.self::REGEX_SEGMENT.')'), $regex);
+		$regex = str_replace(array('<', '>'), array('(?P<', '>'.Route::REGEX_SEGMENT.')'), $regex);
 
-		// Replace default regex patterns with user-specified patterns
-		if (count($this->regex))
+		if ( ! empty($this->_regex))
 		{
-			$replace = array();
-			foreach ($this->regex as $key => $value)
+			$search = $replace = array();
+			foreach ($this->_regex as $key => $value)
 			{
-				$search = "<$key>".self::REGEX_SEGMENT;
-				$replace[$search] = "<$key>$value";
+				$search[]  = "<$key>".Route::REGEX_SEGMENT;
+				$replace[] = "<$key>$value";
 			}
-			$regex = strtr($regex, $replace);
+
+			// Replace the default regex with the user-specified regex
+			$regex = str_replace($search, $replace, $regex);
 		}
 
-		return '^'.$regex.'$';
+		return '#^'.$regex.'$#';
 	}
 
 } // End Kohana_Route
