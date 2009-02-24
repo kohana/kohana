@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -17,48 +17,14 @@ final class Kohana {
 	const VERSION   = '3.0';
 	const CODENAME  = 'renaissance';
 
-	// Save the cache on shutdown?
-	public static $save_cache = FALSE;
+	// Security check that is added to all generated PHP files
+	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
 
-	// Current server is Windows?
-	public static $is_windows = FALSE;
-
-	// Current request is command line?
-	public static $is_cli = FALSE;
-
-	// Client request method
-	public static $request_method = 'GET';
-
-	// Default character set of input and output
-	public static $charset = 'UTF-8';
-
-	// Default locale of your application
-	public static $default_locale = 'en_US';
-
-	// Current configuration
-	public static $config;
-
-	// Current locale
-	public static $locale;
-
-	// Current timezone
-	public static $timezone;
-
-	// Environment has been initialized?
-	private static $init = FALSE;
-
-	// Current modules
-	private static $modules = array();
+	// Currently active modules
+	private static $_modules = array();
 
 	// Include paths that are used to find files
-	private static $include_paths = array(APPPATH, SYSPATH);
-
-	// Cache for resource location
-	private static $file_path;
-	private static $file_path_changed = FALSE;
-
-	// Cache of current language messages
-	private static $language;
+	private static $_paths = array(APPPATH, SYSPATH);
 
 	/**
 	 * Initializes the environment:
@@ -70,84 +36,13 @@ final class Kohana {
 	 */
 	public static function init()
 	{
-		if (self::$init === TRUE)
+		static $_init;
+
+		if ($_init === TRUE)
 			return;
 
-		// Test if the current environment is command-line
-		self::$is_cli = (PHP_SAPI === 'cli');
-
-		// Test if the current evironment is Windows
-		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
-
-		// Determine if the server supports UTF-8 natively
-		utf8::$server_utf8 = extension_loaded('mbstring');
-
-		// Load the file path cache
-		self::$file_path = Kohana::cache('kohana_file_paths');
-
-		// Load the configuration loader
-		self::$config = new Kohana_Config_Loader;
-
-		// Import the main configuration locally
-		$config = self::$config->kohana;
-
-		// Set the default locale
-		self::$default_locale = $config->default_locale;
-		self::$save_cache     = $config->save_cache;
-		self::$charset        = $config->charset;
-
-		// Localize the environment
-		self::locale($config->locale);
-
-		// Set the enviroment time
-		self::timezone($config->timezone);
-
-		// Enable modules
-		self::modules($config->modules);
-
-		if ($hooks = self::list_files('hooks', TRUE))
-		{
-			foreach ($hooks as $hook)
-			{
-				// Load each hook in the order they appear
-				require $hook;
-			}
-		}
-
-		// Convert global variables to current charset.
-		$_GET    = utf8::clean($_GET, self::$charset);
-		$_POST   = utf8::clean($_POST, self::$charset);
-		$_SERVER = utf8::clean($_SERVER, self::$charset);
-
-		// The system has been initialized
-		self::$init = TRUE;
-	}
-
-	public static function instance()
-	{
-		echo Kohana::debug(__METHOD__.' reporting for duty!');
-	}
-
-	/**
-	 * The last method before Kohana stops processing the request:
-	 *
-	 * - Saves the file path cache
-	 *
-	 * @return  void
-	 */
-	public function shutdown()
-	{
-		if (self::$save_cache === TRUE)
-		{
-			// Save the configuration
-			self::$config->save();
-
-			if (self::$file_path_changed === TRUE)
-			{
-				// Save the file found file paths
-				Kohana::cache('kohana_file_paths', self::$file_path);
-			}
-		}
+		// Initialization complete
+		$_init = TRUE;
 	}
 
 	/**
@@ -232,102 +127,6 @@ final class Kohana {
 	}
 
 	/**
-	 * Retrieves a language string, optionally with arguments.
-	 * 
-	 * @param   string  message to translate
-	 * @param   array   replacements for placeholders
-	 * @return  string
-	 */
-	public function i18n($string, array $args = NULL)
-	{
-		if (self::$locale !== self::$default_locale)
-		{
-			if ( ! isset(self::$language[$string]))
-			{
-				// Let the user know that this message needs to be translated
-				throw new Exception('The requested string ['.$string.'] has not been translated to '.self::$locale);
-			}
-
-			// Get the message translation
-			$string = self::$language[$string];
-		}
-
-		if ($args === NULL)
-			return $string;
-
-		return strtr($string, $args);
-	}
-
-	/**
-	 * Sets the environment locale. The first locale must always be a valid
-	 * `xx_XX` locale name to be used for i18n:
-	 * 
-	 *     Kohana::locale(array('de_DE@euro.UTF-8', 'de_DE.UTF-8', 'german'));
-	 * 
-	 * When using this method, it is a good idea to provide many variations, as
-	 * locale availability on different systems is very unpredictable.
-	 * 
-	 * @param   array   locale choices
-	 * @return  void
-	 */
-	public static function locale(array $locales)
-	{
-		if (setlocale(LC_ALL, $locales) !== FALSE)
-		{
-			// Set the system locale
-			self::$locale = substr($locales[0], 0, 5);
-
-			if (($messages = Kohana::cache('kohana_i18n_'.self::$locale)) === NULL)
-			{
-				// Find all this languages translation files
-				$files = self::find_file('i18n', self::$locale);
-
-				$messages = array();
-				foreach ($files as $file)
-				{
-					// Load the messages in this file
-					$messages = array_merge($messages, include $file);
-				}
-
-				// Cache the combined messages
-				Kohana::cache('kohana_i18n_'.self::$locale, $messages);
-			}
-
-			// Load the language internally
-			self::$language = $messages;
-		}
-	}
-
-	/**
-	 * Sets the environment timezone. Any timezone supported by PHP cane be
-	 * used here:
-	 * 
-	 *     Kohana::timezone('Arctic/Longyearbyen');
-	 * 
-	 * @param   string   timezone name
-	 * @return  string
-	 */
-	public static function timezone($timezone)
-	{
-		if ($timezone === NULL)
-		{
-			// Disable notices when using date_default_timezone_get
-			$ER = error_reporting(~E_NOTICE);
-
-			$timezone = date_default_timezone_get();
-
-			// Restore error reporting
-			error_reporting($ER);
-		}
-
-		if (date_default_timezone_set($timezone) === TRUE)
-		{
-			// Set the system timezone
-			self::$timezone = $timezone;
-		}
-	}
-
-	/**
 	 * Changes the currently enabled modules. Module paths may be relative
 	 * or absolute, but must point to a directory:
 	 * 
@@ -336,29 +135,20 @@ final class Kohana {
 	 * @param   array   module paths
 	 * @return  void
 	 */
-	public static function modules($modules = NULL)
+	public static function modules(array $modules = NULL)
 	{
 		if ($modules === NULL)
-			return self::$modules;
+			return self::$_modules;
 
 		// Start a new list of include paths, APPPATH first
-		$include_paths = array(APPPATH);
+		$paths = array(APPPATH);
 
 		foreach ($modules as $name => $path)
 		{
 			if (is_dir($path))
 			{
-				// Get the absolute path to the module
-				$path = realpath($path);
-
-				if (Kohana::$is_windows === TRUE)
-				{
-					// Remove backslashes
-					$path = str_replace('\\', '/', $path);
-				}
-
 				// Add the module to include paths
-				$include_paths[] = $path.'/';
+				$paths[] = realpath($path).DIRECTORY_SEPARATOR;
 			}
 			else
 			{
@@ -368,13 +158,13 @@ final class Kohana {
 		}
 
 		// Finish the include paths by adding SYSPATH
-		$include_paths[] = SYSPATH;
+		$paths[] = SYSPATH;
 
 		// Set the new include paths
-		self::$include_paths = $include_paths;
+		self::$_paths = $paths;
 
 		// Set the current module list
-		return self::$modules = $modules;
+		return self::$_modules = $modules;
 	}
 
 	/**
@@ -401,12 +191,6 @@ final class Kohana {
 		// Create a partial path of the filename
 		$path = $dir.'/'.$file.$ext;
 
-		if (isset(self::$file_path[$path]))
-		{
-			// The path to this file has already been found
-			return self::$file_path[$path];
-		}
-
 		if ($dir === 'i18n' OR $dir === 'config')
 		{
 			// Include paths must be searched in reverse
@@ -429,9 +213,9 @@ final class Kohana {
 			// The file has not been found yet
 			$found = FALSE;
 
-			foreach (self::$include_paths as $dir)
+			foreach (self::$_paths as $dir)
 			{
-				if (file_exists($dir.$path))
+				if (is_file($dir.$path))
 				{
 					// A path has been found
 					$found = $dir.$path;
@@ -442,94 +226,18 @@ final class Kohana {
 			}
 		}
 
-		if ( ! empty($found))
-		{
-			// Cache is about to change
-			self::$file_path_changed = TRUE;
-
-			// Cache path to this file
-			self::$file_path[$path] = $found;
-		}
-
 		return $found;
-	}
-
-	/**
-	 * Find all of the files in a directory:
-	 * 
-	 *     $configs = Kohana::list_files('config');
-	 * 
-	 * @param   string   directory name
-	 * @param   boolean  list files recursively
-	 * @return  array
-	 */
-	public function list_files($directory, $recursive = FALSE)
-	{
-		// Cache key, double wildcard for recursive
-		$key = $directory.'/*'.($recursive === TRUE ? '*' : '');
-
-		if (isset(self::$file_path[$key]))
-		{
-			// The files in this path have already been found
-			return self::$file_path[$key];
-		}
-
-		// Reverse the paths so that lower entries are overwritten
-		$paths = array_reverse(self::$include_paths);
-
-		// Start the list of files
-		$files = array();
-
-		foreach ($paths as $path)
-		{
-			if (is_dir($path.$directory))
-			{
-				$dir = new DirectoryIterator($path.$directory);
-
-				foreach ($dir as $file)
-				{
-					$filename = $file->getFilename();
-
-					if ($filename[0] === '.')
-						continue;
-
-					if ($file->isDir())
-					{
-						if ($recursive === TRUE)
-						{
-							// Recursively add files
-							$files = array_merge($files, self::list_files($directory.'/'.$filename, TRUE));
-						}
-					}
-					elseif ($directory === 'i18n')
-					{
-						// Files in i18n/ do not get overwritten, as all of them must be loaded
-						$files[] = realpath($file->getPathname());
-					}
-					{
-						// Add the file to the files
-						$files[$directory.'/'.$filename] = realpath($file->getPathname());
-					}
-				}
-			}
-		}
-
-		// Cache is about to change
-		self::$file_path_changed = TRUE;
-
-		// Cache and return the files
-		return self::$file_path[$key] = $files;
 	}
 
 	/**
 	 * Loads a file within a totally empty scope and returns the output:
 	 *
-	 *     $foo = Kohana::load_file('foo.php');
+	 *     $foo = Kohana::load('foo.php');
 	 *
 	 * @param   string
 	 * @return  mixed
 	 */
-	public function load_file($file)
+	public function load($file)
 	{
 		return include $file;
 	}
@@ -590,50 +298,7 @@ final class Kohana {
 		}
 
 		// Serialize the data and create the cache
-		return (bool) file_put_contents($dir.$file, '<?php return '.var_export($data, TRUE).';');
-	}
-
-	public function array_get($key, array $array, $default = NULL)
-	{
-		if (empty($array))
-			return $default;
-
-		if (strpos($key, '.') === FALSE)
-		{
-			// This is a quick shortcut that optimizes single-level keys
-			return isset($array[$key]) ? $array[$key] : $default;
-		}
-
-		// Split the key
-		$keys = explode('.', $key);
-
-		do
-		{
-			// Get the next key
-			$key = array_shift($keys);
-
-			if (isset($array[$key]))
-			{
-				if (is_array($array[$key]) AND ! empty($keys))
-				{
-					// Dig down to prepare the next loop
-					$array = $array[$key];
-				}
-				else
-				{
-					// Requested key was found
-					return $array[$key];
-				}
-			}
-			else
-			{
-				// Requested key is not set
-				break;
-			}
-		}
-		while ( ! empty($keys));
-
-		return $default;
+		return (bool) file_put_contents($dir.$file, self::PHP_HEADER.'return '.var_export($data, TRUE).';');
 	}
 
 	/**
@@ -666,7 +331,7 @@ final class Kohana {
 					$var = $var ? 'TRUE' : 'FALSE';
 				break;
 				default:
-					$var = htmlspecialchars(print_r($var, TRUE), NULL, self::$charset, TRUE);
+					$var = htmlspecialchars(print_r($var, TRUE), NULL, 'utf-8', TRUE);
 				break;
 			}
 
