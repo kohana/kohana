@@ -5,33 +5,31 @@
  * and a route. Routes may also contain keys which can be used to set the
  * controller, method, and method arguments.
  *
- * Each :key will be translated to a regular expression using a default regular
- * expression pattern. You can override the default pattern by providing a
- * pattern for the key:
+ * Each <key> will be translated to a regular expression using a default
+ * regular expression pattern. You can override the default pattern by providing
+ * a pattern for the key:
  *
- *     // This route will only match when :id is a digit
- *     Route::factory('user/edit/:id', array('id' => '\d+'));
+ *     // This route will only match when <id> is a digit
+ *     Route::factory('user/edit/<id>', array('id' => '\d+'));
  *
- *     // This route will match when :path is anything
- *     Route::factory(':path', array('path' => '.*'));
+ *     // This route will match when <path> is anything
+ *     Route::factory('<path>', array('path' => '.*'));
  *
  * It is also possible to create optional segments by using parenthesis in
  * the URI definition:
  *
  *     // This is the standard default route, and no keys are required
- *     Route::defautl('(:controller(/:method(/:id)))');
+ *     Route::default('(<controller>(/<method>(/<id>)))');
  *
  *     // This route only requires the :file key
- *     Route::factory('(:path/):file(:format)', array('path' => '.*', 'format' => '\.\w+'));
+ *     Route::factory('(<path>/)<file>(<format>)', array('path' => '.*', 'format' => '\.\w+'));
  *
  * Routes also provide a way to generate URIs (called "reverse routing"), which
  * makes them an extremely powerful and flexible way to generate internal links.
  *
- * $Id: route.php 3730 2008-11-27 00:37:57Z Shadowhand $
- *
  * @package    Core
  * @author     Kohana Team
- * @copyright  (c) 2008 Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 class Route_Core {
@@ -160,7 +158,7 @@ class Route_Core {
 	 * all of the routed parameters as an array. A failed match will return
 	 * boolean FALSE.
 	 *
-	 *     // This route will only match if the :controller, :method, and :id exist
+	 *     // This route will only match if the <controller>, <method>, and <id> exist
 	 *     $params = Route::factory('<controller>/<method>/<id>', array('id' => '\d+'))
 	 *         ->match('users/edit/10');
 	 *     // The parameters are now:
