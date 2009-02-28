@@ -20,6 +20,6 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'action' => 'index',
 		'id' => NULL));
 
-$q = Request::instance(@$_SERVER['PATH_INFO']);
+// Execute the main request
+Request::instance($_SERVER['PATH_INFO'])->execute(FALSE);
 
-$q->process();

@@ -2,7 +2,7 @@
 
 abstract class Controller_Core {
 
-	public $request;
+	protected $request;
 
 	public function __construct(Request $request)
 	{
@@ -15,11 +15,6 @@ abstract class Controller_Core {
 	}
 
 	public function after()
-	{
-		
-	}
-
-	public function render()
 	{
 		
 	}
