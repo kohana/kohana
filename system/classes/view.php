@@ -8,7 +8,7 @@
  *
  * @package    Core
  * @author     Kohana Team
- * @copyright  (c) 2008 Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 class View_Core {
@@ -24,7 +24,7 @@ class View_Core {
 	 * @param   array   array of values
 	 * @return  View
 	 */
-	public static function factory($file = NULL, array $data = array())
+	public static function factory($file = NULL, array $data = NULL)
 	{
 		return new View($file, $data);
 	}
@@ -66,7 +66,7 @@ class View_Core {
 	 * @param   array   array of values
 	 * @return  void
 	 */
-	public function __construct($file = NULL, array $data = array())
+	public function __construct($file = NULL, array $data = NULL)
 	{
 		if ( ! empty($file))
 		{
@@ -128,7 +128,7 @@ class View_Core {
 		}
 		catch (Kohana_Exception $e)
 		{
-			return (string) $e;
+			return (string) $e->getMessage().' on '.$e->getLine().' in '.$e->getFile();
 		}
 	}
 
@@ -149,7 +149,7 @@ class View_Core {
 		}
 		else
 		{
-			throw new Kohana_Exception('kohana.file_not_found', 'views', $file);
+			throw new Kohana_Exception('The requested :type :file was not found', array('type' => 'view', 'file' => $file));
 		}
 
 		return $this;

@@ -9,7 +9,7 @@
  *
  * @package    Core
  * @author     Kohana Team
- * @copyright  (c) 2008 Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 final class Kohana {
@@ -19,6 +19,15 @@ final class Kohana {
 
 	// Security check that is added to all generated PHP files
 	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+
+	// Is this a command line environment?
+	public static $is_cli = FALSE;
+
+	// Is this a Windows environment?
+	public static $is_windows = FALSE;
+
+	// The character set of input and output
+	public static $charset = 'utf-8';
 
 	// Currently active modules
 	private static $_modules = array();
@@ -331,7 +340,7 @@ final class Kohana {
 					$var = $var ? 'TRUE' : 'FALSE';
 				break;
 				default:
-					$var = htmlspecialchars(print_r($var, TRUE), NULL, 'utf-8', TRUE);
+					$var = htmlspecialchars(print_r($var, TRUE), NULL, self::$charset, TRUE);
 				break;
 			}
 
@@ -372,6 +381,174 @@ final class Kohana {
 		}
 
 		return $file;
+	}
+
+	/**
+	 * Returns an HTML string, highlighting a specific line of a file, with some
+	 * number of lines padded above and below.
+	 *
+	 *     // Highlights the current line of the current file
+	 *     echo Kohana::debug_source(__FILE__, __LINE__);
+	 *
+	 * @param   string   file to open
+	 * @param   integer  line number to highlight
+	 * @param   integer  number of padding lines
+	 * @return  string
+	 */
+	public static function debug_source($file, $line_number, $padding = 3)
+	{
+		// Open the file and set the line position
+		$file = fopen($file, 'r');
+		$line = 0;
+
+		// Set the reading range
+		$range = array('start' => $line_number - $padding, 'end' => $line_number + $padding);
+
+		$source = array();
+		while (($row = fgets($file)) !== FALSE)
+		{
+			// Increment the line number
+			if (++$line > $range['end'])
+				break;
+
+			if ($line >= $range['start'])
+			{
+				// Trim whitespace and sanitize the row
+				$row = htmlspecialchars(rtrim($row));
+
+				if ($line === $line_number)
+				{
+					// Apply highlighting to the row
+					$row = '<span style="background:#f2df92">'.$row.'</span>';
+				}
+
+				// Add to the captured source
+				$source[] = $row;
+			}
+		}
+
+		// Close the file
+		fclose($file);
+
+		return implode("\n", $source);
+	}
+
+	/**
+	 * Returns an array of HTML strings that represent each step in the backtace.
+	 *
+	 *     // Displays the entire current backtrace
+	 *     echo implode('<br/>', Kohana::trace());
+	 *
+	 * @param   string  path to debug
+	 * @return  string
+	 */
+	public static function trace(array $trace = NULL)
+	{
+		if ($trace === NULL)
+		{
+			// Start a new trace
+			$trace = debug_backtrace();
+		}
+
+		// Non-standard function calls
+		$statements = array('include', 'include_once', 'require', 'require_once');
+
+		$output = array();
+		foreach ($trace as $line)
+		{
+			if ( ! isset($line['function']) OR ! isset($line['file']))
+			{
+				// Ignore this line, it has unusable data
+				continue;
+			}
+
+			// Start a new trace step
+			$step = array('file' => self::debug_path($line['file']), 'line' => '', 'function' => '');
+
+			if (isset($line['line']))
+			{
+				// Add the file line
+				$step['line'] = $line['line'];
+			}
+
+			if (in_array($line['function'], $statements))
+			{
+				if ( ! isset($line['args']))
+				{
+					// Really bizzare, ignore this line completely
+					continue;
+				}
+
+				// Sanitize all paths
+				$step['args'] = array_map(array(__CLASS__, 'debug_path'), $line['args']);
+
+				// function args
+				$step['function'] = $line['function'].' '.implode(', ', $step['args']);
+			}
+			else
+			{
+				if (isset($line['args']))
+				{
+					// Sanitize all arguments
+					$step['args'] = implode(', ', array_map(array(__CLASS__, 'debug_var'), $line['args']));
+				}
+				else
+				{
+					// No arguments
+					$step['args'] = '';
+				}
+
+				if (isset($line['class']) AND isset($line['type']))
+				{
+					// class::function(args) or class->function(args)
+					$step['function'] = $line['class'].$line['type'].$line['function'].'('.$step['args'].')';
+				}
+				else
+				{
+					// function(args)
+					$step['function'] = $line['function'].'('.$step['args'].')';
+				}
+			}
+
+			// Add this step to the trace output
+			$output[] = "<strong>{$step['file']} [ {$step['line']} ]</strong>\n".
+				"\t{$step['function']}";
+		}
+
+		return $output;
+	}
+
+	public static function debug_var($var)
+	{
+		switch (gettype($var))
+		{
+			case 'null':
+				return 'NULL';
+			break;
+			case 'boolean':
+				return $var ? 'TRUE' : 'FALSE';
+			break;
+			case 'string':
+				return "'{$var}'";
+			break;
+			case 'object':
+				return 'object '.get_class($var);
+			break;
+			case 'array':
+				if (arr::is_assoc($var))
+					return str_replace("\n", ' ', var_export($var, TRUE));
+
+				return 'array('.implode(', ', array_map(array(__CLASS__, __FUNCTION__), $var)).')';
+			break;
+			default:
+				return var_export($var, TRUE);
+			break;
+		}
+	}
+
+	final private function __construct()
+	{
+		// This is a static class
 	}
 
 } // End Kohana
