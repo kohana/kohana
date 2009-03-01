@@ -200,17 +200,17 @@ final class Kohana {
 		// Create a partial path of the filename
 		$path = $dir.'/'.$file.$ext;
 
-		if ($dir === 'i18n' OR $dir === 'config')
+		if ($dir === 'config' OR $dir === 'i18n')
 		{
 			// Include paths must be searched in reverse
-			$paths = array_reverse(self::$include_paths);
+			$paths = array_reverse(self::$_paths);
 
 			// Array of files that have been found
 			$found = array();
 
 			foreach ($paths as $dir)
 			{
-				if (file_exists($dir.$path))
+				if (is_file($dir.$path))
 				{
 					// This path has a file, add it to the list
 					$found[] = $dir.$path;
