@@ -277,8 +277,11 @@ final class Kohana {
 		// Cache file is a hash of the name
 		$file = sha1($name).EXT;
 
-		// Cache directories are split by keys
-		$dir = APPPATH.'cache/'.$file[0].'/';
+		// Lets keep this short and sweet
+		$ds = DIRECTORY_SEPARATOR;
+
+		// Cache directories are split by keys to prevent filesystem overload
+		$dir = APPPATH.'cache'.$ds.substr($file, 0, 2).$ds.substr($file, 2, 2).$ds;
 
 		if ($data === NULL)
 		{
@@ -303,7 +306,7 @@ final class Kohana {
 		if ( ! is_dir($dir))
 		{
 			// Create the cache directory
-			mkdir($dir, 0777);
+			mkdir($dir, 0777, TRUE);
 		}
 
 		// Serialize the data and create the cache
