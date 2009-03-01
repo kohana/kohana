@@ -18,7 +18,7 @@ final class Kohana {
 	const CODENAME  = 'renaissance';
 
 	// Security check that is added to all generated PHP files
-	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+	const PHP_HEADER = "<?php defined('SYSPATH') or die('No direct script access.');\n\n";
 
 	// Is this a command line environment?
 	public static $is_cli = FALSE;
