@@ -2,7 +2,7 @@
 
 abstract class Controller_Core {
 
-	protected $request;
+	public $request;
 
 	public function __construct(Request $request)
 	{
