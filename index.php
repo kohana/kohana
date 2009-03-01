@@ -80,5 +80,17 @@ set_exception_handler(array('Kohana_Exception', 'handle'));
 // Enable the error-to-exception handler
 set_error_handler(array('Kohana', 'error_handler'));
 
+// i18n translation function
+function __($string, array $values = NULL)
+{
+	if (i18n::$lang !== i18n::$default_lang)
+	{
+		// Get the translation for this string
+		$string = i18n::get($string);
+	}
+
+	return empty($values) ? $string : strtr($string, $values);
+}
+
 // Bootstrap the application
 require APPPATH.'bootstrap'.EXT;
