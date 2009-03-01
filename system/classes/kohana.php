@@ -20,13 +20,39 @@ final class Kohana {
 	// Security check that is added to all generated PHP files
 	const PHP_HEADER = "<?php defined('SYSPATH') or die('No direct script access.');\n\n";
 
-	// Is this a command line environment?
+	/**
+	 * @var  boolean  command line environment?
+	 */
 	public static $is_cli = FALSE;
 
-	// Is this a Windows environment?
+	/**
+	 * @var  boolean   Windows environment?
+	 */
 	public static $is_windows = FALSE;
 
-	// The character set of input and output
+	/**
+	 * @var  boolean  magic quotes enabled?
+	 */
+	public static $magic_quotes = FALSE;
+
+	/**
+	 * @var  boolean  cache the location of files across requests?
+	 */
+	public static $cache_paths = FALSE;
+
+	/**
+	 * @var  boolean  display errors and exceptions in output?
+	 */
+	public static $display_errors = TRUE;
+
+	/**
+	 * @var  boolean  log errors and exceptions?
+	 */
+	public static $log_errors = TRUE;
+
+	/**
+	 * @var  string  character set of input and output
+	 */
 	public static $charset = 'utf-8';
 
 	// Currently active modules
@@ -38,20 +64,143 @@ final class Kohana {
 	/**
 	 * Initializes the environment:
 	 *
-	 * - Loads hooks
-	 * - Converts all input variables to the configured character set
+	 * - Disables register_globals and magic_quotes_gpc
+	 * - Determines the current environment
+	 * - Set global settings
+	 * - Sanitizes GET, POST, and COOKIE variables
+	 * - Converts GET, POST, and COOKIE variables to the global character set
 	 *
+	 * Any of the global settings can be set here:
+	 *
+	 * > boolean "display_errors" : display errors and exceptions
+	 * > boolean "log_errors"     : log errors and exceptions
+	 * > boolean "cache_paths"    : cache the location of files between requests
+	 * > string  "charset"        : character set used for all input and output
+	 *
+	 * @param   array   global settings
 	 * @return  void
 	 */
-	public static function init()
+	public static function init(array $settings = NULL)
 	{
 		static $_init;
 
-		if ($_init === TRUE)
-			return;
+		// This function can only be run once
+		if ($_init === TRUE) return;
 
-		// Initialization complete
+		// The system will now be initialized
 		$_init = TRUE;
+
+		if (version_compare(PHP_VERSION, '6.0', '<='))
+		{
+			// Disable magic quotes at runtime
+			set_magic_quotes_runtime(0);
+		}
+
+		if (ini_get('register_globals'))
+		{
+			if (isset($_REQUEST['GLOBALS']))
+			{
+				// Prevent malicious GLOBALS overload attack
+				echo "Global variable overload attack detected! Request aborted.\n";
+
+				// Exit with an error status
+				exit(1);
+			}
+
+			// Get the variable names of all globals
+			$global_variables = array_keys($GLOBALS);
+
+			// Remove the standard global variables from the list
+			$global_variables = array_diff($global_vars,
+				array('GLOBALS', '_REQUEST', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER', '_ENV', '_SESSION'));
+
+			foreach ($global_variables as $name)
+			{
+				// Retrieve the global variable and make it null
+				global $$name;
+				$$name = NULL;
+
+				// Unset the global variable, effectively disabling register_globals
+				unset($GLOBALS[$name], $$name);
+			}
+		}
+
+		// Determine if we are running in a command line environment
+		self::$is_cli = (PHP_SAPI === 'cli');
+
+		// Determine if we are running in a Windows environment
+		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
+
+		// Determine if this server supports UTF-8 natively
+		utf8::$server_utf8 = extension_loaded('mbstring');
+
+		if (isset($settings['display_errors']))
+		{
+			// Enable or disable the display of errors
+			self::$display_errors = (bool) $settings['display_errors'];
+		}
+
+		if (isset($settings['cache_paths']))
+		{
+			// Enable or disable the caching of paths
+			self::$cache_paths = (bool) $settings['cache_paths'];
+		}
+
+		if (isset($settings['charset']))
+		{
+			// Set the system character set
+			self::$charset = strtolower($settings['charset']);
+		}
+
+		// Determine if the extremely evil magic quotes are enabled
+		self::$magic_quotes = (bool) get_magic_quotes_gpc();
+
+		// Sanitize all request variables
+		$_GET    = self::sanitize($_GET);
+		$_POST   = self::sanitize($_POST);
+		$_COOKIE = self::sanitize($_COOKIE);
+
+		// Normalize all request variables to the current charset
+		$_GET    = utf8::clean($_GET, self::$charset);
+		$_POST   = utf8::clean($_POST, self::$charset);
+		$_COOKIE = utf8::clean($_COOKIE, self::$charset);
+	}
+
+	/**
+	 * Recursively sanitizes an input variable:
+	 *
+	 * - Removes slashes if magic quotes are enabled
+	 * - Normalizes all newlines to LF
+	 *
+	 * @param   mixed  any variable
+	 * @return  mixed  sanitized variable
+	 */
+	public static function sanitize($value)
+	{
+		if (is_array($value) OR is_object($value))
+		{
+			foreach ($value as $key => $val)
+			{
+				// Recursively clean each value
+				$value[$key] = self::sanitize($val);
+			}
+		}
+		elseif (is_string($value))
+		{
+			if (self::$magic_quotes === TRUE)
+			{
+				// Remove slashes added by magic quotes
+				$value = stripslashes($value);
+			}
+
+			if (strpos($value, "\r") !== FALSE)
+			{
+				// Standardize newlines
+				$value = str_replace(array("\r\n", "\r"), "\n", $value);
+			}
+		}
+
+		return $value;
 	}
 
 	/**

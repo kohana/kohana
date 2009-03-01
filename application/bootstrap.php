@@ -1,19 +1,24 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
+ * Initialize Kohana
+ */
+Kohana::init(array('charset' => 'utf-8'));
+
+/**
  * Enable modules.
  */
 Kohana::modules(array(
 	'database' => MODPATH.'database'));
 
 /**
- * Add routes.
+ * Set the language to use for translating.
  */
-Route::set('static', 'static/<page>', array('page' => '.+'))
-	->defaults(array(
-		'controller' => 'pages',
-		'action' => 'load'));
+i18n::$lang = 'en_US';
 
+/**
+ * Set the routes.
+ */
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'welcome',
