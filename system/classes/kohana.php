@@ -266,30 +266,11 @@ final class Kohana {
 	}
 
 	/**
-	 * PHP error handler, converts all errors into ErrorExceptions. This handler
-	 * respects error_reporting settings.
-	 *
-	 * @throws   ErrorException
-	 * @return   TRUE
-	 */
-	public static function error_handler($code, $error, $file = NULL, $line = NULL)
-	{
-		if ((error_reporting() & $code) !== 0)
-		{
-			// This error is not suppressed by current error reporting settings
-			throw new ErrorException($error, $code, 0, $file, $line);
-		}
-
-		// Do not execute the PHP error handler
-		return TRUE;
-	}
-
-	/**
 	 * Changes the currently enabled modules. Module paths may be relative
 	 * or absolute, but must point to a directory:
-	 * 
+	 *
 	 *     Kohana::modules(array('modules/foo', MODPATH.'bar'));
-	 * 
+	 *
 	 * @param   array   module paths
 	 * @return  void
 	 */
@@ -401,7 +382,7 @@ final class Kohana {
 	}
 
 	/**
-	 * Provides simple file-based caching for strings and arrays: 
+	 * Provides simple file-based caching for strings and arrays:
 	 *
 	 *     // Set the "foo" cache
 	 *     Kohana::cache('foo', 'hello, world');
@@ -412,9 +393,9 @@ final class Kohana {
 	 * All caches are stored as PHP code, generated with [var_export][ref-var].
 	 * Caching objects may not work as expected. Storing references or an
 	 * object or array that has recursion will cause an E_FATAL.
-	 * 
+	 *
 	 * [ref-var]: http://php.net/var_export
-	 * 
+	 *
 	 * @param   string   name of the cache
 	 * @param   mixed    data to cache
 	 * @param   integer  number of seconds the cache is valid for
@@ -463,6 +444,101 @@ final class Kohana {
 	}
 
 	/**
+	 * PHP error handler, converts all errors into ErrorExceptions. This handler
+	 * respects error_reporting settings.
+	 *
+	 * @throws   ErrorException
+	 * @return   TRUE
+	 */
+	public static function error_handler($code, $error, $file = NULL, $line = NULL)
+	{
+		if ((error_reporting() & $code) !== 0)
+		{
+			// This error is not suppressed by current error reporting settings
+			throw new ErrorException($error, $code, 0, $file, $line);
+		}
+
+		// Do not execute the PHP error handler
+		return TRUE;
+	}
+
+	/**
+	 * Inline exception handler, displays the error message, source of the
+	 * exception, and the stack trace of the error.
+	 *
+	 * @param   object   exception object
+	 * @return  void
+	 */
+	public static function exception_handler(Exception $e)
+	{
+		try
+		{
+			// Get the exception information
+			$type    = get_class($e);
+			$code    = $e->getCode();
+			$message = $e->getMessage();
+			$file    = $e->getFile();
+			$line    = $e->getLine();
+
+			if (Kohana::$is_cli)
+			{
+				// Just display the text of the exception
+				echo "\n", $type, ' [ ', $code ,' ]: ', $message, ' ', $file, ' [ ', $line, ' ] ', "\n";
+
+				return TRUE;
+			}
+
+			// Get the exception backtrace
+			$trace = $e->getTrace();
+
+			if ($e instanceof ErrorException AND version_compare(PHP_VERSION, '5.3', '<'))
+			{
+				// Work around for a bug in ErrorException::getTrace() that exists in
+				// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+				for ($i = count($trace) - 1; $i > 0; --$i)
+				{
+					if (isset($trace[$i - 1]['args']))
+					{
+						// Re-position the args
+						$trace[$i]['args'] = $trace[$i - 1]['args'];
+
+						// Remove the args
+						unset($trace[$i - 1]['args']);
+					}
+				}
+			}
+
+			// Get the source of the error
+			$source = Kohana::debug_source($file, $line);
+
+			// Generate a new error id
+			$error_id = uniqid();
+
+			// Start an output buffer
+			ob_start();
+
+			// Include the exception HTML
+			include Kohana::find_file('views', 'kohana/error');
+
+			// Display the contents of the output buffer
+			echo ob_get_clean();
+
+			return TRUE;
+		}
+		catch (Exception $e)
+		{
+			// Clean the output buffer if one exists
+			ob_get_level() and ob_clean();
+
+			// This can happen when the kohana error view has a PHP error
+			echo $e->getMessage(), ' [ ', Kohana::debug_path($e->getFile()), ', ', $e->getLine(), ' ]';
+
+			// Exit with an error status
+			exit(1);
+		}
+	}
+
+	/**
 	 * Returns an HTML string of debugging information about any number of
 	 * variables, each wrapped in a <pre> tag:
 	 *
@@ -488,6 +564,9 @@ final class Kohana {
 
 			switch ($type)
 			{
+				case 'null':
+					$var = 'NULL';
+				break;
 				case 'boolean':
 					$var = $var ? 'TRUE' : 'FALSE';
 				break;
@@ -586,6 +665,43 @@ final class Kohana {
 	}
 
 	/**
+	 * Returns a single line representation of a variable. Internally, this is
+	 * used only for showing function arguments in stack traces.
+	 * 
+	 *     echo Kohana::debug_var($my_var);
+	 *
+	 * @param   mixed  variable to debug
+	 * @return  string
+	 */
+	public static function debug_var($var)
+	{
+		switch (gettype($var))
+		{
+			case 'null':
+				return 'NULL';
+			break;
+			case 'boolean':
+				return $var ? 'TRUE' : 'FALSE';
+			break;
+			case 'string':
+				return "'{$var}'";
+			break;
+			case 'object':
+				return 'object '.get_class($var);
+			break;
+			case 'array':
+				if (arr::is_assoc($var))
+					return str_replace("\n", ' ', var_export($var, TRUE));
+
+				return 'array('.implode(', ', array_map(array(__CLASS__, __FUNCTION__), $var)).')';
+			break;
+			default:
+				return var_export($var, TRUE);
+			break;
+		}
+	}
+
+	/**
 	 * Returns an array of HTML strings that represent each step in the backtace.
 	 *
 	 *     // Displays the entire current backtrace
@@ -668,34 +784,6 @@ final class Kohana {
 		}
 
 		return $output;
-	}
-
-	public static function debug_var($var)
-	{
-		switch (gettype($var))
-		{
-			case 'null':
-				return 'NULL';
-			break;
-			case 'boolean':
-				return $var ? 'TRUE' : 'FALSE';
-			break;
-			case 'string':
-				return "'{$var}'";
-			break;
-			case 'object':
-				return 'object '.get_class($var);
-			break;
-			case 'array':
-				if (arr::is_assoc($var))
-					return str_replace("\n", ' ', var_export($var, TRUE));
-
-				return 'array('.implode(', ', array_map(array(__CLASS__, __FUNCTION__), $var)).')';
-			break;
-			default:
-				return var_export($var, TRUE);
-			break;
-		}
 	}
 
 	final private function __construct()

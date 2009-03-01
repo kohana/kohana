@@ -75,7 +75,7 @@ require SYSPATH.'classes/kohana'.EXT;
 spl_autoload_register(array('Kohana', 'auto_load'));
 
 // Enable the exception handler
-set_exception_handler(array('Kohana_Exception', 'handle'));
+set_exception_handler(array('Kohana', 'exception_handler'));
 
 // Enable the error-to-exception handler
 set_error_handler(array('Kohana', 'error_handler'));
