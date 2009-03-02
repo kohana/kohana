@@ -27,4 +27,3 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 
 // Execute the main request
 Request::instance($_SERVER['PATH_INFO'])->execute(FALSE);
-

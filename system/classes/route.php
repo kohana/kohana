@@ -295,4 +295,4 @@ class Route_Core {
 		return '#^'.$regex.'$#';
 	}
 
-} // End Kohana_Route
+} // End Route
