@@ -19,6 +19,6 @@ $toggle_details =
 	</div>
 	<div id="kohana_error_<?php echo $error_id ?>_details" class="details" style="display:none;margin:0;padding:0 1em 1em;color:#111">
 		<pre class="source" style="display:block;margin:0;padding:1em;font-family:monospace;background:#efefef;color:#111"><?php echo $source ?></pre>
-		<pre class="trace" style="display:block;margin:0;padding:1em 0 0;font-family:monospace;color:#111"><?php echo implode("\n\n", Kohana::trace($trace)) ?></pre>
+		<dl class="trace" style="display:block;margin:0;padding:1em 0 0;font-family:monospace;color:#111"><?php echo implode("\n\n", Kohana::trace($trace)) ?></pre>
 	</div>
 </div>

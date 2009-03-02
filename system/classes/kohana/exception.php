@@ -16,13 +16,13 @@ class Kohana_Exception_Core extends Exception {
 	 * @param   array    translation variables
 	 * @return  void
 	 */
-	public function __construct($message, array $variables = NULL)
+	public function __construct($message, array $variables = NULL, $code = 0)
 	{
 		// Set the message
 		$message = __($message, $variables);
 
 		// Pass the message to the parent
-		parent::__construct($message);
+		parent::__construct($message, $code);
 	}
 
 } // End Kohana_Exception

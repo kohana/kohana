@@ -18,7 +18,7 @@ final class Kohana {
 	const CODENAME  = 'renaissance';
 
 	// Security check that is added to all generated PHP files
-	const PHP_HEADER = "<?php defined('SYSPATH') or die('No direct script access.');\n\n";
+	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
 
 	/**
 	 * @var  boolean  command line environment?
@@ -48,7 +48,7 @@ final class Kohana {
 	/**
 	 * @var  boolean  log errors and exceptions?
 	 */
-	public static $log_errors = TRUE;
+	public static $log_errors = FALSE;
 
 	/**
 	 * @var  string  character set of input and output
@@ -440,7 +440,7 @@ final class Kohana {
 		}
 
 		// Serialize the data and create the cache
-		return (bool) file_put_contents($dir.$file, self::PHP_HEADER.'return '.var_export($data, TRUE).';');
+		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn ".var_export($data, TRUE).';');
 	}
 
 	/**
@@ -455,7 +455,7 @@ final class Kohana {
 		if ((error_reporting() & $code) !== 0)
 		{
 			// This error is not suppressed by current error reporting settings
-			throw new ErrorException($error, $code, 0, $file, $line);
+			throw new Kohana_Error($error, $code, 0, $file, $line);
 		}
 
 		// Do not execute the PHP error handler
@@ -467,7 +467,7 @@ final class Kohana {
 	 * exception, and the stack trace of the error.
 	 *
 	 * @param   object   exception object
-	 * @return  void
+	 * @return  boolean
 	 */
 	public static function exception_handler(Exception $e)
 	{
@@ -480,6 +480,12 @@ final class Kohana {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 
+			if (self::$log_errors === TRUE)
+			{
+				// Create a new log of this execption
+				Logger::write('error', "{$type} [ {$code} ]: {$message} in ".self::debug_path($file)." on line {$line}");
+			}
+
 			if (Kohana::$is_cli)
 			{
 				// Just display the text of the exception
@@ -491,25 +497,8 @@ final class Kohana {
 			// Get the exception backtrace
 			$trace = $e->getTrace();
 
-			if ($e instanceof ErrorException AND version_compare(PHP_VERSION, '5.3', '<'))
-			{
-				// Work around for a bug in ErrorException::getTrace() that exists in
-				// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
-				for ($i = count($trace) - 1; $i > 0; --$i)
-				{
-					if (isset($trace[$i - 1]['args']))
-					{
-						// Re-position the args
-						$trace[$i]['args'] = $trace[$i - 1]['args'];
-
-						// Remove the args
-						unset($trace[$i - 1]['args']);
-					}
-				}
-			}
-
 			// Get the source of the error
-			$source = Kohana::debug_source($file, $line);
+			$source = self::debug_source($file, $line);
 
 			// Generate a new error id
 			$error_id = uniqid();
@@ -518,7 +507,7 @@ final class Kohana {
 			ob_start();
 
 			// Include the exception HTML
-			include Kohana::find_file('views', 'kohana/error');
+			include self::find_file('views', 'kohana/error');
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
@@ -691,7 +680,7 @@ final class Kohana {
 			break;
 			case 'array':
 				if (arr::is_assoc($var))
-					return str_replace("\n", ' ', var_export($var, TRUE));
+					return print_r($var, TRUE);
 
 				return 'array('.implode(', ', array_map(array(__CLASS__, __FUNCTION__), $var)).')';
 			break;
@@ -779,8 +768,8 @@ final class Kohana {
 			}
 
 			// Add this step to the trace output
-			$output[] = "<strong>{$step['file']} [ {$step['line']} ]</strong>\n".
-				"\t{$step['function']}";
+			$output[] = "<dt>{$step['file']} [ {$step['line']} ]</dt>\n".
+				"<dd>{$step['function']}</dd>";
 		}
 
 		return $output;
