@@ -52,7 +52,7 @@ if ( ! is_dir($modules) AND is_dir(DOCROOT.$modules))
 
 // Make the system relative to the docroot
 if ( ! is_dir($system) AND is_dir(DOCROOT.$system))
-	$modules = DOCROOT.$system;
+	$system = DOCROOT.$system;
 
 // Define the absolute paths for configured directories
 define('APPPATH', realpath($application).DIRECTORY_SEPARATOR);
