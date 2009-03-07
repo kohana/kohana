@@ -1,134 +1,106 @@
-<?php
+<?php defined('SYSPATH') or die('No direct script access.');
+/**
+ * Wrapper for configuration arrays.
+ *
+ * @package    Core
+ * @author     Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
+ * @license    http://kohanaphp.com/license.html
+ */
+class Kohana_Config_Core extends ArrayObject {
 
-class Kohana_Config extends ArrayObject {
-
-	// Has this object been changed?
-	protected $changed = FALSE;
-
-	// The upper parent of this object
-	protected $parent;
-
-	/**
-	 * Creates a new configuration object.
-	 * 
-	 * @param   array   array to convert
-	 * @param   object  parent of this object
-	 * @return  void
-	 */
-	public function __construct($array, $parent = NULL)
-	{
-		if ($parent === NULL)
-		{
-			// The parent object is this object
-			$parent = $this;
-		}
-
-		// Set the parent object
-		$this->parent = $parent;
-
-		parent::__construct($this->array_to_config($array), ArrayObject::ARRAY_AS_PROPS);
-	}
+	// Cache prefix string
+	const CACHE_PREFIX = 'kohana_configuration_';
 
 	/**
-	 * Acts as a getter and setter for the changed status of this object.
-	 * 
-	 * @param   boolean  new status
-	 * @return  boolean
-	 */
-	public function changed($status = NULL)
-	{
-		if ($status === TRUE OR $status === FALSE)
-		{
-			$this->changed = $status;
-		}
-
-		return $this->changed;
-	}
-
-	/**
-	 * Recursively converts all of the arrays within an array to config objects.
-	 * 
-	 * @param   array   array to convert
+	 * Loads a configuration group.
+	 *
+	 * @param   string  group name
 	 * @return  array
 	 */
-	protected function array_to_config($array)
+	protected static function load($group)
 	{
-		foreach ($array as $key => $value)
+		// Find all of the files in this group
+		$files = Kohana::find_file('config', $group);
+
+		// Configuration array
+		$config = array();
+
+		foreach ($files as $file)
 		{
-			if (is_array($value) AND ! isset($value[0]))
-			{
-				// Convert all non-numerically indexed arrays to config objects
-				$array[$key] = new Kohana_Config($value, $this->parent);
-			}
+			// Append each file to the configuration array
+			$config += require $file;
 		}
-		return $array;
+
+		return $config;
+	}
+
+	// Configuration group name
+	protected $_configuration_group;
+
+	// Has the config group changed?
+	protected $_configuration_modified = FALSE;
+
+	public function __construct($group, $cache = TRUE)
+	{
+		// Set the configuration group name
+		$this->_configuration_group = $group;
+
+		if ($cache === FALSE)
+		{
+			// Load the configuration
+			$config = Kohana_Config::load($group);
+		}
+		elseif (($config = Kohana::cache(self::CACHE_PREFIX.$group)) === NULL)
+		{
+			// Load the configuration, it has not been cached
+			$config = Kohana_Config::load($group);
+
+			// Create a cache of the configuration group
+			Kohana::cache(self::CACHE_PREFIX.$group, $config);
+		}
+
+		// Load the array using the values as properties
+		ArrayObject::__construct($config, ArrayObject::ARRAY_AS_PROPS);
 	}
 
 	/**
-	 * ArrayObject::getArrayCopy, recursively convert config objects to arrays.
-	 * 
-	 * @return   array
+	 * Return the "changed" status of the configuration object.
+	 *
+	 * @return  boolean
 	 */
-	public function getArrayCopy()
+	public function changed()
 	{
-		$array = array();
-		foreach ($this as $key => $value)
-		{
-			if (is_object($value) AND $value instanceof Kohana_Config)
-			{
-				// Convert the value to an array, recursion
-				$value = $value->getArrayCopy();
-			}
-
-			$array[$key] = $value;
-		}
-		return $array;
+		return $this->_configuration_modified;
 	}
 
 	/**
-	 * ArrayObject::exchangeArray, recursively converts arrays to config objects.
+	 * Return the raw array that is being used for this object.
+	 *
+	 * @return  array
 	 */
-	public function exchangeArray($array)
+	public function as_array()
 	{
-		return parent::exchangeArray($this->array_to_config($array));
+		return $this->getArrayCopy();
 	}
 
 	/**
-	 * ArrayObject::offsetSet, converts array values to config objects.
-	 * 
-	 * @param   string   array key name
-	 * @param   mixed    new value
-	 * @return  void
+	 * Overloads ArrayObject::offsetSet() to set the "changed" status when
+	 * modifying a configuration value.
+	 *
+	 * @param   string  array key
+	 * @param   mixed   array value
+	 * @return  mixed
 	 */
-	public function offsetSet($index, $newval)
+	public function offsetSet($key, $value)
 	{
-		if (is_object($newval) AND $newval instanceof Kohana_Config)
+		if ($this->offsetGet($key) !== $value)
 		{
-			// Simplify the object back to an array
-			$newval = $newval->getArrayCopy();
+			// The value is about to be modified
+			$this->_configuration_modified = TRUE;
 		}
 
-		if (is_array($newval) AND ! isset($newval[0]))
-		{
-			// Convert the array into a config object
-			$newval = new Kohana_Config($newval, $this->parent);
-		}
-
-		// Notify the parent that values have changed
-		$this->parent->changed(TRUE);
-
-		return parent::offsetSet($index, $newval);
-	}
-
-	public function offsetUnset($index)
-	{
-		if (parent::offsetExists($index))
-		{
-			// Notify the parent that values have changed
-			$this->parent->changed(TRUE);
-		}
-
-		return parent::offsetUnset($index);
+		return parent::offsetSet($key, $value);
 	}
 
 } // End Kohana_Config
