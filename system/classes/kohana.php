@@ -214,7 +214,6 @@ final class Kohana {
 	 *     Kohana::auto_load('My_Class_Name');
 	 *
 	 * @param   string   class name
-	 * @param   string   file extensions to use
 	 * @return  boolean
 	 */
 	public static function auto_load($class)
@@ -253,7 +252,7 @@ final class Kohana {
 					$extension = 'abstract '.$extension;
 				}
 
-				// Cache the extension string to that Reflection will be avoided
+				// Cache the extension string so that Reflection will be avoided
 				Kohana::cache('kohana_auto_extension '.$class, $extension);
 			}
 
@@ -308,7 +307,7 @@ final class Kohana {
 
 	/**
 	 * Finds the path of a file by directory, filename, and extension.
-	 * If no extension is give, the default EXT extension will be used.
+	 * If no extension is given, the default EXT extension will be used.
 	 *
 	 *     // Returns an absolute path to views/template.php
 	 *     echo Kohana::find_file('views', 'template');
@@ -691,7 +690,7 @@ final class Kohana {
 	}
 
 	/**
-	 * Returns an array of HTML strings that represent each step in the backtace.
+	 * Returns an array of HTML strings that represent each step in the backtrace.
 	 *
 	 *     // Displays the entire current backtrace
 	 *     echo implode('<br/>', Kohana::trace());
