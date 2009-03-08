@@ -672,7 +672,7 @@ final class Kohana {
 				return $var ? 'TRUE' : 'FALSE';
 			break;
 			case 'string':
-				return "'{$var}'";
+				return var_export($var);
 			break;
 			case 'object':
 				return 'object '.get_class($var);
