@@ -28,8 +28,8 @@ class Kohana_Config_Core extends ArrayObject {
 
 		foreach ($files as $file)
 		{
-			// Append each file to the configuration array
-			$config += require $file;
+			// Merge each file to the configuration array
+			$config = array_merge($config, require $file);
 		}
 
 		return $config;

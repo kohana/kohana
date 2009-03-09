@@ -12,9 +12,9 @@
 class remote_Core {
 
 	// Default curl options
-	public $default_options = array
+	public static $default_options = array
 	(
-		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v'.KOHANA_VERSION.' +http://kohanaphp.com/)',
+		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
 	);
@@ -31,10 +31,10 @@ class remote_Core {
 	 * @param   array    curl options
 	 * @return  array
 	 */
-	public static function get($url, $options = NULL)
+	public static function get($url, array $options = NULL)
 	{
 		// Add default options
-		$options = array_merge(remote::$default_options, (array) $options);
+		$options = array_merge((array) $options, remote::$default_options);
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
