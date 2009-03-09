@@ -381,6 +381,17 @@ final class Kohana {
 	}
 
 	/**
+	 * Creates a new configuration object for the requested group.
+	 * 
+	 * @param   string   group name
+	 * @param   boolean  enable caching
+	 */
+	public function config($group, $cache = TRUE)
+	{
+		return new Kohana_Config($group, $cache);
+	}
+
+	/**
 	 * Provides simple file-based caching for strings and arrays:
 	 *
 	 *     // Set the "foo" cache
