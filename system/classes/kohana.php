@@ -375,7 +375,7 @@ final class Kohana {
 	 * @param   string
 	 * @return  mixed
 	 */
-	public function load($file)
+	public static function load($file)
 	{
 		return include $file;
 	}
