@@ -14,7 +14,7 @@
 class View_Core {
 
 	// Array of global variables
-	protected static $global_data = array();
+	protected static $_global_data = array();
 
 	/**
 	 * Returns a new View object.
@@ -54,10 +54,10 @@ class View_Core {
 	}
 
 	// View filename
-	protected $file;
+	protected $_file;
 
 	// Array of local variables
-	protected $data = array();
+	protected $_data = array();
 
 	/**
 	 * Sets the initial view filename and local data.
@@ -75,7 +75,7 @@ class View_Core {
 
 		if ( ! empty($data))
 		{
-			$this->data = array_merge($this->data, $data);
+			$this->_data = array_merge($this->_data, $data);
 		}
 	}
 
@@ -88,13 +88,13 @@ class View_Core {
 	 */
 	public function __get($key)
 	{
-		if (isset($this->data[$key]))
+		if (isset($this->_data[$key]))
 		{
-			return $this->data[$key];
+			return $this->_data[$key];
 		}
-		elseif (isset(View::$global_data[$key]))
+		elseif (isset(View::$_global_data[$key]))
 		{
-			return View::$global_data[$key];
+			return View::$_global_data[$key];
 		}
 		else
 		{
@@ -145,7 +145,7 @@ class View_Core {
 	{
 		if ($file = Kohana::find_file('views', $file))
 		{
-			$this->file = $file;
+			$this->_file = $file;
 		}
 		else
 		{
@@ -173,12 +173,12 @@ class View_Core {
 		{
 			foreach ($key as $key2 => $value)
 			{
-				$this->data[$key2] = $value;
+				$this->_data[$key2] = $value;
 			}
 		}
 		else
 		{
-			$this->data[$key] = $value;
+			$this->_data[$key] = $value;
 		}
 
 		return $this;
@@ -198,12 +198,12 @@ class View_Core {
 		{
 			foreach ($key as $key2 => $value)
 			{
-				View::$global_data[$key2] = $value;
+				View::$_global_data[$key2] = $value;
 			}
 		}
 		else
 		{
-			View::$global_data[$key] = $value;
+			View::$_global_data[$key] = $value;
 		}
 
 		return $this;
@@ -225,7 +225,7 @@ class View_Core {
 	 */
 	public function bind($key, & $value)
 	{
-		$this->data[$key] =& $value;
+		$this->_data[$key] =& $value;
 
 		return $this;
 	}
@@ -240,7 +240,7 @@ class View_Core {
 	 */
 	public function bind_global($key, & $value)
 	{
-		View::$global_data[$key] =& $value;
+		View::$_global_data[$key] =& $value;
 
 		return $this;
 	}
@@ -261,16 +261,17 @@ class View_Core {
 			$this->set_filename($file);
 		}
 
-		if (empty($this->file))
+		if (empty($this->_file))
 		{
-			throw new Kohana_Exception('kohana.view.set_filename');
+			// The user has not specified a view file yet
+			throw new Kohana_Exception('No file specified for view, unable to render');
 		}
 
 		// Combine global and local data. Global variables with the same name
 		// will be overwritten by local variables.
-		$data = array_merge(View::$global_data, $this->data);
+		$data = array_merge(View::$_global_data, $this->_data);
 
-		return View::capture($this->file, $data);
+		return View::capture($this->_file, $data);
 	}
 
 } // End View
