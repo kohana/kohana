@@ -7,7 +7,7 @@
  * - Auto-loading and transparent extension of classes
  * - Variable and path debugging
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -90,6 +90,9 @@ final class Kohana {
 		// The system will now be initialized
 		$_init = TRUE;
 
+		// Start an output buffer
+		ob_start();
+
 		if (version_compare(PHP_VERSION, '6.0', '<='))
 		{
 			// Disable magic quotes at runtime
@@ -131,9 +134,6 @@ final class Kohana {
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
-		// Determine if this server supports UTF-8 natively
-		utf8::$server_utf8 = extension_loaded('mbstring');
-
 		if (isset($settings['display_errors']))
 		{
 			// Enable or disable the display of errors
@@ -159,6 +159,9 @@ final class Kohana {
 		$_GET    = self::sanitize($_GET);
 		$_POST   = self::sanitize($_POST);
 		$_COOKIE = self::sanitize($_COOKIE);
+
+		// Determine if this server supports UTF-8 natively
+		utf8::$server_utf8 = extension_loaded('mbstring');
 
 		// Normalize all request variables to the current charset
 		$_GET    = utf8::clean($_GET, self::$charset);
@@ -228,6 +231,7 @@ final class Kohana {
 		}
 		else
 		{
+			// Class is not in the filesystem
 			return FALSE;
 		}
 
@@ -270,8 +274,8 @@ final class Kohana {
 	 *
 	 *     Kohana::modules(array('modules/foo', MODPATH.'bar'));
 	 *
-	 * @param   array   module paths
-	 * @return  void
+	 * @param   array  list of module paths
+	 * @return  array  enabled modules
 	 */
 	public static function modules(array $modules = NULL)
 	{
@@ -309,17 +313,25 @@ final class Kohana {
 	 * Finds the path of a file by directory, filename, and extension.
 	 * If no extension is given, the default EXT extension will be used.
 	 *
+	 * When searching the "config" or "i18n" directory, an array of files
+	 * will be returned. These files will return arrays which must be
+	 * merged together.
+	 *
 	 *     // Returns an absolute path to views/template.php
-	 *     echo Kohana::find_file('views', 'template');
+	 *     Kohana::find_file('views', 'template');
 	 *
 	 *     // Returns an absolute path to media/css/style.css
-	 *     echo Kohana::find_file('media', 'css/style', 'css');
+	 *     Kohana::find_file('media', 'css/style', 'css');
+	 * 
+	 *     // Returns an array of all the "mimes" configuration file
+	 *     Kohana::find_file('config', 'mimes');
 	 *
-	 * @param   string   directory name (views, classes, extensions, etc.)
+	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
 	 * @param   string   filename with subdirectory
 	 * @param   string   extension to search for
-	 * @return  string   success
-	 * @return  FALSE    failure
+	 * @return  string   single file found
+	 * @return  FALSE    single file NOT found
+	 * @return  array    multiple files from the "config" or "i18n" directories
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
@@ -382,7 +394,7 @@ final class Kohana {
 
 	/**
 	 * Creates a new configuration object for the requested group.
-	 * 
+	 *
 	 * @param   string   group name
 	 * @param   boolean  enable caching
 	 */
@@ -417,11 +429,8 @@ final class Kohana {
 		// Cache file is a hash of the name
 		$file = sha1($name).EXT;
 
-		// Lets keep this short and sweet
-		$ds = DIRECTORY_SEPARATOR;
-
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = APPPATH.'cache'.$ds.substr($file, 0, 2).$ds.substr($file, 2, 2).$ds;
+		$dir = APPPATH."cache/{$file[0]}/";
 
 		if ($data === NULL)
 		{
@@ -449,8 +458,11 @@ final class Kohana {
 			mkdir($dir, 0777, TRUE);
 		}
 
+		// Convert the data to a string representation
+		$data = var_export($data, TRUE);
+
 		// Serialize the data and create the cache
-		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn ".var_export($data, TRUE).';');
+		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn {$data};");
 	}
 
 	/**
@@ -666,7 +678,7 @@ final class Kohana {
 	/**
 	 * Returns a single line representation of a variable. Internally, this is
 	 * used only for showing function arguments in stack traces.
-	 * 
+	 *
 	 *     echo Kohana::debug_var($my_var);
 	 *
 	 * @param   mixed  variable to debug

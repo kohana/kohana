@@ -2,7 +2,7 @@
 /**
  * utf8::to_unicode
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks

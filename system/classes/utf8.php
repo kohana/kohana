@@ -18,9 +18,7 @@
  * [ref-ie]: http://php.net/iconv
  * [ref-mb]: http://php.net/mbstring
  *
- * $Id: utf8.php 3735 2008-11-28 17:56:34Z Geert $
- *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks

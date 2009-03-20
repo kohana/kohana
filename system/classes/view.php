@@ -6,7 +6,7 @@
  *
  * $Id: view.php 3740 2008-12-01 20:24:43Z Geert $
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
