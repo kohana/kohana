@@ -107,8 +107,18 @@ class Request_Core {
 				}
 			}
 
+			// Determine the request method
+			$method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+
+			if ($method !== 'GET' AND $method !== 'POST')
+			{
+				// Methods besides GET and POST do not properly parse the form-encoded
+				// query string into the $_POST array, so we do it manually.
+				parse_str(file_get_contents('php://input'), $_POST);
+			}
+
 			// Create the instance singleton
-			Request::$_instance = new Request($uri);
+			Request::$_instance = new Request($method, $uri);
 		}
 
 		return Request::$_instance;
@@ -124,9 +134,9 @@ class Request_Core {
 	 * @param   array   overloaded POST data
 	 * @return  Request
 	 */
-	public static function factory($uri, array $get = NULL, array $post = NULL)
+	public static function factory($method, $uri, array $get = NULL, array $post = NULL)
 	{
-		return new Request($uri, $get, $post);
+		return new Request($method, $uri, $get, $post);
 	}
 
 	/**
@@ -164,6 +174,9 @@ class Request_Core {
 	 */
 	public $action;
 
+	// Method of this request
+	protected $_method;
+
 	// URI of this request
 	protected $_uri;
 
@@ -178,14 +191,18 @@ class Request_Core {
 	 * Creates a new request object for the given URI. Global GET and POST data
 	 * can be overloaded.
 	 *
+	 * @param   string  request method
 	 * @param   string  URI of the request
 	 * @param   array   overloaded GET data
 	 * @param   array   overloaded POST data
 	 * @return  void
 	 * @throws  Request_Exception  if no route matches the URI
 	 */
-	public function __construct($uri, array $get = NULL, array $post = NULL)
+	public function __construct($method, $uri, array $get = NULL, array $post = NULL)
 	{
+		// Set the request method
+		$this->_method = strtoupper($method);
+
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
@@ -214,6 +231,17 @@ class Request_Core {
 		}
 
 		throw new Request_Exception('Unable to find a route to handle :uri', array(':uri' => $uri));
+	}
+
+	/**
+	 * Retrieves the method of the current request. For most web applications,
+	 * this will only be GET or POST.
+	 *
+	 * @return  string
+	 */
+	public function method()
+	{
+		return $this->_method;
 	}
 
 	/**
@@ -369,7 +397,7 @@ class Request_Core {
 		$controller = new $controller($this);
 
 		// A new action is about to be run
-		$controller->before();
+		$controller->before($this->_method);
 
 		// Set the action name after running before() to allow the controller
 		// to change the action based on the current parameters
@@ -379,7 +407,7 @@ class Request_Core {
 		$controller->$action();
 
 		// The action has been run
-		$controller->after();
+		$controller->after($this->_method);
 
 		if ($capture === TRUE)
 			return $this->response;
