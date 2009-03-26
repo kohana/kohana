@@ -519,6 +519,23 @@ final class Kohana {
 			// Get the exception backtrace
 			$trace = $e->getTrace();
 
+			if ($e instanceof ErrorException AND version_compare(PHP_VERSION, '5.3', '<'))
+			{
+				// Work around for a bug in ErrorException::getTrace() that exists in
+				// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+				for ($i = count($trace) - 1; $i > 0; --$i)
+				{
+					if (isset($trace[$i - 1]['args']))
+					{
+						// Re-position the args
+						$trace[$i]['args'] = $trace[$i - 1]['args'];
+
+						// Remove the args
+						unset($trace[$i - 1]['args']);
+					}
+				}
+			}
+
 			// Get the source of the error
 			$source = self::debug_source($file, $line);
 
@@ -695,7 +712,7 @@ final class Kohana {
 				return $var ? 'TRUE' : 'FALSE';
 			break;
 			case 'string':
-				return var_export($var);
+				return var_export($var, TRUE);
 			break;
 			case 'object':
 				return 'object '.get_class($var);
@@ -733,65 +750,45 @@ final class Kohana {
 		$statements = array('include', 'include_once', 'require', 'require_once');
 
 		$output = array();
-		foreach ($trace as $line)
+		foreach ($trace as $step)
 		{
-			if ( ! isset($line['function']) OR ! isset($line['file']))
+			if ( ! (isset($step['function']) AND isset($step['file'])))
 			{
 				// Ignore this line, it has unusable data
 				continue;
 			}
 
-			// Start a new trace step
-			$step = array('file' => self::debug_path($line['file']), 'line' => '', 'function' => '');
+			// Set the function name
+			$function = $step['function'];
 
-			if (isset($line['line']))
+			// Set the file and line
+			$file = self::debug_path($step['file']);
+			$line = $step['line'];
+
+			if (isset($step['class']))
 			{
-				// Add the file line
-				$step['line'] = $line['line'];
+				// Change the function to a method
+				$function = $step['class'].$step['type'].$function;
 			}
 
-			if (in_array($line['function'], $statements))
+			if (isset($step['args']))
 			{
-				if ( ! isset($line['args']))
+				if (in_array($function, $statements))
 				{
-					// Really bizzare, ignore this line completely
-					continue;
-				}
-
-				// Sanitize all paths
-				$step['args'] = array_map(array(__CLASS__, 'debug_path'), $line['args']);
-
-				// function args
-				$step['function'] = $line['function'].' '.implode(', ', $step['args']);
-			}
-			else
-			{
-				if (isset($line['args']))
-				{
-					// Sanitize all arguments
-					$step['args'] = implode(', ', array_map(array(__CLASS__, 'debug_var'), $line['args']));
+					// Sanitize the path name
+					$function .= ' '.self::debug_path($step['args'][0]);
 				}
 				else
 				{
-					// No arguments
-					$step['args'] = '';
-				}
-
-				if (isset($line['class']) AND isset($line['type']))
-				{
-					// class::function(args) or class->function(args)
-					$step['function'] = $line['class'].$line['type'].$line['function'].'('.$step['args'].')';
-				}
-				else
-				{
-					// function(args)
-					$step['function'] = $line['function'].'('.$step['args'].')';
+					// Sanitize the function arguments
+					$function .= '('.implode(', ', $args = array_map('Kohana::debug_var', $step['args'])).')';
 				}
 			}
 
-			// Add this step to the trace output
-			$output[] = "<dt>{$step['file']} [ {$step['line']} ]</dt>\n".
-				"<dd>{$step['function']}</dd>";
+			$output[] = array(
+				'function' => $function,
+				'file'     => self::debug_path($step['file']),
+				'line'     => $step['line']);
 		}
 
 		return $output;

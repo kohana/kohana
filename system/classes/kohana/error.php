@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Error_Core extends Exception {
+class Kohana_Error_Core extends ErrorException {
 
 	protected $codes = array
 	(
@@ -14,8 +14,6 @@ class Kohana_Error_Core extends Exception {
 		E_RECOVERABLE_ERROR  => 'Recoverable Error',
 	);
 
-	protected $severity;
-
 	public function __construct($message, $code, $severity, $filename, $line)
 	{
 		$this->message  = $message;
@@ -23,11 +21,6 @@ class Kohana_Error_Core extends Exception {
 		$this->severity = $severity;
 		$this->file     = $filename;
 		$this->line     = $line;
-	}
-
-	public function getSeverity()
-	{
-		return $this->severity;
 	}
 
 } // End Kohana_Error
