@@ -17,6 +17,11 @@ final class Kohana {
 	const VERSION   = '3.0';
 	const CODENAME  = 'renaissance';
 
+	// Log message types
+	const ERROR = 'ERROR';
+	const DEBUG = 'DEBUG';
+	const INFO  = 'INFO';
+
 	// Security check that is added to all generated PHP files
 	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
 
@@ -54,6 +59,11 @@ final class Kohana {
 	 * @var  string  character set of input and output
 	 */
 	public static $charset = 'utf-8';
+
+	/**
+	 * @var  object  logging object
+	 */
+	public static $log;
 
 	// Currently active modules
 	private static $_modules = array();
@@ -159,6 +169,9 @@ final class Kohana {
 		$_GET    = self::sanitize($_GET);
 		$_POST   = self::sanitize($_POST);
 		$_COOKIE = self::sanitize($_COOKIE);
+
+		// Load the logger
+		self::$log = Kohana_Log::instance();
 
 		// Determine if this server supports UTF-8 natively
 		utf8::$server_utf8 = extension_loaded('mbstring');
@@ -502,16 +515,16 @@ final class Kohana {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 
-			if (self::$log_errors === TRUE)
-			{
-				// Create a new log of this execption
-				Logger::write('error', "{$type} [ {$code} ]: {$message} in ".self::debug_path($file)." on line {$line}");
-			}
+			// Set the text version of the exception
+			$text = "{$type} [ {$code} ]: {$message} ".self::debug_path($file)." [ {$line} ]";
+
+			// Add this exception to the log
+			self::$log->add(Kohana::ERROR, $text);
 
 			if (Kohana::$is_cli)
 			{
 				// Just display the text of the exception
-				echo "\n", $type, ' [ ', $code ,' ]: ', $message, ' ', $file, ' [ ', $line, ' ] ', "\n";
+				echo "\n{$text}\n";
 
 				return TRUE;
 			}
