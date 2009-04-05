@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-abstract class Kohana_Log_Writer {
+abstract class Kohana_Log_Writer_Core {
 
 	/**
 	 * Write an array of messages.

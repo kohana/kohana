@@ -1,5 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Message logging with observer-based log writing.
+ *
+ * @package    Kohana
+ * @author     Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
+ * @license    http://kohanaphp.com/license.html
+ */
 final class Kohana_Log {
 
 	/**
@@ -8,20 +15,25 @@ final class Kohana_Log {
 	public static $timestamp = 'Y-m-d H:i:s';
 
 	// Singleton static instance
-	private static $instance;
+	private static $_instance;
 
+	/**
+	 * Get the singleton instance of this class and enable writing at shutdown.
+	 *
+	 * @return  Kohana_Log
+	 */
 	public static function instance()
 	{
-		if (self::$instance === NULL)
+		if (self::$_instance === NULL)
 		{
 			// Create a new instance
-			self::$instance = new self;
+			self::$_instance = new self;
 
 			// Write the logs at shutdown
-			register_shutdown_function(array(self::$instance, 'write'));
+			register_shutdown_function(array(self::$_instance, 'write'));
 		}
 
-		return self::$instance;
+		return self::$_instance;
 	}
 
 	// List of added messages
