@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-final class Kohana_Log {
+class Kohana_Log_Core {
 
 	/**
 	 * @var  string  timestamp format
