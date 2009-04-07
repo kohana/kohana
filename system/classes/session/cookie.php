@@ -10,11 +10,11 @@
 class Session_Cookie_Core extends Session {
 
 	/**
-	 * Loads the session data from the the session cookie.
+	 * Loads the session data from the secure cookie.
 	 *
 	 * @return  string
 	 */
-	public function read()
+	protected function _read()
 	{
 		return cookie::get($this->_name, NULL);
 	}
@@ -24,20 +24,19 @@ class Session_Cookie_Core extends Session {
 	 *
 	 * @return  void
 	 */
-	public function regenerate()
+	protected function _regenerate()
 	{
 		return NULL;
 	}
 
 	/**
-	 * Sets the
+	 * Sets a secure cookie.
+	 *
+	 * @return  boolean
 	 */
-	public function write()
+	protected function _write()
 	{
-		// Get the session data as a string
-		$data = $this->__toString();
-
-		return cookie::set($this->_name, $data);
+		return cookie::set($this->_name, $this->__toString(), $this->_lifetime);
 	}
 
 } // End Session_Cookie

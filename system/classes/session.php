@@ -16,9 +16,10 @@ abstract class Session_Core {
 	 * Creates a singleton session of the given type.
 	 *
 	 * @param   string   session type (native, cookie, etc)
+	 * @param   boolean  bind $_SESSION to the internal array
 	 * @return  Session
 	 */
-	public static function instance($type = 'cookie', $bind = FALSE)
+	public static function instance($type = 'native', $bind = FALSE)
 	{
 		if ( ! isset(Session::$instances[$type]))
 		{
@@ -85,37 +86,8 @@ abstract class Session_Core {
 			$this->_encrypted = (bool) $config['encrypted'];
 		}
 
-		if ($data = $this->read())
-		{
-			try
-			{
-				if ($this->_encrypted === TRUE)
-				{
-					// @todo: decrypt the data here
-				}
-				else
-				{
-					// Decode the base64 encoded data
-					$data = base64_decode($data);
-				}
-
-				// Unserialize the data
-				$data = unserialize($data);
-			}
-			catch (Exception $e)
-			{
-				// Ignore all reading errors
-			}
-		}
-
-		if (is_array($data))
-		{
-			// Load the session data
-			$this->_data = $data;
-		}
-
-		// Set the last active timestamp
-		$this->_data['last_active'] = time();
+		// Load the session
+		$this->read();
 	}
 
 	/**
@@ -142,11 +114,11 @@ abstract class Session_Core {
 	}
 
 	/**
-	 * Assigns the current session data to the given variable by reference.
+	 * Returns the current session array.
 	 *
-	 * @return  Session
+	 * @return  array
 	 */
-	public function & data()
+	public function & as_array()
 	{
 		return $this->_data;
 	}
@@ -191,24 +163,84 @@ abstract class Session_Core {
 	}
 
 	/**
+	 * Loads the session data.
+	 * 
+	 * @return  void
+	 */
+	public function read()
+	{
+		if (is_string($data = $this->_read()))
+		{
+			try
+			{
+				if ($this->_encrypted === TRUE)
+				{
+					// @todo: decrypt the data here
+				}
+				else
+				{
+					// Decode the base64 encoded data
+					$data = base64_decode($data);
+				}
+
+				// Unserialize the data
+				$data = unserialize($data);
+			}
+			catch (Exception $e)
+			{
+				// Ignore all reading errors
+			}
+		}
+
+		if (is_array($data))
+		{
+			// Load the data locally
+			$this->_data = $data;
+		}
+	}
+
+	/**
+	 * Generates a new session id and returns it.
+	 *
+	 * @return  string
+	 */
+	public function regenerate()
+	{
+		return $this->_regenerate();
+	}
+
+	/**
+	 * Sets the last_active timestamp and saves the session.
+	 *
+	 * @return  boolean
+	 */
+	public function write()
+	{
+		// Set the last active timestamp
+		$this->_data['last_active'] = time();
+
+		return $this->_write();
+	}
+
+	/**
 	 * Loads the raw session data string and returns it.
 	 *
 	 * @return  string
 	 */
-	abstract public function read();
+	abstract protected function _read();
 
 	/**
 	 * Generate a new session id and return it.
 	 *
 	 * @return  string
 	 */
-	abstract public function regenerate();
+	abstract protected function _regenerate();
 
 	/**
 	 * Writes the current session.
 	 *
 	 * @return  boolean
 	 */
-	abstract public function write();
+	abstract protected function _write();
 
 } // End Session
