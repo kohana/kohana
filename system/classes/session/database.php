@@ -21,6 +21,12 @@ class Session_Database_Core extends Session {
 	// Update the session?
 	protected $_update = FALSE;
 
+	/**
+	 * Loads database-specific configuration data.
+	 *
+	 * @param   array   configuration
+	 * @return  void
+	 */
 	public function __construct(array $config = NULL)
 	{
 		if ( ! isset($config['group']))
@@ -124,7 +130,7 @@ class Session_Database_Core extends Session {
 		$this->_update_id = $this->_session_id;
 
 		// Update the cookie with the new session id
-		cookie::set($this->_name, $this->_session_id);
+		cookie::set($this->_name, $this->_session_id, $this->_lifetime);
 
 		return TRUE;
 	}
