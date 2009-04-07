@@ -14,6 +14,7 @@
  */
 final class Kohana {
 
+	// Release version and codename
 	const VERSION   = '3.0';
 	const CODENAME  = 'renaissance';
 
@@ -411,7 +412,7 @@ final class Kohana {
 	 * @param   string   group name
 	 * @param   boolean  enable caching
 	 */
-	public function config($group, $cache = TRUE)
+	public static function config($group, $cache = TRUE)
 	{
 		return new Kohana_Config($group, $cache);
 	}
@@ -437,7 +438,7 @@ final class Kohana {
 	 * @return  mixed    for getting
 	 * @return  boolean  for setting
 	 */
-	public function cache($name, $data = NULL, $lifetime = 60)
+	public static function cache($name, $data = NULL, $lifetime = 60)
 	{
 		// Cache file is a hash of the name
 		$file = sha1($name).EXT;
@@ -807,7 +808,7 @@ final class Kohana {
 		return $output;
 	}
 
-	final private function __construct()
+	private function __construct()
 	{
 		// This is a static class
 	}

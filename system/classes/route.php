@@ -87,7 +87,7 @@ class Route_Core {
 	 *
 	 * @return  array  named routes
 	 */
-	public function all()
+	public static function all()
 	{
 		return Route::$_routes;
 	}
