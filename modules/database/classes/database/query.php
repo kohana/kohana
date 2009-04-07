@@ -13,23 +13,30 @@ class Database_Query_Core {
 	protected $_sql;
 	protected $_params;
 
-	protected $_last_query;
-	protected $_result;
-
 	public function __construct($type, $sql)
 	{
 		$this->_type = $type;
 		$this->_sql = $sql;
 	}
 
+	public function __toString()
+	{
+		// Return the SQL of this query
+		return $this->_sql;
+	}
+
 	public function set($key, $value)
 	{
 		$this->_params[$key] = $value;
+
+		return $this;
 	}
 
 	public function bind($key, & $value)
 	{
 		$this->_params[$key] =& $value;
+
+		return $this;
 	}
 
 	public function execute($db = 'default')
@@ -40,41 +47,20 @@ class Database_Query_Core {
 			$db = Database::instance($db);
 		}
 
-		// Import the SQL locally for modification
+		// Import the SQL locally
 		$sql = $this->_sql;
 
-		if ($params = $this->_params)
+		if ( ! empty($this->_params))
 		{
-			foreach ($params as $key => $value)
-			{
-				switch (gettype($value))
-				{
-					case 'integer':
-						// Nothing
-					break;
-					case 'null':
-						$value = 'NULL';
-					break;
-					default:
-						$value = "'".$db->escape((string) $value)."'";
-					break;
-				}
+			// Quote all of the values
+			$params = array_map(array($db, 'quote'), $this->_params);
 
-				// Escape each parameter value
-				$params[$key] = $value;
-			}
-
-			// Replace the parameters in the SQL
+			// Replace the values in the SQL
 			$sql = strtr($sql, $params);
 		}
 
-		// Set the last query
-		$this->_last_query = $sql;
-
 		// Load the result
-		$result = $db->query($this->_type, $sql);
-
-		return $result;
+		return $db->query($this->_type, $sql);
 	}
 
 } // End Database_Query

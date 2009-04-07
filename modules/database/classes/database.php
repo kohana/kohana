@@ -1,13 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Database access.
+ * Database connection wrapper.
  *
  * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Database_Core {
+abstract class Database_Core {
 
 	const SELECT =  1;
 	const INSERT =  2;
@@ -17,62 +17,103 @@ class Database_Core {
 	const ALTER  = -3;
 	const DROP   = -4;
 
+	public static $instances = array();
+
 	public static function instance($name, $cached = TRUE)
 	{
-		static $instances;
-
-		if ( ! isset($instances[$name]))
+		if ( ! isset(Database::$instances[$name]))
 		{
+			// Load the configuration for this database group
 			$config = Kohana::config('database', $cached)->$name;
 
-			$instances[$name] = new Database($config);
+			if ( ! isset($config['type']))
+			{
+				throw new Kohana_Exception('Database type not defined in :name configuration',
+					array(':name' => $name));
+			}
+
+			// Set the driver class name
+			$driver = 'Database_'.ucfirst($config['type']);
+
+			// Create the database connection instance
+			Database::$instances[$name] = new $driver($config);
 		}
 
-		return $instances[$name];
+		return Database::$instances[$name];
 	}
 
-	protected $_driver;
+	/**
+	 * @var  string  the last query executed
+	 */
+	public $last_query;
+
+	// Configuration array
+	protected $_config;
+
+	// Required configuration keys
+	protected $_config_required = array();
+
+	// Raw server connection
+	protected $_connection;
 
 	public function __construct(array $config)
 	{
-		if ( ! isset($config['type']))
-			throw new Kohana_Exception('Database type not defined in configuration');
+		foreach ($this->_config_required as $param)
+		{
+			if ( ! isset($config[$param]))
+			{
+				throw new Database_Exception('Required configuration parameter missing: :param',
+					array(':param', $param));
+			}
+		}
 
-		// Set the driver class name
-		$driver = 'Database_'.ucfirst($config['type']).'_Connection';
-
-		// Load the driver
-		$this->_driver = new $driver($config);
+		// Store the config locally
+		$this->_config = $config;
 	}
 
-	public function query($type, $sql)
+	public function __destruct()
 	{
-		return $this->_driver->query($type, $sql);
+		$this->disconnect();
 	}
 
-	public function escape($value)
+	abstract public function connect();
+
+	abstract public function disconnect();
+
+	abstract public function set_charset($charset);
+
+	abstract public function query($type, $sql);
+
+	abstract public function escape($value);
+
+	public function quote($value)
 	{
-		return $this->_driver->escape($value);
+		if ($value === NULL)
+		{
+			return 'NULL';
+		}
+		elseif ($value === TRUE OR $value === FALSE)
+		{
+			return $value ? 'TRUE' : 'FALSE';
+		}
+		elseif (is_int($value) OR (is_string($value) AND ctype_digit($value)))
+		{
+			return (int) $value;
+		}
+
+		return '"'.$this->escape($value).'"';
 	}
 
-	public function select($sql)
+	public function list_tables()
 	{
-		return $this->_driver->query(Database::SELECT, $sql);
+		throw new Database_Exception('The :method is not implemented in :class',
+			array(':method' => __FUNCTION__, ':class' => get_class($this)));
 	}
 
-	public function insert($sql)
+	public function list_columns($table)
 	{
-		return $this->_driver->query(Database::INSERT, $sql);
+		throw new Database_Exception('The :method is not implemented in :class',
+			array(':method' => __FUNCTION__, ':class' => get_class($this)));
 	}
 
-	public function update($sql)
-	{
-		return $this->_driver->query(Database::UPDATE, $sql);
-	}
-
-	public function delete($sql)
-	{
-		return $this->_driver->query(Database::DELETE, $sql);
-	}
-
-} // End Database
+} // End Database_Connection

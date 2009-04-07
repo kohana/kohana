@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Database_MySQL_Connection_Core extends Database_Connection {
+class Database_MySQL_Core extends Database {
 
 	protected $_config_required = array('hostname', 'username', 'database');
 
@@ -102,17 +102,22 @@ class Database_MySQL_Connection_Core extends Database_Connection {
 				mysql_errno($this->_connection));
 		}
 
+		// Set the last query
+		$this->last_query = $sql;
+
 		if ($type === Database::SELECT)
 		{
-			// Only SELECT statements return resources that can be scrolled
-			return new Database_MySQL_Result($result);
+			// Return an iterator of results
+			return new Database_MySQL_Result($result, $sql);
 		}
 		elseif ($type === Database::INSERT)
 		{
+			// Return the insert id of the row
 			return mysql_insert_id($this->_connection);
 		}
 		else
 		{
+			// Return the number of rows affected
 			return mysql_affected_rows($this->_connection);
 		}
 	}

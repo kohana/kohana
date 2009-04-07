@@ -2,6 +2,11 @@
 
 class DB_Core {
 
+	public static function query($type, $sql)
+	{
+		return new Database_Query($type, $sql);
+	}
+
 	public static function select($sql)
 	{
 		return new Database_Query(Database::SELECT, $sql);
