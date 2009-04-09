@@ -25,7 +25,7 @@ class Database_Query_Core {
 		return $this->_sql;
 	}
 
-	public function set($key, $value)
+	public function value($key, $value)
 	{
 		$this->_params[$key] = $value;
 

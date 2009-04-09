@@ -11,6 +11,9 @@ class Database_MySQL_Core extends Database {
 
 	protected $_config_required = array('hostname', 'username', 'database');
 
+	// Database name
+	protected $_database;
+
 	public function connect()
 	{
 		if ($this->_connection)
@@ -45,6 +48,9 @@ class Database_MySQL_Core extends Database {
 				array(':error' => mysql_error($this->_connection)),
 				mysql_errno($this->_connection));
 		}
+
+		// Store the database name for use by meta functions
+		$this->_database = $database;
 
 		if (isset($charset))
 		{
@@ -120,6 +126,50 @@ class Database_MySQL_Core extends Database {
 			// Return the number of rows affected
 			return mysql_affected_rows($this->_connection);
 		}
+	}
+
+	public function list_tables($like = NULL)
+	{
+		// Make sure the database is connected
+		$this->_connection or $this->connect();
+
+		if (is_string($like))
+		{
+			// Search for table names
+			$result = $this->query(Database::SELECT, 'SHOW TABLES LIKE '.$this->quote($like))->as_array();
+		}
+		else
+		{
+			// Find all table names
+			$result = $this->query(Database::SELECT, 'SHOW TABLES')->as_array();
+		}
+
+		$tables = array();
+		foreach ($result as $row)
+		{
+			// Get the table name from the results
+			$tables[] = current($row);
+		}
+
+		return $tables;
+	}
+
+	public function list_columns($table)
+	{
+		// Make sure the database is connected
+		$this->_connection or $this->connect();
+
+		// Find all table names
+		$result = $this->query(Database::SELECT, 'SHOW COLUMNS FROM '.$table)->as_array();
+
+		$columns = array();
+		foreach ($result as $row)
+		{
+			// Get the column name from the results
+			$columns[] = $row['Field'];
+		}
+
+		return $columns;
 	}
 
 	public function escape($value)

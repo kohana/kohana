@@ -19,7 +19,7 @@ abstract class Database_Core {
 
 	public static $instances = array();
 
-	public static function instance($name, $cached = TRUE)
+	public static function instance($name = 'default', $cached = TRUE)
 	{
 		if ( ! isset(Database::$instances[$name]))
 		{
@@ -84,6 +84,10 @@ abstract class Database_Core {
 
 	abstract public function query($type, $sql);
 
+	abstract public function list_tables();
+
+	abstract public function list_columns($table);
+
 	abstract public function escape($value);
 
 	public function quote($value)
@@ -102,18 +106,6 @@ abstract class Database_Core {
 		}
 
 		return '"'.$this->escape($value).'"';
-	}
-
-	public function list_tables()
-	{
-		throw new Database_Exception('The :method is not implemented in :class',
-			array(':method' => __FUNCTION__, ':class' => get_class($this)));
-	}
-
-	public function list_columns($table)
-	{
-		throw new Database_Exception('The :method is not implemented in :class',
-			array(':method' => __FUNCTION__, ':class' => get_class($this)));
 	}
 
 } // End Database_Connection
