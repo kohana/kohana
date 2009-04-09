@@ -54,11 +54,11 @@ class cookie_Core {
 			return $default;
 		}
 
-		// Find the position of the split between salt and contents
-		$split = strlen(cookie::salt($key, NULL));
-
 		// Get the cookie value
 		$cookie = $_COOKIE[$key];
+
+		// Find the position of the split between salt and contents
+		$split = strlen(cookie::salt($key, NULL));
 
 		if (isset($cookie[$split]) AND $cookie[$split] === '~')
 		{
