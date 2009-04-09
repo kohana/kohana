@@ -336,7 +336,7 @@ final class Kohana {
 	 *
 	 *     // Returns an absolute path to media/css/style.css
 	 *     Kohana::find_file('media', 'css/style', 'css');
-	 * 
+	 *
 	 *     // Returns an array of all the "mimes" configuration file
 	 *     Kohana::find_file('config', 'mimes');
 	 *
@@ -470,12 +470,24 @@ final class Kohana {
 		{
 			// Create the cache directory
 			mkdir($dir, 0777, TRUE);
+
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($dir, 0777);
+		}
+
+		if ( ! is_file($dir.$file))
+		{
+			// Create the file
+			touch($dir.$file);
+
+			// Make the file world writable
+			chmod($dir.$file, 0666);
 		}
 
 		// Convert the data to a string representation
 		$data = var_export($data, TRUE);
 
-		// Serialize the data and create the cache
+		// Write the cache
 		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn {$data};");
 	}
 
