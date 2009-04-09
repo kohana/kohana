@@ -9,6 +9,7 @@
  */
 abstract class Model_Core {
 
+	// Database instance
 	protected $_db = 'default';
 
 	/**
@@ -21,7 +22,7 @@ abstract class Model_Core {
 		if (is_string($this->_db))
 		{
 			// Load the database
-			$this->_db = Database::instance($this->_db)
+			$this->_db = Database::instance($this->_db);
 		}
 	}
 
