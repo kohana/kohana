@@ -104,6 +104,10 @@ abstract class Database_Core {
 		{
 			return (int) $value;
 		}
+		elseif (is_array($value))
+		{
+			return implode(', ', array_map(array($this, __FUNCTION__), $value));
+		}
 
 		return '"'.$this->escape($value).'"';
 	}

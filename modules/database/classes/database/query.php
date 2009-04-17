@@ -11,7 +11,7 @@ class Database_Query_Core {
 
 	protected $_type;
 	protected $_sql;
-	protected $_params;
+	protected $_values = array();
 
 	public function __construct($type, $sql)
 	{
@@ -25,16 +25,34 @@ class Database_Query_Core {
 		return $this->_sql;
 	}
 
-	public function value($key, $value)
+	public function replace($key, $value)
 	{
-		$this->_params[$key] = $value;
+		// Replace the given value
+		$this->_sql = str_replace($key, $value, $this->_sql);
 
 		return $this;
 	}
 
-	public function bind($key, & $value)
+	public function values(array $values)
 	{
-		$this->_params[$key] =& $value;
+		// Merge the new values in
+		$this->_values = $values + $this->_values;
+
+		return $this;
+	}
+
+	public function value($key, $value)
+	{
+		// Add or overload a new value
+		$this->_values[$key] = $value;
+
+		return $this;
+	}
+
+	public function bind($key, & $var)
+	{
+		// Bind a value to a variable
+		$this->_values[$key] =& $var;
 
 		return $this;
 	}
@@ -50,13 +68,13 @@ class Database_Query_Core {
 		// Import the SQL locally
 		$sql = $this->_sql;
 
-		if ( ! empty($this->_params))
+		if ( ! empty($this->_values))
 		{
 			// Quote all of the values
-			$params = array_map(array($db, 'quote'), $this->_params);
+			$values = array_map(array($db, 'quote'), $this->_values);
 
 			// Replace the values in the SQL
-			$sql = strtr($sql, $params);
+			$sql = strtr($sql, $values);
 		}
 
 		// Load the result

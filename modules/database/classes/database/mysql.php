@@ -177,7 +177,7 @@ class Database_MySQL_Core extends Database {
 		// Make sure the database is connected
 		$this->_connection or $this->connect();
 
-		if (($value = mysql_real_escape_string($value, $this->_connection)) === FALSE)
+		if (($value = mysql_real_escape_string((string) $value, $this->_connection)) === FALSE)
 		{
 			throw new Database_Exception(':error',
 				array(':error' => mysql_errno($this->_connection)),
@@ -185,6 +185,18 @@ class Database_MySQL_Core extends Database {
 		}
 
 		return $value;
+	}
+
+	public function quote_column($column, $alias = NULL)
+	{
+		$column = '`'.$column.'`';
+
+		if ($alias !== NULL)
+		{
+			$column .= ' AS `'.$alias.'`';
+		}
+
+		return $column;
 	}
 
 } // End Database_Connection_MySQL
