@@ -42,11 +42,6 @@ final class Kohana {
 	public static $magic_quotes = FALSE;
 
 	/**
-	 * @var  boolean  cache the location of files across requests?
-	 */
-	public static $cache_paths = FALSE;
-
-	/**
 	 * @var  boolean  display errors and exceptions in output?
 	 */
 	public static $display_errors = TRUE;
@@ -60,6 +55,16 @@ final class Kohana {
 	 * @var  string  character set of input and output
 	 */
 	public static $charset = 'utf-8';
+
+	/**
+	 * @var  string  base URL to the application
+	 */
+	public static $base_url = '/';
+
+	/**
+	 * @var  boolean  cache the location of files across requests?
+	 */
+	public static $cache_paths = FALSE;
 
 	/**
 	 * @var  object  logging object
@@ -161,6 +166,12 @@ final class Kohana {
 		{
 			// Set the system character set
 			self::$charset = strtolower($settings['charset']);
+		}
+
+		if (isset($settings['base_url']))
+		{
+			// Set the base URL
+			self::$base_url = rtrim($settings['base_url'], '/').'/';
 		}
 
 		// Determine if the extremely evil magic quotes are enabled
