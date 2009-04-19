@@ -112,7 +112,7 @@ class cookie_Core {
 	 * @param   string   cookie name
 	 * @return  boolean
 	 */
-	public function delete($key)
+	public static function delete($key)
 	{
 		// Remove the cookie
 		unset($_COOKIE[$key]);
