@@ -126,9 +126,9 @@ class View_Core {
 		{
 			return $this->render();
 		}
-		catch (Kohana_Exception $e)
+		catch (Exception $e)
 		{
-			return (string) $e->getMessage().' on '.$e->getLine().' in '.$e->getFile();
+			return (string) $e->getMessage().' in '.Kohana::debug_path($e->getFile()).' [ '.$e->getLine().' ]';
 		}
 	}
 
