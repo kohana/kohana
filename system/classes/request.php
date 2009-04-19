@@ -2,7 +2,7 @@
 /**
  * Request and response wrapper.
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -74,11 +74,59 @@ class Request_Core {
 	 * @param   string   URI of the request
 	 * @return  Request
 	 */
-	public static function instance( & $uri = NULL)
+	public static function instance( & $uri = FALSE)
 	{
 		if (Request::$_instance === NULL)
 		{
-			if (func_num_args() === 0)
+			// Create the initial request parameters
+			$params = array('method' => 'GET', 'get' => NULL, 'post' => NULL);
+
+			if (Kohana::$is_cli)
+			{
+				// Get the command line options
+				$options = cli::options('uri', 'method', 'get', 'post');
+
+				if (isset($options['uri']))
+				{
+					// Use the specified URI
+					$uri = $options['uri'];
+				}
+
+				if (isset($options['method']))
+				{
+					// Request method specified
+					$params['method'] = $options['method'];
+				}
+
+				if (isset($options['get']))
+				{
+					// GET data specified
+					parse_str($options['get'], $params['get']);
+				}
+
+				if (isset($options['post']))
+				{
+					// POST data specified
+					parse_str($options['post'], $params['post']);
+				}
+			}
+			else
+			{
+				if (isset($_SERVER['REQUEST_METHOD']))
+				{
+					// Use the server request method
+					$params['method'] = $_SERVER['REQUEST_METHOD'];
+				}
+
+				if ($params['method'] !== 'GET' AND $params['method'] !== 'POST')
+				{
+					// Methods besides GET and POST do not properly parse the form-encoded
+					// query string into the $_POST array, so we do it manually.
+					parse_str(file_get_contents('php://input'), $params['post']);
+				}
+			}
+
+			if ($uri === FALSE)
 			{
 				if (isset($_SERVER['PATH_INFO']))
 				{
@@ -108,7 +156,7 @@ class Request_Core {
 			}
 
 			// Create the instance singleton
-			Request::$_instance = new Request($uri);
+			Request::$_instance = new Request($uri, $params);
 		}
 
 		return Request::$_instance;
@@ -124,9 +172,9 @@ class Request_Core {
 	 * @param   array   overloaded POST data
 	 * @return  Request
 	 */
-	public static function factory($uri, array $get = NULL, array $post = NULL)
+	public static function factory($uri, array $params = NULL)
 	{
-		return new Request($uri, $get, $post);
+		return new Request($uri, $params);
 	}
 
 	/**
@@ -135,24 +183,29 @@ class Request_Core {
 	public $route;
 
 	/**
+	 * @var  string  request method type (GET, POST, PUT, etc)
+	 */
+	public $method = 'GET';
+
+	/**
 	 * @var  decimal  HTTP version (1.0, 1.1)
 	 */
-	public $version  = 1.1;
+	public $version = 1.1;
 
 	/**
 	 * @var  integer  HTTP response code (200, 404, 500, etc)
 	 */
-	public $status   = 200;
+	public $status = 200;
 
 	/**
 	 * @var  string  response body
 	 */
-	public $response = '';
+	public $response;
 
 	/**
 	 * @var  array  headers to send with the response body
 	 */
-	public $headers  = array('content-type' => 'text/html; charset=utf-8');
+	public $headers = array('content-type' => 'text/html; charset=utf-8');
 
 	/**
 	 * @var  string  controller to be executed
@@ -164,8 +217,10 @@ class Request_Core {
 	 */
 	public $action;
 
-	// URI of this request
-	protected $_uri;
+	/**
+	 * @var  string  the URI of the request
+	 */
+	public $uri;
 
 	// Parameters extracted from the route
 	protected $_params;
@@ -176,16 +231,27 @@ class Request_Core {
 
 	/**
 	 * Creates a new request object for the given URI. Global GET and POST data
-	 * can be overloaded.
+	 * can be overloaded by setting "get" and "post" in the parameters.
 	 *
 	 * @param   string  URI of the request
-	 * @param   array   overloaded GET data
-	 * @param   array   overloaded POST data
+	 * @param   array   request parameters
 	 * @return  void
-	 * @throws  Request_Exception  if no route matches the URI
+	 * @throws  Kohana_Exception  if no route matches the URI
 	 */
-	public function __construct($uri, array $get = NULL, array $post = NULL)
+	public function __construct($uri, array $params = NULL)
 	{
+		if (isset($params['method']))
+		{
+			// Set the request method
+			$this->method = strtoupper($params['method']);
+		}
+
+		// Load GET data
+		$this->_get = isset($params['get']) ? $params['get'] : $_GET;
+
+		// Load POST data
+		$this->_post = isset($params['post']) ? $params['post'] : $_POST;
+
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
@@ -196,24 +262,27 @@ class Request_Core {
 		{
 			if ($params = $route->matches($uri))
 			{
+				// Store the URI
+				$this->uri = $uri;
+
+				// Store the matching route
 				$this->route = $route;
 
+				// Store the controller and action
 				$this->controller = $params['controller'];
 				$this->action     = $params['action'];
 
+				// These are accessible as public vars and can be overloaded
 				unset($params['controller'], $params['action']);
 
-				$this->_uri    = $uri;
+				// Params cannot be changed once matched
 				$this->_params = $params;
-
-				$this->_get  = ($get === NULL)  ? $_GET  : $get;
-				$this->_post = ($post === NULL) ? $_POST : $post;
 
 				return;
 			}
 		}
 
-		throw new Request_Exception('Unable to find a route to handle :uri', array(':uri' => $uri));
+		throw new Kohana_Exception('Unable to find a route to handle :uri', array(':uri' => $uri));
 	}
 
 	/**
@@ -223,8 +292,14 @@ class Request_Core {
 	 * @param   mixed    default value if the key is not set
 	 * @return  mixed
 	 */
-	public function param($key, $default = NULL)
+	public function param($key = NULL, $default = NULL)
 	{
+		if ($key === NULL)
+		{
+			// Return the full array
+			return $this->_params;
+		}
+
 		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
 	}
 
@@ -235,8 +310,14 @@ class Request_Core {
 	 * @param   mixed    default value if the key is not set
 	 * @return  mixed
 	 */
-	public function get($key, $default = NULL)
+	public function get($key = NULL, $default = NULL)
 	{
+		if ($key === NULL)
+		{
+			// Return the full array
+			return $this->_get;
+		}
+
 		return isset($this->_get[$key]) ? $this->_get[$key] : $default;
 	}
 
@@ -247,8 +328,14 @@ class Request_Core {
 	 * @param   mixed    default value if the key is not set
 	 * @return  mixed
 	 */
-	public function post($key, $default = NULL)
+	public function post($key = NULL, $default = NULL)
 	{
+		if ($key === NULL)
+		{
+			// Return the full array
+			return $this->_post;
+		}
+
 		return isset($this->_post[$key]) ? $this->_post[$key] : $default;
 	}
 
@@ -369,7 +456,7 @@ class Request_Core {
 		$controller = new $controller($this);
 
 		// A new action is about to be run
-		$controller->before();
+		$controller->before($this->method);
 
 		// Set the action name after running before() to allow the controller
 		// to change the action based on the current parameters
@@ -379,7 +466,7 @@ class Request_Core {
 		$controller->$action();
 
 		// The action has been run
-		$controller->after();
+		$controller->after($this->method);
 
 		if ($capture === TRUE)
 			return $this->response;

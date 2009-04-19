@@ -1,4 +1,9 @@
 <?php
+
+error_reporting(E_ALL | E_STRICT);
+
+date_default_timezone_set('America/Chicago');
+
 /**
  * The directory in which your application specific resources are located.
  * The application directory must contain the config/kohana.php file.

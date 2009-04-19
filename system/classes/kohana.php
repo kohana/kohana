@@ -7,15 +7,21 @@
  * - Auto-loading and transparent extension of classes
  * - Variable and path debugging
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 final class Kohana {
 
+	// Release version and codename
 	const VERSION   = '3.0';
 	const CODENAME  = 'renaissance';
+
+	// Log message types
+	const ERROR = 'ERROR';
+	const DEBUG = 'DEBUG';
+	const INFO  = 'INFO';
 
 	// Security check that is added to all generated PHP files
 	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
@@ -36,11 +42,6 @@ final class Kohana {
 	public static $magic_quotes = FALSE;
 
 	/**
-	 * @var  boolean  cache the location of files across requests?
-	 */
-	public static $cache_paths = FALSE;
-
-	/**
 	 * @var  boolean  display errors and exceptions in output?
 	 */
 	public static $display_errors = TRUE;
@@ -54,6 +55,21 @@ final class Kohana {
 	 * @var  string  character set of input and output
 	 */
 	public static $charset = 'utf-8';
+
+	/**
+	 * @var  string  base URL to the application
+	 */
+	public static $base_url = '/';
+
+	/**
+	 * @var  boolean  cache the location of files across requests?
+	 */
+	public static $cache_paths = FALSE;
+
+	/**
+	 * @var  object  logging object
+	 */
+	public static $log;
 
 	// Currently active modules
 	private static $_modules = array();
@@ -89,6 +105,9 @@ final class Kohana {
 
 		// The system will now be initialized
 		$_init = TRUE;
+
+		// Start an output buffer
+		ob_start();
 
 		if (version_compare(PHP_VERSION, '6.0', '<='))
 		{
@@ -131,9 +150,6 @@ final class Kohana {
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
-		// Determine if this server supports UTF-8 natively
-		utf8::$server_utf8 = extension_loaded('mbstring');
-
 		if (isset($settings['display_errors']))
 		{
 			// Enable or disable the display of errors
@@ -152,6 +168,12 @@ final class Kohana {
 			self::$charset = strtolower($settings['charset']);
 		}
 
+		if (isset($settings['base_url']))
+		{
+			// Set the base URL
+			self::$base_url = rtrim($settings['base_url'], '/').'/';
+		}
+
 		// Determine if the extremely evil magic quotes are enabled
 		self::$magic_quotes = (bool) get_magic_quotes_gpc();
 
@@ -159,6 +181,12 @@ final class Kohana {
 		$_GET    = self::sanitize($_GET);
 		$_POST   = self::sanitize($_POST);
 		$_COOKIE = self::sanitize($_COOKIE);
+
+		// Load the logger
+		self::$log = Kohana_Log::instance();
+
+		// Determine if this server supports UTF-8 natively
+		utf8::$server_utf8 = extension_loaded('mbstring');
 
 		// Normalize all request variables to the current charset
 		$_GET    = utf8::clean($_GET, self::$charset);
@@ -228,6 +256,7 @@ final class Kohana {
 		}
 		else
 		{
+			// Class is not in the filesystem
 			return FALSE;
 		}
 
@@ -270,8 +299,8 @@ final class Kohana {
 	 *
 	 *     Kohana::modules(array('modules/foo', MODPATH.'bar'));
 	 *
-	 * @param   array   module paths
-	 * @return  void
+	 * @param   array  list of module paths
+	 * @return  array  enabled modules
 	 */
 	public static function modules(array $modules = NULL)
 	{
@@ -309,17 +338,25 @@ final class Kohana {
 	 * Finds the path of a file by directory, filename, and extension.
 	 * If no extension is given, the default EXT extension will be used.
 	 *
+	 * When searching the "config" or "i18n" directory, an array of files
+	 * will be returned. These files will return arrays which must be
+	 * merged together.
+	 *
 	 *     // Returns an absolute path to views/template.php
-	 *     echo Kohana::find_file('views', 'template');
+	 *     Kohana::find_file('views', 'template');
 	 *
 	 *     // Returns an absolute path to media/css/style.css
-	 *     echo Kohana::find_file('media', 'css/style', 'css');
+	 *     Kohana::find_file('media', 'css/style', 'css');
 	 *
-	 * @param   string   directory name (views, classes, extensions, etc.)
+	 *     // Returns an array of all the "mimes" configuration file
+	 *     Kohana::find_file('config', 'mimes');
+	 *
+	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
 	 * @param   string   filename with subdirectory
 	 * @param   string   extension to search for
-	 * @return  string   success
-	 * @return  FALSE    failure
+	 * @return  string   single file found
+	 * @return  FALSE    single file NOT found
+	 * @return  array    multiple files from the "config" or "i18n" directories
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
@@ -375,18 +412,18 @@ final class Kohana {
 	 * @param   string
 	 * @return  mixed
 	 */
-	public function load($file)
+	public static function load($file)
 	{
 		return include $file;
 	}
 
 	/**
 	 * Creates a new configuration object for the requested group.
-	 * 
+	 *
 	 * @param   string   group name
 	 * @param   boolean  enable caching
 	 */
-	public function config($group, $cache = TRUE)
+	public static function config($group, $cache = TRUE)
 	{
 		return new Kohana_Config($group, $cache);
 	}
@@ -412,16 +449,13 @@ final class Kohana {
 	 * @return  mixed    for getting
 	 * @return  boolean  for setting
 	 */
-	public function cache($name, $data = NULL, $lifetime = 60)
+	public static function cache($name, $data = NULL, $lifetime = 60)
 	{
 		// Cache file is a hash of the name
 		$file = sha1($name).EXT;
 
-		// Lets keep this short and sweet
-		$ds = DIRECTORY_SEPARATOR;
-
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = APPPATH.'cache'.$ds.substr($file, 0, 2).$ds.substr($file, 2, 2).$ds;
+		$dir = APPPATH."cache/{$file[0]}/";
 
 		if ($data === NULL)
 		{
@@ -447,10 +481,25 @@ final class Kohana {
 		{
 			// Create the cache directory
 			mkdir($dir, 0777, TRUE);
+
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($dir, 0777);
 		}
 
-		// Serialize the data and create the cache
-		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn ".var_export($data, TRUE).';');
+		if ( ! is_file($dir.$file))
+		{
+			// Create the file
+			touch($dir.$file);
+
+			// Make the file world writable
+			chmod($dir.$file, 0666);
+		}
+
+		// Convert the data to a string representation
+		$data = var_export($data, TRUE);
+
+		// Write the cache
+		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn {$data};");
 	}
 
 	/**
@@ -490,22 +539,39 @@ final class Kohana {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 
-			if (self::$log_errors === TRUE)
-			{
-				// Create a new log of this execption
-				Logger::write('error', "{$type} [ {$code} ]: {$message} in ".self::debug_path($file)." on line {$line}");
-			}
+			// Set the text version of the exception
+			$text = "{$type} [ {$code} ]: {$message} ".self::debug_path($file)." [ {$line} ]";
+
+			// Add this exception to the log
+			self::$log->add(Kohana::ERROR, $text);
 
 			if (Kohana::$is_cli)
 			{
 				// Just display the text of the exception
-				echo "\n", $type, ' [ ', $code ,' ]: ', $message, ' ', $file, ' [ ', $line, ' ] ', "\n";
+				echo "\n{$text}\n";
 
 				return TRUE;
 			}
 
 			// Get the exception backtrace
 			$trace = $e->getTrace();
+
+			if ($e instanceof ErrorException AND version_compare(PHP_VERSION, '5.3', '<'))
+			{
+				// Work around for a bug in ErrorException::getTrace() that exists in
+				// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+				for ($i = count($trace) - 1; $i > 0; --$i)
+				{
+					if (isset($trace[$i - 1]['args']))
+					{
+						// Re-position the args
+						$trace[$i]['args'] = $trace[$i - 1]['args'];
+
+						// Remove the args
+						unset($trace[$i - 1]['args']);
+					}
+				}
+			}
 
 			// Get the source of the error
 			$source = self::debug_source($file, $line);
@@ -666,7 +732,7 @@ final class Kohana {
 	/**
 	 * Returns a single line representation of a variable. Internally, this is
 	 * used only for showing function arguments in stack traces.
-	 * 
+	 *
 	 *     echo Kohana::debug_var($my_var);
 	 *
 	 * @param   mixed  variable to debug
@@ -683,7 +749,7 @@ final class Kohana {
 				return $var ? 'TRUE' : 'FALSE';
 			break;
 			case 'string':
-				return var_export($var);
+				return var_export($var, TRUE);
 			break;
 			case 'object':
 				return 'object '.get_class($var);
@@ -721,71 +787,51 @@ final class Kohana {
 		$statements = array('include', 'include_once', 'require', 'require_once');
 
 		$output = array();
-		foreach ($trace as $line)
+		foreach ($trace as $step)
 		{
-			if ( ! isset($line['function']) OR ! isset($line['file']))
+			if ( ! (isset($step['function']) AND isset($step['file'])))
 			{
 				// Ignore this line, it has unusable data
 				continue;
 			}
 
-			// Start a new trace step
-			$step = array('file' => self::debug_path($line['file']), 'line' => '', 'function' => '');
+			// Set the function name
+			$function = $step['function'];
 
-			if (isset($line['line']))
+			// Set the file and line
+			$file = self::debug_path($step['file']);
+			$line = $step['line'];
+
+			if (isset($step['class']))
 			{
-				// Add the file line
-				$step['line'] = $line['line'];
+				// Change the function to a method
+				$function = $step['class'].$step['type'].$function;
 			}
 
-			if (in_array($line['function'], $statements))
+			if (isset($step['args']))
 			{
-				if ( ! isset($line['args']))
+				if (in_array($function, $statements))
 				{
-					// Really bizzare, ignore this line completely
-					continue;
-				}
-
-				// Sanitize all paths
-				$step['args'] = array_map(array(__CLASS__, 'debug_path'), $line['args']);
-
-				// function args
-				$step['function'] = $line['function'].' '.implode(', ', $step['args']);
-			}
-			else
-			{
-				if (isset($line['args']))
-				{
-					// Sanitize all arguments
-					$step['args'] = implode(', ', array_map(array(__CLASS__, 'debug_var'), $line['args']));
+					// Sanitize the path name
+					$function .= ' '.self::debug_path($step['args'][0]);
 				}
 				else
 				{
-					// No arguments
-					$step['args'] = '';
-				}
-
-				if (isset($line['class']) AND isset($line['type']))
-				{
-					// class::function(args) or class->function(args)
-					$step['function'] = $line['class'].$line['type'].$line['function'].'('.$step['args'].')';
-				}
-				else
-				{
-					// function(args)
-					$step['function'] = $line['function'].'('.$step['args'].')';
+					// Sanitize the function arguments
+					$function .= '('.implode(', ', $args = array_map('Kohana::debug_var', $step['args'])).')';
 				}
 			}
 
-			// Add this step to the trace output
-			$output[] = "<dt>{$step['file']} [ {$step['line']} ]</dt>\n".
-				"<dd>{$step['function']}</dd>";
+			$output[] = array(
+				'function' => $function,
+				'file'     => self::debug_path($step['file']),
+				'line'     => $step['line']);
 		}
 
 		return $output;
 	}
 
-	final private function __construct()
+	private function __construct()
 	{
 		// This is a static class
 	}

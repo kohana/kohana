@@ -27,7 +27,7 @@
  * Routes also provide a way to generate URIs (called "reverse routing"), which
  * makes them an extremely powerful and flexible way to generate internal links.
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -59,20 +59,20 @@ class Route_Core {
 
 	/**
 	 * Stores a named route and returns it.
-	 * 
+	 *
 	 * @param   string   route name
 	 * @param   string   URI pattern
 	 * @param   array    regex patterns for route keys
 	 * @return  Route
 	 */
-	public static function set($name, $uri, array $regex = NULL)
+	public static function add($name, $uri, array $regex = NULL)
 	{
 		return Route::$_routes[$name] = new Route($uri, $regex);
 	}
 
 	/**
 	 * Retrieves a named route.
-	 * 
+	 *
 	 * @param   string  route name
 	 * @return  Route
 	 * @return  FALSE   when no route is found
@@ -84,16 +84,19 @@ class Route_Core {
 
 	/**
 	 * Retrieves all named routes, with the default route last.
-	 * 
+	 *
 	 * @return  array  named routes
 	 */
-	public function all()
+	public static function all()
 	{
 		return Route::$_routes;
 	}
 
 	// Route URI string
 	protected $_uri = '';
+
+	// Controller directory
+	protected $_directory;
 
 	// Regular expressions for route keys
 	protected $_regex = array();
@@ -129,6 +132,19 @@ class Route_Core {
 
 		// Store the compiled regex locally
 		$this->_route_regex = $regex;
+	}
+
+	/**
+	 * Sets the prefix directory for all controllers matched by this route.
+	 *
+	 * @param   string  directory path
+	 * @return  Route
+	 */
+	public function directory($directory = NULL)
+	{
+		$this->_directory = strtolower($directory);
+
+		return $this;
 	}
 
 	/**
@@ -202,6 +218,15 @@ class Route_Core {
 				// Set default values for any key that was not matched
 				$params[$key] = $value;
 			}
+		}
+
+		if ( ! empty($this->_directory))
+		{
+			// Create the class prefix
+			$prefix = str_replace(array('\\', '/'), '_', $this->_directory);
+
+			// Add the prefix to the controller
+			$params['controller'] = $prefix.'_'.$params['controller'];
 		}
 
 		return $params;

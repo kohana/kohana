@@ -2,7 +2,7 @@
 /**
  * Wrapper for configuration arrays.
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -13,7 +13,8 @@ class Kohana_Config_Core extends ArrayObject {
 	const CACHE_PREFIX = 'kohana_configuration_';
 
 	/**
-	 * Loads a configuration group.
+	 * Loads all of the files in a configuration group and returns a merged
+	 * array of the values.
 	 *
 	 * @param   string  group name
 	 * @return  array
@@ -41,6 +42,14 @@ class Kohana_Config_Core extends ArrayObject {
 	// Has the config group changed?
 	protected $_configuration_modified = FALSE;
 
+	/**
+	 * Creates a new configuration object for the specified group. When caching
+	 * is enabled, Kohana_Config will attempt to load the group from the cache.
+	 *
+	 * @param   string   group name
+	 * @param   boolean  cache the group array
+	 * @return  void
+	 */
 	public function __construct($group, $cache = TRUE)
 	{
 		// Set the configuration group name
@@ -82,6 +91,30 @@ class Kohana_Config_Core extends ArrayObject {
 	public function as_array()
 	{
 		return $this->getArrayCopy();
+	}
+
+	/**
+	 * Get a variable from the configuration or return the default value.
+	 *
+	 * @param   string   array key
+	 * @param   mixed    default value
+	 * @return  mixed
+	 */
+	public function get($key, $default = NULL)
+	{
+		return $this->offsetExists($key) ? $this->offsetGet($key) : $default;
+	}
+
+	/**
+	 * Sets a value in the configuration array.
+	 *
+	 * @param   string   array key
+	 * @param   mixed    array value
+	 * @return  mixed
+	 */
+	public function set($key, $value)
+	{
+		return $this->offsetSet($key, $value);
 	}
 
 	/**

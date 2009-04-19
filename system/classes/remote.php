@@ -4,7 +4,7 @@
  *
  * [ref-curl]: http://php.net/curl
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -20,13 +20,9 @@ class remote_Core {
 	);
 
 	/**
-	 * Returns the output of a remote URL. Output will be returned as an
-	 * array with a boolean "status" and a string "response":
-	 * 
-	 *     $page = remote::get('http://www.google.com');
-	 *     
-	 *     echo $page['status'] ? $page['response'] : 'Error: '.$page['response'];
-	 * 
+	 * Returns the output of a remote URL.
+	 *
+	 * @throws  Kohana_Exception
 	 * @param   string   remote URL
 	 * @param   array    curl options
 	 * @return  array
@@ -45,24 +41,22 @@ class remote_Core {
 		// Set connection options
 		curl_setopt_array($remote, $options);
 
-		if (($response = curl_exec($remote)) === FALSE)
-		{
-			// An error has occurred
-			$status = FALSE;
+		// Get the response
+		$response = curl_exec($remote);
 
-			// Return the error message instead of the response
-			$response = curl_error($remote);
-		}
-		else
+		// Get the response information
+		$code = curl_getinfo($remote, CURLINFO_HTTP_CODE);
+
+		if ($response === FALSE OR $code !== 200)
 		{
-			// The response is valid
-			$status = TRUE;
+			throw new Kohana_Exception('Error fetching remote :url [ status :code ] :error',
+				array(':url' => $url, ':code' => $code, ':error' => curl_error($remote)));
 		}
 
 		// Close the connection
 		curl_close($remote);
 
-		return array('status' => $status, 'response' => $response);
+		return $response;
 	}
 
 } // End remote
