@@ -27,7 +27,14 @@ i18n::$lang = 'en_US';
 /**
  * Set the routes.
  */
-Route::add('default', '(<controller>(/<action>(/<id>)))')
+
+Route::set('test', 'test/(<controller>(/<action>))')
+	->defaults(array(
+		'directory'  => 'test',
+		'controller' => 'list',
+		'action'     => 'index'));
+
+Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'welcome',
 		'action' => 'index',
