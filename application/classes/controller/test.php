@@ -18,20 +18,21 @@ abstract class Controller_Test extends Controller {
 		{
 			if (strpos($method, 'action_') === 0 AND $method !== 'action_index')
 			{
+				// Remove "action" prefix
+				$method = substr($method, 7);
+
 				// Add the method to the test list
-				$tests[] = substr($method, 7);
+				$tests[$this->request->url(array('action' => $method))] = $method;
 			}
 		}
 
 		// Get the controller name
 		$controller = inflector::humanize(substr(get_class($this), 16));
 
-		echo '<h1>Test: ', $controller, '</h1><ul>';
-		foreach ($tests as $name)
-		{
-			echo '<li><a href="', $this->request->url(array('action' => $name)), '">', $name, '</a></li>';
-		}
-		echo '</ul>';
+		// Show the test list
+		$this->request->response = View::factory('test/index')
+			->set('controller', $controller)
+			->set('tests', $tests);
 	}
 
 	public function after($method)
