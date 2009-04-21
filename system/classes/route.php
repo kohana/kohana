@@ -220,6 +220,12 @@ class Route_Core {
 			}
 		}
 
+		if ( ! isset($params['action']))
+		{
+			// The default action is "index", like HTTP
+			$params['action'] = 'index';
+		}
+
 		if ( ! empty($this->_directory))
 		{
 			// Create the class prefix
