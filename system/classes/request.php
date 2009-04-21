@@ -208,6 +208,11 @@ class Request_Core {
 	public $headers = array('content-type' => 'text/html; charset=utf-8');
 
 	/**
+	 * @var  string  controller directory
+	 */
+	public $directory = '';
+
+	/**
 	 * @var  string  controller to be executed
 	 */
 	public $controller;
@@ -268,12 +273,18 @@ class Request_Core {
 				// Store the matching route
 				$this->route = $route;
 
+				if (isset($params['directory']))
+				{
+					// Controllers are in a sub-directory
+					$this->directory = $params['directory'];
+				}
+
 				// Store the controller and action
 				$this->controller = $params['controller'];
 				$this->action     = $params['action'];
 
 				// These are accessible as public vars and can be overloaded
-				unset($params['controller'], $params['action']);
+				unset($params['controller'], $params['action'], $params['directory']);
 
 				// Params cannot be changed once matched
 				$this->_params = $params;
@@ -449,8 +460,19 @@ class Request_Core {
 	 */
 	public function execute($capture = TRUE)
 	{
+		if (empty($this->directory))
+		{
+			// There is no controller prefix
+			$prefix = '';
+		}
+		else
+		{
+			// Make the directory name into a class prefix
+			$prefix = str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
+		}
+
 		// Set the controller class name
-		$controller = 'controller_'.$this->controller;
+		$controller = 'controller_'.$prefix.$this->controller;
 
 		// Load the controller
 		$controller = new $controller($this);
