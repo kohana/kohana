@@ -297,6 +297,40 @@ class Request_Core {
 	}
 
 	/**
+	 * Generates a complete URL for the current route.
+	 *
+	 * @param   array   additional route parameters
+	 * @return  string
+	 */
+	public function url(array $params = NULL)
+	{
+		return Kohana::$base_url.$this->uri($params);
+	}
+
+	/**
+	 * Generates a relative URI for the current route.
+	 *
+	 * @param   array   additional route parameters
+	 * @return  string
+	 */
+	public function uri(array $params = NULL)
+	{
+		if ( ! isset($params['controller']))
+		{
+			// Add the current controller
+			$params['controller'] = $this->controller;
+		}
+
+		if ( ! isset($params['action']))
+		{
+			// Add the current action
+			$params['action'] = $this->action;
+		}
+
+		return $this->route->uri($params);
+	}
+
+	/**
 	 * Retrieves a value from the route parameters.
 	 *
 	 * @param   string   key of the value
