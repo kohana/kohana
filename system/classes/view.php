@@ -143,13 +143,14 @@ class View_Core {
 	 */
 	public function set_filename($file)
 	{
-		if ($file = Kohana::find_file('views', $file))
+		if ($path = Kohana::find_file('views', $file))
 		{
-			$this->_file = $file;
+			$this->_file = $path;
 		}
 		else
 		{
-			throw new Kohana_Exception('The requested :type :file was not found', array('type' => 'view', 'file' => $file));
+			throw new Kohana_Exception('The requested :type :file was not found',
+				array(':type' => 'view', ':file' => $file));
 		}
 
 		return $this;
