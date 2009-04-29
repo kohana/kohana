@@ -37,7 +37,7 @@ class Profiler_Core {
 			'start_time'   => microtime(TRUE),
 			'start_memory' => memory_get_usage(),
 
-			// Set NULL values
+			// Set the stop keys without values
 			'stop_time'    => FALSE,
 			'stop_memory'  => FALSE,
 		);
@@ -53,12 +53,6 @@ class Profiler_Core {
 	 */
 	public static function stop($token)
 	{
-		if ( ! isset(Profiler::$_marks[$token]))
-		{
-			throw new Kohana_Exception('Profiler token :token is not valid',
-				array(':token', $token));
-		}
-
 		// Stop the benchmark
 		Profiler::$_marks[$token]['stop_time']   = microtime(TRUE);
 		Profiler::$_marks[$token]['stop_memory'] = memory_get_usage();
