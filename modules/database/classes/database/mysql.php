@@ -25,7 +25,7 @@ class Database_MySQL_Core extends Database {
 		$this->_config = array();
 
 		// Set the connection type
-		$connect = (isset($persistent) AND $persistent === TRUE) ? 'mysql_pconnect' : 'mysql_connect';
+		$connect = empty($persistent) ? 'mysql_connect' : 'mysql_pconnect';
 
 		try
 		{
