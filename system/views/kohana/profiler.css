@@ -1,0 +1,11 @@
+.kohana table.profiler { width: 100%; margin: 0 0 1em; border-collapse: collapse; }
+	.kohana table.profiler th,
+	.kohana table.profiler td { padding: 0.2em 0.4em; background: #fff; border: solid 1px #ccc; text-align: left; font-weight: normal; font-size: 1em; color: #111; vertical-align: top; }
+	.kohana table.profiler tr.group th { font-size: 1.4em; background: #222; color: #eee; }
+	.kohana table.profiler tr.mark th.name { font-size: 1.2em; background: #fff; vertical-align: middle; }
+	.kohana table.profiler tr.mark th.min { background: #d2f1cb; }
+	.kohana table.profiler tr.mark th.max { background: #ead3cb; }
+	.kohana table.profiler tr.mark th.average { background: #ddd; }
+	.kohana table.profiler tr.mark th.total { background: #d0e3f0; }
+	.kohana table.profiler tr.time td { border-bottom: none; }
+	.kohana table.profiler tr.memory td { border-top: none; }
