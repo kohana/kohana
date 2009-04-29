@@ -83,7 +83,7 @@ class Database_Query_Core {
 		if ($this->profile === TRUE)
 		{
 			// Start profiling this query
-			$token = Profiler::start($sql, 'database ('.(string) $db.')');
+			$token = Profiler::start('database ('.(string) $db.')', $sql);
 		}
 
 		// Load the result
