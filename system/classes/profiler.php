@@ -15,11 +15,11 @@ class Profiler_Core {
 	/**
 	 * Starts a new benchmark and returns a unique token.
 	 *
-	 * @param   string  benchmark name
 	 * @param   string  group name
+	 * @param   string  benchmark name
 	 * @return  string
 	 */
-	public static function start($name, $group = 'general')
+	public static function start($group, $name)
 	{
 		do
 		{
