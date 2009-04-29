@@ -36,7 +36,7 @@ abstract class Database_Core {
 			$driver = 'Database_'.ucfirst($config['type']);
 
 			// Create the database connection instance
-			Database::$instances[$name] = new $driver($config);
+			new $driver($name, $config);
 		}
 
 		return Database::$instances[$name];
@@ -56,8 +56,14 @@ abstract class Database_Core {
 	// Raw server connection
 	protected $_connection;
 
-	public function __construct(array $config)
+	public function __construct($name, array $config)
 	{
+		// Set the instance name
+		$this->_name = $name;
+
+		// Add the instance to the list
+		Database::$instances[$name] = $this;
+
 		foreach ($this->_config_required as $param)
 		{
 			if ( ! isset($config[$param]))
@@ -74,6 +80,12 @@ abstract class Database_Core {
 	public function __destruct()
 	{
 		$this->disconnect();
+	}
+
+	public function __toString()
+	{
+		// Return the instance name
+		return $this->_name;
 	}
 
 	abstract public function connect();

@@ -9,6 +9,9 @@
  */
 class Database_Query_Core {
 
+	// Enable profiling?
+	public $profile = TRUE;
+
 	protected $_type;
 	protected $_sql;
 	protected $_values = array();
@@ -77,8 +80,19 @@ class Database_Query_Core {
 			$sql = strtr($sql, $values);
 		}
 
+		if ($this->profile === TRUE)
+		{
+			// Start profiling this query
+			$token = Profiler::start($sql, 'database ('.(string) $db.')');
+		}
+
 		// Load the result
-		return $db->query($this->_type, $sql);
+		$result = $db->query($this->_type, $sql);
+
+		if (isset($token))
+		{
+			Profiler::stop($token);
+		}
 	}
 
 } // End Database_Query
