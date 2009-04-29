@@ -91,8 +91,11 @@ class Database_Query_Core {
 
 		if (isset($token))
 		{
+			// Stop profiling
 			Profiler::stop($token);
 		}
+
+		return $result;
 	}
 
 } // End Database_Query
