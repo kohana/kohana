@@ -65,6 +65,18 @@ class Profiler_Core {
 	}
 
 	/**
+	 * Deletes a benchmark.
+	 * 
+	 * @param   string  token
+	 * @return  void
+	 */
+	public static function delete($token)
+	{
+		// Remove the benchmark
+		unset(Profiler::$_marks[$token]);
+	}
+
+	/**
 	 * Returns all the benchmark tokens by group and name as an array.
 	 *
 	 * @return  array
