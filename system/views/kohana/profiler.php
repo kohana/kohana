@@ -18,7 +18,7 @@
 			<th class="average"><?php echo __('Average') ?></th>
 			<th class="total"><?php echo __('Total') ?></th>
 		</tr>
-		<?php $stats = Profiler::average($tokens); ?>
+		<?php $stats = Profiler::stats($tokens); ?>
 		<tr class="mark time">
 			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
 			<td class="<?php echo $key ?>"><?php echo number_format($stats[$key]['time'], 6), ' ', __('seconds') ?></td>
