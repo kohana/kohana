@@ -27,6 +27,11 @@ final class Kohana {
 	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
 
 	/**
+	 * @var  boolean  enable core profiling
+	 */
+	public static $profile = TRUE;
+
+	/**
 	 * @var  boolean  command line environment?
 	 */
 	public static $is_cli = FALSE;
@@ -102,6 +107,18 @@ final class Kohana {
 
 		// This function can only be run once
 		if ($_init === TRUE) return;
+
+		if (isset($settings['profile']))
+		{
+			// Enable profiling
+			self::$profile = (bool) $settings['profile'];
+		}
+
+		if (self::$profile === TRUE)
+		{
+			// Start a new benchmark
+			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+		}
 
 		// The system will now be initialized
 		$_init = TRUE;
@@ -192,6 +209,12 @@ final class Kohana {
 		$_GET    = utf8::clean($_GET, self::$charset);
 		$_POST   = utf8::clean($_POST, self::$charset);
 		$_COOKIE = utf8::clean($_COOKIE, self::$charset);
+
+		if (isset($benchmark))
+		{
+			// Stop benchmarking
+			Profiler::stop($benchmark);
+		}
 	}
 
 	/**
@@ -246,6 +269,12 @@ final class Kohana {
 	 */
 	public static function auto_load($class)
 	{
+		if (self::$profile === TRUE AND class_exists('Profiler', FALSE))
+		{
+			// Start a benchmark
+			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+		}
+
 		// Transform the class name into a path
 		$file = str_replace('_', '/', strtolower($class));
 
@@ -290,6 +319,12 @@ final class Kohana {
 			eval($extension);
 		}
 
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			Profiler::stop($benchmark);
+		}
+
 		return TRUE;
 	}
 
@@ -306,6 +341,12 @@ final class Kohana {
 	{
 		if ($modules === NULL)
 			return self::$_modules;
+
+		if (self::$profile === TRUE)
+		{
+			// Start a new benchmark
+			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+		}
 
 		// Start a new list of include paths, APPPATH first
 		$paths = array(APPPATH);
@@ -326,6 +367,12 @@ final class Kohana {
 
 		// Finish the include paths by adding SYSPATH
 		$paths[] = SYSPATH;
+
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			Profiler::stop($benchmark);
+		}
 
 		// Set the new include paths
 		self::$_paths = $paths;
@@ -360,6 +407,12 @@ final class Kohana {
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
+		if (self::$profile === TRUE AND class_exists('Profiler', FALSE))
+		{
+			// Start a new benchmark
+			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+		}
+
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
 
@@ -399,6 +452,12 @@ final class Kohana {
 					break;
 				}
 			}
+		}
+
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			Profiler::stop($benchmark);
 		}
 
 		return $found;
