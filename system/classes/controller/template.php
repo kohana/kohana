@@ -10,10 +10,9 @@ class Controller_Template_Core extends Controller {
 	/**
 	 * Loads the template View object.
 	 *
-	 * @param   string   request method
 	 * @return  void
 	 */
-	public function before($method)
+	public function before()
 	{
 		$this->template = View::factory($this->template);
 	}
@@ -24,7 +23,7 @@ class Controller_Template_Core extends Controller {
 	 * @param   string   request method
 	 * @return  void
 	 */
-	public function after($method)
+	public function after()
 	{
 		// Assigns the template as the request response
 		$this->request->response = $this->template;

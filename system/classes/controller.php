@@ -30,10 +30,9 @@ abstract class Controller_Core {
 	/**
 	 * Automatically executed before the controller action.
 	 *
-	 * @param   string   request method
 	 * @return  void
 	 */
-	public function before($method)
+	public function before()
 	{
 		// Nothing by default
 	}
@@ -41,10 +40,9 @@ abstract class Controller_Core {
 	/**
 	 * Automatically executed after the controller action.
 	 *
-	 * @param   string  request method
 	 * @return  void
 	 */
-	public function after($method)
+	public function after()
 	{
 		// Nothing by default
 	}

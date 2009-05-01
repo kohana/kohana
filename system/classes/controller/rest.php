@@ -12,11 +12,11 @@ abstract class Controller_REST extends Controller {
 
 	protected $_action_requested = '';
 
-	public function before($method)
+	public function before()
 	{
 		$this->_action_requested = $this->request->action;
 
-		if ( ! isset($this->_action_map[$method]))
+		if ( ! isset($this->_action_map[Request::$method]))
 		{
 			$this->request->status = 405;
 			$this->request->action = 'invalid';
@@ -25,7 +25,7 @@ abstract class Controller_REST extends Controller {
 		}
 		else
 		{
-			$this->request->action = strtolower($method);
+			$this->request->action = strtolower(Request::$method);
 		}
 	}
 
