@@ -35,12 +35,14 @@ abstract class Controller_Test extends Controller {
 			->set('tests', $tests);
 	}
 
-	public function after($method)
+	public function after()
 	{
 		if ($this->request->action !== 'index')
 		{
 			$this->request->response = View::factory($this->request->uri)
-				->bind('cases', $this->_cases);
+				->bind('cases', $this->_cases)
+				.
+				View::factory('profiler/stats');
 		}
 	}
 
