@@ -10,7 +10,7 @@
 class Request_Core {
 
 	// HTTP status codes and messages
-	protected static $messages = array(
+	public static $messages = array(
 		// Informational 1xx
 		100 => 'Continue',
 		101 => 'Switching Protocols',
@@ -64,8 +64,30 @@ class Request_Core {
 		509 => 'Bandwidth Limit Exceeded'
 	);
 
-	// Main request instance
-	protected static $_instance;
+	/**
+	 * @var  string  method: GET, POST, PUT, DELETE, etc
+	 */
+	public static $method = 'GET';
+
+	/**
+	 * @var  string  protocol: http, https, ftp, cli, etc
+	 */
+	public static $protocol = 'http';
+
+	/**
+	 * @var  string  referring URL
+	 */
+	public static $referrer;
+
+	/**
+	 * @var  boolean  AJAX-generated request
+	 */
+	public static $is_ajax = FALSE;
+
+	/**
+	 * @var  Request  primary request
+	 */
+	public static $instance;
 
 	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
@@ -76,13 +98,13 @@ class Request_Core {
 	 */
 	public static function instance( & $uri = FALSE)
 	{
-		if (Request::$_instance === NULL)
+		if (Request::$instance === NULL)
 		{
-			// Create the initial request parameters
-			$params = array('method' => 'GET', 'get' => NULL, 'post' => NULL);
-
 			if (Kohana::$is_cli)
 			{
+				// Default protocol for command line is cli://
+				Request::$protocol = 'cli';
+
 				// Get the command line options
 				$options = cli::options('uri', 'method', 'get', 'post');
 
@@ -94,20 +116,20 @@ class Request_Core {
 
 				if (isset($options['method']))
 				{
-					// Request method specified
-					$params['method'] = $options['method'];
+					// Use the specified method
+					Request::$method = strtoupper($options['method']);
 				}
 
 				if (isset($options['get']))
 				{
-					// GET data specified
-					parse_str($options['get'], $params['get']);
+					// Overload the global GET data
+					parse_str($options['get'], $_GET);
 				}
 
 				if (isset($options['post']))
 				{
-					// POST data specified
-					parse_str($options['post'], $params['post']);
+					// Overload the global POST data
+					parse_str($options['post'], $_POST);
 				}
 			}
 			else
@@ -115,85 +137,95 @@ class Request_Core {
 				if (isset($_SERVER['REQUEST_METHOD']))
 				{
 					// Use the server request method
-					$params['method'] = $_SERVER['REQUEST_METHOD'];
+					Request::$method = $_SERVER['REQUEST_METHOD'];
 				}
 
-				if ($params['method'] !== 'GET' AND $params['method'] !== 'POST')
+				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+				{
+					// This request is secure
+					Request::$protocol = 'https';
+				}
+
+				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+				{
+					// This request is an AJAX request
+					Request::$is_ajax = TRUE;
+				}
+
+				if (isset($_SERVER['HTTP_REFERER']))
+				{
+					// There is a referrer for this request
+					Request::$referrer = $_SERVER['HTTP_REFERER'];
+				}
+
+				if (Request::$method !== 'GET' AND Request::$method !== 'POST')
 				{
 					// Methods besides GET and POST do not properly parse the form-encoded
-					// query string into the $_POST array, so we do it manually.
-					parse_str(file_get_contents('php://input'), $params['post']);
+					// query string into the $_POST array, so we overload it manually.
+					parse_str(file_get_contents('php://input'), $_POST);
 				}
-			}
 
-			if ($uri === FALSE)
-			{
-				if (isset($_SERVER['PATH_INFO']))
+				if ($uri === FALSE)
 				{
-					// PATH_INFO is most realiable way to handle routing, as it
-					// does not include the document root or index file
-					$uri = $_SERVER['PATH_INFO'];
-				}
-				else
-				{
-					// REQUEST_URI and PHP_SELF both provide the full path,
-					// including the document root and index file
-					if (isset($_SERVER['REQUEST_URI']))
+					if (isset($_SERVER['PATH_INFO']))
 					{
-						$uri = $_SERVER['REQUEST_URI'];
+						// PATH_INFO is most realiable way to handle routing, as it
+						// does not include the document root or index file
+						$uri = $_SERVER['PATH_INFO'];
 					}
-					elseif (isset($_SERVER['PHP_SELF']))
+					else
 					{
-						$uri = $_SERVER['PHP_SELF'];
-					}
+						// REQUEST_URI and PHP_SELF both provide the full path,
+						// including the document root and index file
+						if (isset($_SERVER['REQUEST_URI']))
+						{
+							$uri = $_SERVER['REQUEST_URI'];
+						}
+						elseif (isset($_SERVER['PHP_SELF']))
+						{
+							$uri = $_SERVER['PHP_SELF'];
+						}
 
-					if (isset($_SERVER['SCRIPT_NAME']) AND strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
-					{
-						// Remove the document root and index file from the URI
-						$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
+						if (isset($_SERVER['SCRIPT_NAME']) AND strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
+						{
+							// Remove the document root and index file from the URI
+							$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
+						}
 					}
 				}
 			}
 
 			// Create the instance singleton
-			Request::$_instance = new Request($uri, $params);
+			Request::$instance = new Request($uri);
 		}
 
-		return Request::$_instance;
+		return Request::$instance;
 	}
 
 	/**
-	 * Creates a new request object for the given URI. Global GET and POST data
-	 * can be overloaded.
+	 * Creates a new request object for the given URI.
 	 *
 	 * @chainable
 	 * @param   string  URI of the request
-	 * @param   array   overloaded GET data
-	 * @param   array   overloaded POST data
 	 * @return  Request
 	 */
-	public static function factory($uri, array $params = NULL)
+	public static function factory($uri)
 	{
-		return new Request($uri, $params);
+		return new Request($uri);
 	}
 
 	/**
-	 * @var  object  route used for this request
+	 * @var  object  route matched for this request
 	 */
 	public $route;
 
 	/**
-	 * @var  string  request method type (GET, POST, PUT, etc)
-	 */
-	public $method = 'GET';
-
-	/**
-	 * @var  decimal  HTTP version (1.0, 1.1)
+	 * @var  decimal  HTTP version: 1.0, 1.1, etc
 	 */
 	public $version = 1.1;
 
 	/**
-	 * @var  integer  HTTP response code (200, 404, 500, etc)
+	 * @var  integer  HTTP response code: 200, 404, 500, etc
 	 */
 	public $status = 200;
 
@@ -230,33 +262,16 @@ class Request_Core {
 	// Parameters extracted from the route
 	protected $_params;
 
-	// Request GET and POST data
-	protected $_get;
-	protected $_post;
-
 	/**
 	 * Creates a new request object for the given URI. Global GET and POST data
 	 * can be overloaded by setting "get" and "post" in the parameters.
 	 *
 	 * @param   string  URI of the request
-	 * @param   array   request parameters
 	 * @return  void
 	 * @throws  Kohana_Exception  if no route matches the URI
 	 */
-	public function __construct($uri, array $params = NULL)
+	public function __construct($uri)
 	{
-		if (isset($params['method']))
-		{
-			// Set the request method
-			$this->method = strtoupper($params['method']);
-		}
-
-		// Load GET data
-		$this->_get = isset($params['get']) ? $params['get'] : $_GET;
-
-		// Load POST data
-		$this->_post = isset($params['post']) ? $params['post'] : $_POST;
-
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
@@ -505,14 +520,23 @@ class Request_Core {
 			$prefix = str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
 		}
 
+		// Start benchmarking
+		$benchmark = Profiler::start('Requests', $this->uri);
+
 		// Set the controller class name
 		$controller = 'controller_'.$prefix.$this->controller;
 
 		// Load the controller
 		$controller = new $controller($this);
 
+		if ($capture === TRUE)
+		{
+			// Start an output buffer to capture debugging info
+			ob_start();
+		}
+
 		// A new action is about to be run
-		$controller->before($this->method);
+		$controller->before();
 
 		// Set the action name after running before() to allow the controller
 		// to change the action based on the current parameters
@@ -522,10 +546,19 @@ class Request_Core {
 		$controller->$action();
 
 		// The action has been run
-		$controller->after($this->method);
+		$controller->after();
+
+		// Stop the benchmark
+		Profiler::stop($benchmark);
 
 		if ($capture === TRUE)
-			return $this->response;
+		{
+			// Force __toString to be called if the response is an object
+			$response = (string) $this->response;
+
+			// Close the output buffer and attach it to the response
+			return ob_get_clean().$response;
+		}
 
 		// Send the headers
 		$this->send_headers();
