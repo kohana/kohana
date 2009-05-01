@@ -73,18 +73,6 @@ if (file_exists('install'.EXT))
 	return include 'install'.EXT;
 }
 
-// Load the main Kohana class
-require SYSPATH.'classes/kohana'.EXT;
-
-// Enable auto-loading of classes
-spl_autoload_register(array('Kohana', 'auto_load'));
-
-// Enable the exception handler
-set_exception_handler(array('Kohana', 'exception_handler'));
-
-// Enable the error-to-exception handler
-set_error_handler(array('Kohana', 'error_handler'));
-
 // i18n translation function
 function __($string, array $values = NULL)
 {
@@ -96,6 +84,21 @@ function __($string, array $values = NULL)
 
 	return empty($values) ? $string : strtr($string, $values);
 }
+
+// Define the start time of the application
+define('KOHANA_START_TIME', microtime(TRUE));
+
+// Load the main Kohana class
+require SYSPATH.'classes/kohana'.EXT;
+
+// Enable auto-loading of classes
+spl_autoload_register(array('Kohana', 'auto_load'));
+
+// Enable the exception handler
+set_exception_handler(array('Kohana', 'exception_handler'));
+
+// Enable the error-to-exception handler
+set_error_handler(array('Kohana', 'error_handler'));
 
 // Bootstrap the application
 require APPPATH.'bootstrap'.EXT;
