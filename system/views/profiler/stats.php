@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.') ?>
 
 <style type="text/css">
-<?php include Kohana::find_file('views', 'kohana/profiler', 'css') ?>
+<?php include Kohana::find_file('views', 'profiler/style', 'css') ?>
 </style>
 
 <div class="kohana">
