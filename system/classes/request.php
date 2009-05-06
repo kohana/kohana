@@ -215,6 +215,135 @@ class Request_Core {
 	}
 
 	/**
+	 * Returns the accepted content types. If a specific type is defined,
+	 * the quality of that type will be returned.
+	 *
+	 * @param   string  content MIME type
+	 * @return  float   when checking a specific type
+	 * @return  array
+	 */
+	public static function accept_type($type = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
+		}
+
+		if (isset($type))
+		{
+			// Return the quality setting for this type
+			return isset($accepts[$type]) ? $accepts[$type] : $accepts['*/*'];
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Returns the accepted languages. If a specific language is defined,
+	 * the quality of that language will be returned. If the language is not
+	 * accepted, FALSE will be returned.
+	 *
+	 * @param   string  language code
+	 * @return  float   when checking a specific language
+	 * @return  array
+	 */
+	public static function accept_lang($lang = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT_LANGUAGE header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		}
+
+		if (isset($lang))
+		{
+			// Return the quality setting for this lang
+			return isset($accepts[$lang]) ? $accepts[$lang] : FALSE;
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Returns the accepted encodings. If a specific encoding is defined,
+	 * the quality of that encoding will be returned. If the encoding is not
+	 * accepted, FALSE will be returned.
+	 *
+	 * @param   string  encoding type
+	 * @return  float   when checking a specific encoding
+	 * @return  array
+	 */
+	public static function accept_encoding($type = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT_LANGUAGE header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
+		}
+
+		if (isset($type))
+		{
+			// Return the quality setting for this type
+			return isset($accepts[$type]) ? $accepts[$type] : FALSE;
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Parses an accept header and returns an array (type => quality) of the
+	 * accepted types.
+	 *
+	 * @param   string   header to parse
+	 * @param   array    default values
+	 * @return  array
+	 */
+	protected static function _parse_accept( & $header, array $accepts = NULL)
+	{
+		if ( ! empty($header))
+		{
+			// Get all of the types
+			$types = explode(',', $header);
+
+			foreach ($types as $type)
+			{
+				// Split the type into parts
+				$parts = explode(';', $type);
+
+				// Make the type only the MIME
+				$type = trim(array_shift($parts));
+
+				// Default quality is 1.0
+				$quality = 1.0;
+
+				foreach ($parts as $part)
+				{
+					// Separate the key and value
+					list ($key, $value) = explode('=', trim($part));
+
+					if ($key === 'q')
+					{
+						// There is a quality for this type
+						$quality = (float) trim($value);
+					}
+				}
+
+				// Add the accept type and quality
+				$accepts[$type] = $quality;
+			}
+		}
+
+		return (array) $accepts;
+	}
+
+	/**
 	 * @var  object  route matched for this request
 	 */
 	public $route;
