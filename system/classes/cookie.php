@@ -40,7 +40,9 @@ class cookie_Core {
 	public static $httponly = FALSE;
 
 	/**
-	 * Gets the value of a signed cookie. Unsigned cookies will not be returned.
+	 * Gets the value of a signed cookie. Cookies without signatures will not
+	 * be returned. If the cookie signature is present, but invalid, the cookie
+	 * will be deleted.
 	 *
 	 * @param   string  cookie name
 	 * @param   mixed   default value to return
@@ -79,14 +81,15 @@ class cookie_Core {
 	}
 
 	/**
-	 * Sets a signed cookie.
+	 * Sets a signed cookie. Note that all cookie values must be strings and no
+	 * automatic serialization will be performed!
 	 *
 	 * @param   string   name of cookie
-	 * @param   string   contents of cookie
+	 * @param   string   value of cookie
 	 * @param   integer  lifetime in seconds
 	 * @return  boolean
 	 */
-	public static function set($key, $value, $expiration = NULL)
+	public static function set($name, $value, $expiration = NULL)
 	{
 		if ($expiration === NULL)
 		{
@@ -101,39 +104,39 @@ class cookie_Core {
 		}
 
 		// Add the salt to the cookie value
-		$value = cookie::salt($key, $value).'~'.$value;
+		$value = cookie::salt($name, $value).'~'.$value;
 
-		return setcookie($key, $value, $expiration, cookie::$path, cookie::$domain, cookie::$secure, cookie::$httponly);
+		return setcookie($name, $value, $expiration, cookie::$path, cookie::$domain, cookie::$secure, cookie::$httponly);
 	}
 
 	/**
-	 * Deletes a cookie by emptying the contents and expiring it.
+	 * Deletes a cookie by making the value NULL and expiring it.
 	 *
 	 * @param   string   cookie name
 	 * @return  boolean
 	 */
-	public static function delete($key)
+	public static function delete($name)
 	{
 		// Remove the cookie
-		unset($_COOKIE[$key]);
+		unset($_COOKIE[$name]);
 
-		// Expire the cookie
-		return cookie::set($key, NULL, -3600);
+		// Nullify the cookie and make it expire
+		return cookie::set($name, NULL, -86400);
 	}
 
 	/**
-	 * Generates a salt string for a cookie based on the name and contents.
+	 * Generates a salt string for a cookie based on the name and value.
 	 *
 	 * @param   string   name of cookie
-	 * @param   string   contents of cookie
+	 * @param   string   value of cookie
 	 * @return  string
 	 */
-	public static function salt($key, $value)
+	public static function salt($name, $value)
 	{
 		// Determine the user agent
-		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown';
+		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 
-		return sha1($agent.$key.$value.cookie::$salt);
+		return sha1($agent.$name.$value.cookie::$salt);
 	}
 
 } // End cookie
