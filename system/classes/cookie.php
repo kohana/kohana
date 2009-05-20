@@ -130,7 +130,10 @@ class cookie_Core {
 	 */
 	public static function salt($key, $value)
 	{
-		return sha1($_SERVER['HTTP_USER_AGENT'].$key.$value.cookie::$salt);
+		// Determine the user agent
+		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'unknown';
+
+		return sha1($agent.$key.$value.cookie::$salt);
 	}
 
 } // End cookie
