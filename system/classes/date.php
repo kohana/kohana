@@ -19,40 +19,41 @@ class date_Core {
 
 	/**
 	 * Returns the offset (in seconds) between two time zones.
-	 * @see     http://php.net/timezones
 	 *
+	 * @see     http://php.net/timezones
 	 * @param   string  timezone that to find the offset of
 	 * @param   string  timezone used as the baseline
 	 * @return  integer
 	 */
-	public static function timezone_offset($remote, $local = NULL)
+	public static function offset($remote, $local = NULL)
 	{
-		static $offsets;
-
 		if ($local === NULL)
 		{
 			// Use the default timezone
 			$local = date_default_timezone_get();
 		}
 
-		// Cache key name
-		$cache = $remote.$local;
+		// Set the cache key, matches the method name
+		$cache_key = "date::offset({$remote},{$local})";
 
-		if (empty($offsets[$cache]))
+		if (($offset = Kohana::cache($cache_key)) === NULL)
 		{
 			// Create timezone objects
-			$remote = new DateTimeZone($remote);
-			$local  = new DateTimeZone($local);
+			$zone_remote = new DateTimeZone($remote);
+			$zone_local  = new DateTimeZone($local);
 
 			// Create date objects from timezones
-			$time_there = new DateTime('now', $remote);
-			$time_here  = new DateTime('now', $local);
+			$time_remote = new DateTime('now', $zone_remote);
+			$time_local  = new DateTime('now', $zone_local);
 
 			// Find the offset
-			$offsets[$cache] = $remote->getOffset($time_there) - $local->getOffset($time_here);
+			$offset = $zone_remote->getOffset($time_remote) - $zone_local->getOffset($time_local);
+
+			// Cache the offset
+			Kohana::cache($cache_key, $offset);
 		}
 
-		return $offsets[$cache];
+		return $offset;
 	}
 
 	/**
