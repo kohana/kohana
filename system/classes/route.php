@@ -164,10 +164,7 @@ class Route_Core {
 	 *     // This route will only match if the <controller>, <action>, and <id> exist
 	 *     $params = Route::factory('<controller>/<action>/<id>', array('id' => '\d+'))
 	 *         ->match('users/edit/10');
-	 *     // The parameters are now:
-	 *     // controller = users
-	 *     // action = edit
-	 *     // id = 10
+	 *     // The parameters are now: controller = users, action = edit, id = 10
 	 *
 	 * This method should almost always be used within an if/else block:
 	 *
@@ -261,6 +258,7 @@ class Route_Core {
 	 * Returns the compiled regular expression for the route. This translates
 	 * keys and optional groups to a proper PCRE regular expression.
 	 *
+	 * @access  protected
 	 * @return  string
 	 */
 	protected function _compile()
