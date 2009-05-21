@@ -57,28 +57,6 @@ Kohana::modules(array(
 Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
 
 /**
- * Set the language to use for translating.
- */
-i18n::$lang = 'en_US';
-
-//-- Production configuration -------------------------------------------------
-
-if (Kohana::$environment === 'production')
-{
-	/**
-	 * Enable internal path caching for a performance boost.
-	 */
-	Kohana::$cache_paths = TRUE;
-
-	/**
-	 * Change the cookie salt to something private.
-	 */
-	cookie::$salt = 'a secret phrase or random text';
-}
-
-//-- Routing and execution ----------------------------------------------------
-
-/**
  * Set the routes.
  */
 
