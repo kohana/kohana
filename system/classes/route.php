@@ -118,13 +118,16 @@ class Route_Core {
 		// Store the URI that this route will match
 		$this->_uri = $uri;
 
-		if (($regex = Kohana::cache('kohana_route:'.$uri)) === NULL)
+		// Set the cache key
+		$cache_key = 'route::compile("'.$uri.'")';
+
+		if (($regex = Kohana::cache($cache_key)) === NULL)
 		{
 			// Compile the complete regex for this uri
 			$regex = $this->_compile();
 
 			// Cache the compiled regex
-			Kohana::cache('kohana_route:'.$uri, $regex);
+			Kohana::cache($cache_key, $regex);
 		}
 
 		// Store the compiled regex locally
