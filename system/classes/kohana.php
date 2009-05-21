@@ -24,7 +24,10 @@ final class Kohana {
 	const INFO  = 'INFO';
 
 	// Security check that is added to all generated PHP files
-	const PHP_HEADER = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+
+	// Format of cache files: header, cache name, and data
+	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
 
 	/**
 	 * @var  boolean  enable core profiling
@@ -554,11 +557,13 @@ final class Kohana {
 			chmod($dir.$file, 0666);
 		}
 
-		// Convert the data to a string representation
-		$data = var_export($data, TRUE);
-
 		// Write the cache
-		return (bool) file_put_contents($dir.$file, self::PHP_HEADER."\n\nreturn {$data};");
+		return (bool) file_put_contents($dir.$file, strtr(self::FILE_CACHE, array
+		(
+			':header' => self::FILE_SECURITY,
+			':name'   => $name,
+			':data'   => 'return '.var_export($data, TRUE).';',
+		)));
 	}
 
 	/**
