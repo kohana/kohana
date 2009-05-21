@@ -1,9 +1,5 @@
 <?php
 
-error_reporting(E_ALL | E_STRICT);
-
-date_default_timezone_set('America/Chicago');
-
 /**
  * The directory in which your application specific resources are located.
  * The application directory must contain the config/kohana.php file.
@@ -36,12 +32,22 @@ $system = 'system';
 define('EXT', '.php');
 
 /**
+ * Set the PHP error reporting level. If you set this in php.ini, you remove this.
+ * @see  http://php.net/error_reporting
+ *
+ * When developing your application, it is highly recommended to enable notices
+ * and strict warnings. Enable them by using: E_ALL | E_STRICT
+ *
+ * In a production environment, it is safe to ignore notices and strict warnings.
+ * Disable them by using: E_ALL ^ E_NOTICE
+ */
+error_reporting(E_ALL | E_STRICT);
+
+/**
  * End of standard configuration! Changing any of the code below should only be
  * attempted by those with a working knowledge of Kohana internals.
  *
  * @see  http://docs.kohanaphp.com/bootstrap
- *
- * ----------------------------------------------------------------------------
  */
 
 // Set the full path to the docroot

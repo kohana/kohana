@@ -30,6 +30,11 @@ final class Kohana {
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
 
 	/**
+	 * @var  string  current environment name
+	 */
+	public static $environment = 'development';
+
+	/**
 	 * @var  boolean  enable core profiling
 	 */
 	public static $profile = TRUE;

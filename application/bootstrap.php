@@ -3,17 +3,34 @@
 //-- Environment setup --------------------------------------------------------
 
 /**
+ * Set the default time zone.
+ * 
+ * @see  http://docs.kohanaphp.com/features/localization#time
+ * @see  http://php.net/timezones
+ */
+date_default_timezone_set('America/Chicago');
+
+/**
  * Enable the Kohana auto-loader.
+ * 
+ * @see  http://docs.kohanaphp.com/features/autoloading
+ * @see  http://php.net/spl_autoload_register
  */
 spl_autoload_register(array('Kohana', 'auto_load'));
 
 /**
  * Enable Kohana exception handling, adds stack traces and error source.
+ * 
+ * @see  http://docs.kohanaphp.com/features/exceptions
+ * @see  http://php.net/set_exception_handler
  */
 set_exception_handler(array('Kohana', 'exception_handler'));
 
 /**
  * Enable Kohana error handling, converts all PHP errors to exceptions.
+ * 
+ * @see  http://docs.kohanaphp.com/features/exceptions
+ * @see  http://php.net/set_error_handler
  */
 set_error_handler(array('Kohana', 'error_handler'));
 
@@ -43,6 +60,21 @@ Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
  * Set the language to use for translating.
  */
 i18n::$lang = 'en_US';
+
+//-- Production configuration -------------------------------------------------
+
+if (Kohana::$environment === 'production')
+{
+	/**
+	 * Enable internal path caching for a performance boost.
+	 */
+	Kohana::$cache_paths = TRUE;
+
+	/**
+	 * Change the cookie salt to something private.
+	 */
+	cookie::$salt = 'a secret phrase or random text';
+}
 
 //-- Routing and execution ----------------------------------------------------
 
