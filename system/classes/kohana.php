@@ -299,7 +299,10 @@ final class Kohana {
 		}
 		elseif (class_exists($class.'_Core', FALSE))
 		{
-			if (($extension = Kohana::cache('kohana_auto_extension '.$class)) === NULL)
+			// Set the extension cache key
+			$cache_key = 'kohana::auto_load('.$class.')';
+
+			if (($extension = Kohana::cache($cache_key)) === NULL)
 			{
 				// Class extension to be evaluated
 				$extension = 'class '.$class.' extends '.$class.'_Core { }';
@@ -314,7 +317,7 @@ final class Kohana {
 				}
 
 				// Cache the extension string so that Reflection will be avoided
-				Kohana::cache('kohana_auto_extension '.$class, $extension);
+				Kohana::cache($cache_key, $extension);
 			}
 
 			// Transparent class extensions are possible using eval. Not very
