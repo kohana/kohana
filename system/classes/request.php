@@ -361,7 +361,7 @@ class Request_Core {
 	/**
 	 * @var  string  response body
 	 */
-	public $response;
+	public $response = '';
 
 	/**
 	 * @var  array  headers to send with the response body
@@ -508,7 +508,8 @@ class Request_Core {
 	}
 
 	/**
-	 * Sets an named header.
+	 * Sets an named header. Use NULL as the header value to remove it from
+	 * the header list.
 	 *
 	 * @param   string   header name
 	 * @param   string   header value
@@ -519,8 +520,16 @@ class Request_Core {
 		// The header name is always stored lowercase
 		$name = strtolower($name);
 
-		// Add the header to the list
-		$this->headers[$name] = $value;
+		if ($value === NULL)
+		{
+			// Remove the header
+			unset($this->headers[$name]);
+		}
+		else
+		{
+			// Add the header to the list
+			$this->headers[$name] = $value;
+		}
 
 		return $this;
 	}
@@ -534,23 +543,6 @@ class Request_Core {
 	public function set_raw_header($value)
 	{
 		$this->headers[] = $value;
-
-		return $this;
-	}
-
-	/**
-	 * Deletes a named header.
-	 *
-	 * @param   string   header name
-	 * @return  $this
-	 */
-	public function delete_header($name)
-	{
-		// The header name is always stored lowercase
-		$name = strtolower($name);
-
-		// Remove the header from the list
-		unset($this->_headers[$name]);
 
 		return $this;
 	}
@@ -596,68 +588,63 @@ class Request_Core {
 	 * By default, the output from the controller is captured and returned, and
 	 * no headers are sent.
 	 *
-	 * @param   boolean   capture the output and return it
-	 * @return  string    for captured output
-	 * @return  void      for displayed output
+	 * @return  $this
 	 */
-	public function execute($capture = TRUE)
+	public function execute()
 	{
-		if (empty($this->directory))
+		// Create the class prefix
+		$prefix = 'controller_';
+
+		if ( ! empty($this->directory))
 		{
-			// There is no controller prefix
-			$prefix = '';
-		}
-		else
-		{
-			// Make the directory name into a class prefix
-			$prefix = str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
+			// Add the directory name to the class prefix
+			$prefix .= str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
 		}
 
 		// Start benchmarking
 		$benchmark = Profiler::start('Requests', $this->uri);
 
-		// Set the controller class name
-		$controller = 'controller_'.$prefix.$this->controller;
-
-		// Load the controller
-		$controller = new $controller($this);
-
-		if ($capture === TRUE)
+		try
 		{
-			// Start an output buffer to capture debugging info
-			ob_start();
+			// Load the controller using reflection
+			$class = new ReflectionClass($prefix.$this->controller);
+
+			// Create a new instance of the controller
+			$controller = $class->newInstance($this);
+
+			// Execute the "before action" method
+			$class->getMethod('before')->invoke($controller);
+
+			// Execute the main action with the parameters
+			$class->getMethod('action_'.$this->action)->invokeArgs($controller, $this->_params);
+
+			// Execute the "after action" method
+			$class->getMethod('after')->invoke($controller);
 		}
+		catch (Exception $e)
+		{
+			// Delete the benchmark, it is invalid
+			Profiler::delete($benchmark);
 
-		// A new action is about to be run
-		$controller->before();
+			if ($e instanceof ReflectionException)
+			{
+				// Reflection will throw exceptions for missing classes or actions
+				$this->status = 404;
+			}
+			else
+			{
+				// All other exceptions are PHP/server errors
+				$this->status = 500;
+			}
 
-		// Set the action name after running before() to allow the controller
-		// to change the action based on the current parameters
-		$action = 'action_'.$this->action;
-
-		// Execute the action
-		$controller->$action();
-
-		// The action has been run
-		$controller->after();
+			// Re-throw the exception
+			throw $e;
+		}
 
 		// Stop the benchmark
 		Profiler::stop($benchmark);
 
-		if ($capture === TRUE)
-		{
-			// Force __toString to be called if the response is an object
-			$response = (string) $this->response;
-
-			// Close the output buffer and attach it to the response
-			return ob_get_clean().$response;
-		}
-
-		// Send the headers
-		$this->send_headers();
-
-		// Send the response
-		echo $this->response;
+		return $this;
 	}
 
 } // End Request

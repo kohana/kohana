@@ -97,9 +97,8 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 /**
  * Execute the main request using PATH_INFO. If no URI source is specified,
  * the URI will be automatically detected.
- *
- * To return the output of the request instead of displaying it, specify
- * TRUE for execute().
  */
-Request::instance($_SERVER['PATH_INFO'])
-	->execute(FALSE);
+echo Request::instance($_SERVER['PATH_INFO'])
+	->execute()
+	->send_headers()
+	->response;
