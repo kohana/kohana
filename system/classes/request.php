@@ -493,42 +493,6 @@ class Request_Core {
 	}
 
 	/**
-	 * Retrieves a value from GET data.
-	 *
-	 * @param   string   key of the value
-	 * @param   mixed    default value if the key is not set
-	 * @return  mixed
-	 */
-	public function get($key = NULL, $default = NULL)
-	{
-		if ($key === NULL)
-		{
-			// Return the full array
-			return $this->_get;
-		}
-
-		return isset($this->_get[$key]) ? $this->_get[$key] : $default;
-	}
-
-	/**
-	 * Retrieves a value from POST data.
-	 *
-	 * @param   string   key of the value
-	 * @param   mixed    default value if the key is not set
-	 * @return  mixed
-	 */
-	public function post($key = NULL, $default = NULL)
-	{
-		if ($key === NULL)
-		{
-			// Return the full array
-			return $this->_post;
-		}
-
-		return isset($this->_post[$key]) ? $this->_post[$key] : $default;
-	}
-
-	/**
 	 * Gets an named header.
 	 *
 	 * @param   string   header name
