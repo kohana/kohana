@@ -55,11 +55,6 @@ final class Kohana {
 	public static $magic_quotes = FALSE;
 
 	/**
-	 * @var  boolean  display errors and exceptions in output?
-	 */
-	public static $display_errors = TRUE;
-
-	/**
 	 * @var  boolean  log errors and exceptions?
 	 */
 	public static $log_errors = FALSE;
@@ -174,12 +169,6 @@ final class Kohana {
 
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
-
-		if (isset($settings['display_errors']))
-		{
-			// Enable or disable the display of errors
-			self::$display_errors = (bool) $settings['display_errors'];
-		}
 
 		if (isset($settings['cache_paths']))
 		{
