@@ -70,6 +70,11 @@ final class Kohana {
 	public static $base_url = '/';
 
 	/**
+	 * @var  string  application index file
+	 */
+	public static $index_file = 'index.php';
+
+	/**
 	 * @var  boolean  cache the location of files across requests?
 	 */
 	public static $cache_paths = FALSE;
@@ -186,6 +191,12 @@ final class Kohana {
 		{
 			// Set the base URL
 			self::$base_url = rtrim($settings['base_url'], '/').'/';
+		}
+
+		if (isset($settings['index_file']))
+		{
+			// Set the index file
+			self::$index_file = trim($settings['index_file'], '/');
 		}
 
 		// Determine if the extremely evil magic quotes are enabled

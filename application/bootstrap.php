@@ -39,7 +39,7 @@ set_error_handler(array('Kohana', 'error_handler'));
 /**
  * Initialize Kohana, setting the default options.
  */
-Kohana::init(array('charset' => 'utf-8', 'base_url' => '/ko3/index.php/'));
+Kohana::init(array('charset' => 'utf-8', 'base_url' => '/ko3/', 'index_file' => 'index.php'));
 
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
