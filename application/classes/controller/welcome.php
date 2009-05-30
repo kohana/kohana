@@ -4,8 +4,7 @@ class Controller_Welcome extends Controller {
 
 	public function action_index()
 	{
-		$this->request->response = View::factory('welcome')
-			->bind('c', $this);
+		$this->request->response = 'hello, world!';
 	}
 
-} // End Welcome Controller
+} // End Welcome
