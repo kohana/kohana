@@ -210,14 +210,6 @@ final class Kohana {
 		// Load the logger
 		self::$log = Kohana_Log::instance();
 
-		// Determine if this server supports UTF-8 natively
-		utf8::$server_utf8 = extension_loaded('mbstring');
-
-		// Normalize all request variables to the current charset
-		$_GET    = utf8::clean($_GET, self::$charset);
-		$_POST   = utf8::clean($_POST, self::$charset);
-		$_COOKIE = utf8::clean($_COOKIE, self::$charset);
-
 		if (isset($benchmark))
 		{
 			// Stop benchmarking

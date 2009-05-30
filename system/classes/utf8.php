@@ -27,7 +27,7 @@
 final class utf8 {
 
 	// Does the server support UTF-8 natively?
-	public static $server_utf8 = FALSE;
+	public static $server_utf8 = NULL;
 
 	// Called methods
 	public static $called = array();
@@ -704,3 +704,9 @@ final class utf8 {
 	}
 
 } // End utf8
+
+if (utf8::$server_utf8 === NULL)
+{
+	// Determine if this server supports UTF-8 natively
+	utf8::$server_utf8 = extension_loaded('mbstring');
+}
