@@ -108,6 +108,7 @@ class arr_core {
 
 	/**
 	 * Creates a callable function and parameter list from a string representation.
+	 * Note that this function does not validate the callback string.
 	 *
 	 *     // Get the callback function and parameters
 	 *     list($func, $params) = arr::callback('foo::bar[apple,orange]');
@@ -124,12 +125,12 @@ class arr_core {
 		$command = $params = NULL;
 
 		// command[param,param]
-		if (preg_match('/([^\[]*+)\[(.*)\]/', $str, $match))
+		if (preg_match('/^([^\[]*+)\[(.*)\]$/', $str, $match))
 		{
 			// command
 			$command = $match[1];
 
-			if ( ! empty($match[2]))
+			if ($match[2] !== '')
 			{
 				// param,param
 				$params = preg_split('/(?<!\\\\),/', $match[2]);
