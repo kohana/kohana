@@ -325,6 +325,10 @@ class Request_Core {
 
 				foreach ($parts as $part)
 				{
+					// Prevent undefined $value notice below
+					if (strpos($part, '=') === FALSE)
+						continue;
+
 					// Separate the key and value
 					list ($key, $value) = explode('=', trim($part));
 
