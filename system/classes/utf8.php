@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * A port of [phputf8][ref-p8] to a unified set of files. Provides multi-byte
  * aware replacement string functions.
