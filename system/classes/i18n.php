@@ -10,10 +10,10 @@
 class i18n_Core {
 
 	// The default language of all messages
-	public static $default_lang = 'en_US';
+	public static $default_lang = 'en-US';
 
 	// The current language
-	public static $lang = 'en_US';
+	public static $lang = 'en-US';
 
 	// Cache of loaded languages
 	protected static $_cache = array();
@@ -45,7 +45,7 @@ class i18n_Core {
 		if ( ! isset(i18n::$_cache[$lang]))
 		{
 			// Separate the language and locale
-			list ($language, $locale) = explode('_', strtolower($lang));
+			list ($language, $locale) = explode('-', strtolower($lang), 2);
 
 			// Start a new translation table
 			$table = array();
