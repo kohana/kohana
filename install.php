@@ -65,9 +65,9 @@
 		<tr>
 			<th>Cache Directory</th>
 			<?php if (is_dir(APPPATH) AND is_dir(APPPATH.'cache') AND is_writable(APPPATH.'cache')): ?>
-				<td class="pass"><?php echo APPPATH.'cache' ?></td>
+				<td class="pass"><?php echo APPPATH.'cache/' ?></td>
 			<?php else: $failed = TRUE ?>
-				<td class="fail">The <code><?php echo APPPATH.'cache' ?></code> directory is not writable.</td>
+				<td class="fail">The <code><?php echo APPPATH.'cache/' ?></code> directory is not writable.</td>
 			<?php endif ?>
 		</tr>
 		<tr>
