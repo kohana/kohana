@@ -404,9 +404,8 @@ final class Kohana {
 	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
 	 * @param   string   filename with subdirectory
 	 * @param   string   extension to search for
-	 * @return  string   single file found
-	 * @return  FALSE    single file NOT found
-	 * @return  array    multiple files from the "config" or "i18n" directories
+	 * @return  array    file list from the "config" or "i18n" directories
+	 * @return  string   single file path
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
@@ -462,6 +461,80 @@ final class Kohana {
 			// Stop the benchmark
 			Profiler::stop($benchmark);
 		}
+
+		return $found;
+	}
+
+	/**
+	 * Recursively finds all of the files in the specified directory.
+	 *
+	 *     $views = Kohana::list_files('views');
+	 *
+	 * @param   string  directory name
+	 * @return  array
+	 */
+	public static function list_files($directory = NULL)
+	{
+		if ( ! empty($directory))
+		{
+			// Add the directory separator
+			$directory .= DIRECTORY_SEPARATOR;
+		}
+
+		// Create an array for the files
+		$found = array();
+
+		foreach (self::$_paths as $path)
+		{
+			if (is_dir($path.$directory))
+			{
+				// Create a new directory iterator
+				$dir = new DirectoryIterator($path.$directory);
+
+				foreach ($dir as $file)
+				{
+					// Get the file name
+					$filename = $file->getFilename();
+
+					if ($filename[0] === '.')
+					{
+						// Skip all hidden files
+						continue;
+					}
+
+					// Relative filename is the array key
+					$key = $directory.$filename;
+
+					if ($file->isDir())
+					{
+						if ($sub_dir = self::list_files($key))
+						{
+							if (isset($found[$key]))
+							{
+								// Append the sub-directory list
+								$found[$key] += $sub_dir;
+							}
+							else
+							{
+								// Create a new sub-directory list
+								$found[$key] = $sub_dir;
+							}
+						}
+					}
+					else
+					{
+						if ( ! isset($found[$key]))
+						{
+							// Add new files to the list
+							$found[$key] = realpath($file->getPathName());
+						}
+					}
+				}
+			}
+		}
+
+		// Sort the results alphabetically
+		ksort($found);
 
 		return $found;
 	}
