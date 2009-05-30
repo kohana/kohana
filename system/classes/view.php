@@ -1,10 +1,8 @@
-<?php
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Acts as an object wrapper for HTML pages with embedded PHP, called "views".
  * Variables can be assigned with the view object and referenced locally within
  * the view.
- *
- * $Id: view.php 3740 2008-12-01 20:24:43Z Geert $
  *
  * @package    Kohana
  * @author     Kohana Team
