@@ -299,7 +299,7 @@ class Request_Core {
 
 	/**
 	 * Parses an accept header and returns an array (type => quality) of the
-	 * accepted types.
+	 * accepted types, ordered by quality.
 	 *
 	 * @param   string   header to parse
 	 * @param   array    default values
@@ -339,6 +339,9 @@ class Request_Core {
 				$accepts[$type] = $quality;
 			}
 		}
+
+		// Order by quality
+		arsort($accepts);
 
 		return (array) $accepts;
 	}
