@@ -345,9 +345,10 @@ class Request_Core {
 		}
 
 		// Order by quality
+		$accepts = (array) $accepts;
 		arsort($accepts);
 
-		return (array) $accepts;
+		return $accepts;
 	}
 
 	/**
