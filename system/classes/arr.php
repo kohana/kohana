@@ -110,7 +110,7 @@ class arr_core {
 	 * Creates a callable function and parameter list from a string representation.
 	 *
 	 *     // Get the callback function and parameters
-	 *     list($func, $params) = 'foo::bar[apple,orange]';
+	 *     list($func, $params) = arr::callback('foo::bar[apple,orange]');
 	 *
 	 *     // Get the result of the callback
 	 *     $result = call_user_func_array($func, $params);
