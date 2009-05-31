@@ -44,8 +44,19 @@ class View_Core {
 		// Capture the view output
 		ob_start();
 
-		// Load the view within the current scope
-		include $kohana_view_filename;
+		try
+		{
+			// Load the view within the current scope
+			include $kohana_view_filename;
+		}
+		catch (Exception $e)
+		{
+			// Delete the output buffer
+			ob_end_clean();
+
+			// Re-throw the exception
+			throw $e;
+		}
 
 		// Get the captured output and close the buffer
 		return ob_get_clean();
