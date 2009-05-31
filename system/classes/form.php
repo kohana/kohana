@@ -42,6 +42,9 @@ class form_Core {
 		// Set action
 		$attr['action'] = $action;
 
+		// Only accept the default character set
+		$attr['accept-charset'] = Kohana::$charset;
+
 		// Form opening tag
 		$form = '<form'.html::attributes($attr).'>'."\n";
 
