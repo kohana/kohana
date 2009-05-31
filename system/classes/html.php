@@ -50,7 +50,8 @@ class html_Core {
 	public static $windowed_urls = FALSE;
 
 	/**
-	 * Create HTML link anchors.
+	 * Create HTML link anchors. Note that the title is not escaped, to allow
+	 * HTML elements within links (images, etc).
 	 *
 	 * @param   string  URL or URI string
 	 * @param   string  link text
@@ -63,7 +64,7 @@ class html_Core {
 		if ($title === NULL)
 		{
 			// Use the URI as the title
-			$title = htmlspecialchars($uri, ENT_NOQUOTES, Kohana::$charset, TRUE);
+			$title = $uri;
 		}
 
 		if ($uri === '')
@@ -95,7 +96,8 @@ class html_Core {
 	}
 
 	/**
-	 * Creates an HTML anchor to a file.
+	 * Creates an HTML anchor to a file. Note that the title is not escaped,
+	 * to allow HTML elements within links (images, etc).
 	 *
 	 * @param   string  name of file to link to
 	 * @param   string  link text
@@ -108,7 +110,7 @@ class html_Core {
 		if ($title === NULL)
 		{
 			// Use the file name as the title
-			$title = htmlspecialchars($file, ENT_NOQUOTES, Kohana::$charset, TRUE);
+			$title = $title;
 		}
 
 		// Add the file link to the attributes
@@ -144,7 +146,8 @@ class html_Core {
 	}
 
 	/**
-	 * Creates an email anchor.
+	 * Creates an email anchor. Note that the title is not escaped, to allow
+	 * HTML elements within links (images, etc).
 	 *
 	 * @param   string  email address to send to
 	 * @param   string  link text
@@ -159,7 +162,7 @@ class html_Core {
 		if ($title === NULL)
 		{
 			// Use the email address as the title
-			$title = htmlspecialchars($email, ENT_NOQUOTES, Kohana::$charset, FALSE);
+			$title = $email;
 		}
 
 		return '<a href="&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email.'"'.html::attributes($attributes).'>'.$title.'</a>';
