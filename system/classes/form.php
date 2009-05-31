@@ -43,7 +43,7 @@ class form_Core {
 		$attr['action'] = $action;
 
 		// Form opening tag
-		$form = '<form'.form::attributes($attr).'>'."\n";
+		$form = '<form'.html::attributes($attr).'>'."\n";
 
 		// Add hidden fields immediate after opening tag
 		empty($hidden) or $form .= form::hidden($hidden);
@@ -99,7 +99,7 @@ class form_Core {
 	 */
 	public static function legend($text = '', $data = NULL, $extra = '')
 	{
-		return '<legend'.form::attributes((array) $data).' '.$extra.'>'.$text.'</legend>'."\n";
+		return '<legend'.html::attributes((array) $data).' '.$extra.'>'.$text.'</legend>'."\n";
 	}
 
 	/**
@@ -158,7 +158,7 @@ class form_Core {
 			'value' => $value
 		);
 
-		return '<input'.form::attributes($data).' '.$extra.' />';
+		return '<input'.html::attributes($data).' '.$extra.' />';
 	}
 
 	/**
@@ -223,7 +223,7 @@ class form_Core {
 		// Value is not part of the attributes
 		unset($data['value']);
 
-		return '<textarea'.form::attributes($data, 'textarea').' '.$extra.'>'.html::specialchars($value, $double_encode).'</textarea>';
+		return '<textarea'.html::attributes($data, 'textarea').' '.$extra.'>'.html::specialchars($value, $double_encode).'</textarea>';
 	}
 
 	/**
@@ -267,7 +267,7 @@ class form_Core {
 			$selected = array($selected);
 		}
 
-		$input = '<select'.form::attributes($data, 'select').' '.$extra.'>'."\n";
+		$input = '<select'.html::attributes($data, 'select').' '.$extra.'>'."\n";
 		foreach ((array) $options as $key => $val)
 		{
 			// Key should always be a string
@@ -409,7 +409,7 @@ class form_Core {
 			$value = arr::remove('value', $data);
 		}
 
-		return '<button'.form::attributes($data, 'button').' '.$extra.'>'.$value.'</button>';
+		return '<button'.html::attributes($data, 'button').' '.$extra.'>'.$value.'</button>';
 	}
 
 	/**
@@ -453,88 +453,7 @@ class form_Core {
 			$text = ucwords(inflector::humanize($data['for']));
 		}
 
-		return '<label'.form::attributes($data).' '.$extra.'>'.$text.'</label>';
-	}
-
-	/**
-	 * Sorts a key/value array of HTML attributes, putting form attributes first,
-	 * and returns an attribute string.
-	 *
-	 * @param   array   HTML attributes array
-	 * @return  string
-	 */
-	public static function attributes($attr, $type = NULL)
-	{
-		if (empty($attr))
-			return '';
-
-		if (isset($attr['name']) AND empty($attr['id']) AND strpos($attr['name'], '[') === FALSE)
-		{
-			if ($type === NULL AND ! empty($attr['type']))
-			{
-				// Set the type by the attributes
-				$type = $attr['type'];
-			}
-
-			switch ($type)
-			{
-				case 'text':
-				case 'textarea':
-				case 'password':
-				case 'select':
-				case 'checkbox':
-				case 'file':
-				case 'image':
-				case 'button':
-				case 'submit':
-					// Only specific types of inputs use name to id matching
-					$attr['id'] = $attr['name'];
-				break;
-			}
-		}
-
-		$order = array
-		(
-			'action',
-			'method',
-			'type',
-			'id',
-			'name',
-			'value',
-			'src',
-			'size',
-			'maxlength',
-			'rows',
-			'cols',
-			'accept',
-			'tabindex',
-			'accesskey',
-			'align',
-			'alt',
-			'title',
-			'class',
-			'style',
-			'selected',
-			'checked',
-			'readonly',
-			'disabled'
-		);
-
-		$sorted = array();
-		foreach ($order as $key)
-		{
-			if (isset($attr[$key]))
-			{
-				// Move the attribute to the sorted array
-				$sorted[$key] = $attr[$key];
-
-				// Remove the attribute from unsorted array
-				unset($attr[$key]);
-			}
-		}
-
-		// Combine the sorted and unsorted attributes and create an HTML string
-		return html::attributes(array_merge($sorted, $attr));
+		return '<label'.html::attributes($data).' '.$extra.'>'.$text.'</label>';
 	}
 
 } // End form
