@@ -31,8 +31,8 @@ class Session_Database_Core extends Session {
 	{
 		if ( ! isset($config['group']))
 		{
-			throw new Kohana_Exception('You must define the :name parameter in your session configuration',
-				array(':name' => 'group'));
+			// Use the default group
+			$config['group'] = 'default';
 		}
 
 		// Load the database
@@ -56,7 +56,7 @@ class Session_Database_Core extends Session {
 	{
 		if ($id = cookie::get($this->_name))
 		{
-			$result = DB::query(Database::SELECT, 'SELECT data FROM '.$this->_table.' WHERE session_id = :id LIMIT 1')
+			$result = DB::query(Database::SELECT, "SELECT data FROM {$this->_table} WHERE session_id = :id LIMIT 1")
 				->set(':id', $id)
 				->execute($this->_db);
 
