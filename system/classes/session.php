@@ -82,8 +82,14 @@ abstract class Session_Core {
 
 		if (isset($config['encrypted']))
 		{
+			if ($config['encrypted'] === TRUE)
+			{
+				// Use the default Encrypt instance
+				$config['encrypted'] = 'default';
+			}
+
 			// Enable or disable encryption of data
-			$this->_encrypted = (bool) $config['encrypted'];
+			$this->_encrypted = $config['encrypted'];
 		}
 
 		// Load the session
@@ -100,10 +106,10 @@ abstract class Session_Core {
 		// Serialize the data array
 		$data = serialize($this->_data);
 
-		if ($this->_encrypted === TRUE)
+		if ($this->_encrypted)
 		{
 			// Encrypt the data using the default key
-			$data = Encrypt::instance()->encode($data);
+			$data = Encrypt::instance($this->_encrypted)->encode($data);
 		}
 		else
 		{
@@ -165,7 +171,7 @@ abstract class Session_Core {
 
 	/**
 	 * Loads the session data.
-	 * 
+	 *
 	 * @return  void
 	 */
 	public function read()
@@ -174,10 +180,10 @@ abstract class Session_Core {
 		{
 			try
 			{
-				if ($this->_encrypted === TRUE)
+				if ($this->_encrypted)
 				{
 					// Decrypt the data using the default key
-					$data = Encrypt::instance()->decode($data);
+					$data = Encrypt::instance($this->_encrypted)->decode($data);
 				}
 				else
 				{
