@@ -264,6 +264,12 @@ class html_Core {
 		$compiled = '';
 		foreach ($attributes as $key => $value)
 		{
+			if ($value === NULL)
+			{
+				// Skip attributes that have NULL values
+				continue;
+			}
+
 			// Add the attribute value
 			$compiled .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES, Kohana::$charset, TRUE).'"';
 		}
