@@ -102,7 +102,8 @@ abstract class Session_Core {
 
 		if ($this->_encrypted === TRUE)
 		{
-			// @todo: encrypt the data here
+			// Encrypt the data using the default key
+			$data = Encrypt::instance()->encode($data);
 		}
 		else
 		{
@@ -175,7 +176,8 @@ abstract class Session_Core {
 			{
 				if ($this->_encrypted === TRUE)
 				{
-					// @todo: decrypt the data here
+					// Decrypt the data using the default key
+					$data = Encrypt::instance()->decode($data);
 				}
 				else
 				{
