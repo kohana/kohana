@@ -344,8 +344,10 @@ class Request_Core {
 			}
 		}
 
-		// Order by quality
+		// Make sure that accepts is an array
 		$accepts = (array) $accepts;
+
+		// Order by quality
 		arsort($accepts);
 
 		return $accepts;
