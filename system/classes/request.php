@@ -299,7 +299,7 @@ class Request_Core {
 
 	/**
 	 * Parses an accept header and returns an array (type => quality) of the
-	 * accepted types.
+	 * accepted types, ordered by quality.
 	 *
 	 * @param   string   header to parse
 	 * @param   array    default values
@@ -325,6 +325,10 @@ class Request_Core {
 
 				foreach ($parts as $part)
 				{
+					// Prevent undefined $value notice below
+					if (strpos($part, '=') === FALSE)
+						continue;
+
 					// Separate the key and value
 					list ($key, $value) = explode('=', trim($part));
 
@@ -340,7 +344,11 @@ class Request_Core {
 			}
 		}
 
-		return (array) $accepts;
+		// Order by quality
+		$accepts = (array) $accepts;
+		arsort($accepts);
+
+		return $accepts;
 	}
 
 	/**
