@@ -342,83 +342,98 @@ class date_Core {
 	public static function fuzzy_span($timestamp)
 	{
 		// Determine the difference in seconds
-		$offset = time() - $timestamp;
+		$offset = abs(time() - $timestamp);
 
 		if ($offset <= date::MINUTE)
 		{
-			return 'moments ago';
+			$span = 'moments';
 		}
 		elseif ($offset < (date::MINUTE * 20))
 		{
-			return 'a few minutes ago';
+			$span = 'a few minutes';
 		}
 		elseif ($offset < date::HOUR)
 		{
-			return 'less than an hour ago';
+			$span = 'less than an hour';
 		}
 		elseif ($offset < (date::HOUR * 4))
 		{
-			return 'a couple of hours ago';
+			$span = 'a couple of hours';
 		}
 		elseif ($offset < date::DAY)
 		{
-			return 'less than a day ago';
+			$span = 'less than a day';
 		}
 		elseif ($offset < (date::DAY * 2))
 		{
-			return 'about a day ago';
+			$span = 'about a day';
 		}
 		elseif ($offset < (date::DAY * 4))
 		{
-			return 'a couple of days ago';
+			$span = 'a couple of days';
 		}
 		elseif ($offset < date::WEEK)
 		{
-			return 'less than a week ago';
+			$span = 'less than a week';
 		}
 		elseif ($offset < (date::WEEK * 2))
 		{
-			return 'about a week ago';
+			$span = 'about a week';
 		}
 		elseif ($offset < date::MONTH)
 		{
-			return 'less than a month ago';
+			$span = 'less than a month';
 		}
 		elseif ($offset < (date::MONTH * 2))
 		{
-			return 'about a month ago';
+			$span = 'about a month';
 		}
 		elseif ($offset < (date::MONTH * 4))
 		{
-			return 'a couple of months ago';
+			$span = 'a couple of months';
 		}
 		elseif ($offset < date::YEAR)
 		{
-			return 'less than a year ago';
+			$span = 'less than a year';
 		}
 		elseif ($offset < (date::YEAR * 2))
 		{
-			return 'about a year ago';
+			$span = 'about a year';
 		}
-		elseif ($offset < (date::YEAR * 9))
+		elseif ($offset < (date::YEAR * 4))
 		{
-			return 'a couple of years ago';
+			$span = 'a couple of years';
 		}
-		elseif ($offset < (date::YEAR * 14))
+		elseif ($offset < (date::YEAR * 8))
 		{
-			return 'about a decade ago';
+			$span = 'a few years';
 		}
-		elseif ($offset < (date::YEAR * 32))
+		elseif ($offset < (date::YEAR * 12))
 		{
-			return 'a couple of decades ago';
+			$span = 'about a decade';
+		}
+		elseif ($offset < (date::YEAR * 24))
+		{
+			$span = 'a couple of decades';
 		}
 		elseif ($offset < (date::YEAR * 64))
 		{
-			return 'several decades ago';
+			$span = 'several decades';
 		}
 		else
 		{
-			return 'a long time ago';
+			$span = 'a long time';
+		}
+
+		if ($timestamp <= time())
+		{
+			// This is in the past
+			return $span.' ago';
+		}
+		else
+		{
+			// This in the future
+			return 'in '.$span;
 		}
 	}
 
