@@ -593,6 +593,91 @@ class Request_Core {
 	}
 
 	/**
+	 * Sends a file as the request response.
+	 *
+	 * @param   string   file path
+	 * @param   string   download file name
+	 * @param   boolean  allow the download to be resumed
+	 * @return  void
+	 */
+	public function send_file($filename, $nicename = NULL, $resumable = TRUE)
+	{
+		// Get the complete file path
+		$filename = realpath($filename);
+
+		if (empty($nicename))
+		{
+			// Use the file name as the nice name
+			$nicename = pathinfo($filename, PATHINFO_BASENAME);
+		}
+
+		// Get the file size
+		$size = filesize($filename);
+
+		// Set the starting offset and length to send
+		$ranges = NULL;
+
+		if ($resumable)
+		{
+			if (isset($_SERVER['HTTP_RANGE']))
+			{
+				// @todo: ranged download processing
+			}
+
+			// Accept accepted range type
+			$this->set_header('accept-ranges', 'bytes');
+		}
+
+		// Set the headers
+		$this->set_header('content-disposition', 'attachment; filename="'.$nicename.'"');
+
+		// Set the content type of the response
+		$this->set_header('content-type', file::mime($filename));
+
+		// Set the content size in bytes
+		$this->set_header('content-length', $size);
+
+		// Send all headers now
+		$this->send_headers();
+
+		while (ob_get_level())
+		{
+			// Flush all output buffers
+			ob_end_flush();
+		}
+
+		// Manually stop execution
+		ignore_user_abort(TRUE);
+
+		// Keep the script running forever
+		set_time_limit(0);
+
+		// Open the file for reading
+		$file = fopen($filename, 'rb');
+
+		// Send data in 16kb blocks
+		$block = 1024 * 16;
+
+		while ( ! feof($file))
+		{
+			if (connection_aborted())
+				break;
+
+			// Output a block of the file
+			echo fread($file, $block);
+
+			// Send the data now
+			flush();
+		}
+
+		// Close the file
+		fclose($file);
+
+		// Stop execution
+		exit(0);
+	}
+
+	/**
 	 * Processes the request, executing the controller. Before the routed action
 	 * is run, the before() method will be called, which allows the controller
 	 * to overload the action based on the request parameters. After the action
