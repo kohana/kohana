@@ -12,67 +12,56 @@ class file_Core {
 	/**
 	 * Attempt to get the mime type from a file. This method is horribly
 	 * unreliable, due to PHP being horribly unreliable when it comes to
-	 * determining the mime-type of a file.
+	 * determining the mime type of a file.
 	 *
-	 * @param   string   filename
-	 * @return  string   mime-type, if found
-	 * @return  boolean  FALSE, if not found
+	 * @param   string  file path
+	 * @return  string  mime type, on success
+	 * @return  FALSE   on failure
 	 */
 	public static function mime($filename)
 	{
-		// Make sure the file is readable
-		if ( ! (is_file($filename) AND is_readable($filename)))
-			return FALSE;
+		// Get the complete path to the file
+		$filename = realpath($filename);
 
 		// Get the extension from the filename
-		$extension = strtolower(substr(strrchr($filename, '.'), 1));
+		$extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
 		if (preg_match('/^(?:jpe?g|png|[gt]if|bmp|swf)$/', $extension))
 		{
-			// Disable error reporting
-			$ER = error_reporting(0);
-
 			// Use getimagesize() to find the mime type on images
-			$mime = getimagesize($filename);
+			$file = getimagesize($filename);
 
-			// Turn error reporting back on
-			error_reporting($ER);
-
-			// Return the mime type
-			if (isset($mime['mime']))
-				return $mime['mime'];
+			if (isset($image['mime']))
+				return $file['mime'];
 		}
 
 		if (function_exists('finfo_open'))
 		{
-			// Use the fileinfo extension
-			$finfo = finfo_open(FILEINFO_MIME);
-			$mime  = finfo_file($finfo, $filename);
-			finfo_close($finfo);
+			if ($file = finfo_open(FILEINFO_MIME))
+			{
+				// Get the mime type
+				$mime = finfo_file($file, $filename);
 
-			// Return the mime type
+				// Close the finfo
+				finfo_close($file);
+			}
+
 			return $mime;
 		}
 
 		if (ini_get('mime_magic.magicfile') AND function_exists('mime_content_type'))
 		{
-			// Return the mime type using mime_content_type
+			// The mime_content_type function is only useful with a magic file
 			return mime_content_type($filename);
 		}
 
-		if ( ! KOHANA_IS_WIN)
+		if ( ! empty($extension))
 		{
-			// Attempt to locate use the file command, checking the return value
-			if ($command = trim(exec('which file', $output, $return)) AND $return === 0)
-			{
-				return trim(exec($command.' -bi '.escapeshellarg($filename)));
-			}
-		}
+			// Guess the mime using the file extension
+			$mimes = Kohana::config('mimes');
 
-		if ( ! empty($extension) AND is_array($mime = Kohana::config('mimes.'.$extension)))
-		{
-			// Return the mime-type guess, based on the extension
-			return $mime[0];
+			if (isset($mimes[$extension]))
+				return $mimes[$extension][0];
 		}
 
 		// Unable to find the mime-type
