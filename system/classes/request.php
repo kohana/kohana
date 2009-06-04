@@ -564,26 +564,29 @@ class Request_Core {
 	 */
 	public function send_headers()
 	{
-		// Get the status message
-		$message = Request::$messages[$this->status];
-
-		// Send the HTTP status message
-		header("HTTP/{$this->version} {$this->status} {$message}", TRUE, $this->status);
-
-		foreach ($this->headers as $name => $value)
+		if ( ! headers_sent())
 		{
-			if (is_string($name))
+			// Get the status message
+			$message = Request::$messages[$this->status];
+
+			// Send the HTTP status message
+			header("HTTP/{$this->version} {$this->status} {$message}", TRUE, $this->status);
+
+			foreach ($this->headers as $name => $value)
 			{
-				// Convert the header name to Title-Case, to match RFC spec
-				$name = str_replace('-', ' ', $name);
-				$name = str_replace(' ', '-', ucwords($name));
+				if (is_string($name))
+				{
+					// Convert the header name to Title-Case, to match RFC spec
+					$name = str_replace('-', ' ', $name);
+					$name = str_replace(' ', '-', ucwords($name));
 
-				// Combine the name and value to make a raw header
-				$value = "{$name}: {$value}";
+					// Combine the name and value to make a raw header
+					$value = "{$name}: {$value}";
+				}
+
+				// Send the raw header
+				header($value, TRUE);
 			}
-
-			// Send the raw header
-			header($value, TRUE);
 		}
 
 		return $this;
