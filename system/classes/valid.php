@@ -10,62 +10,115 @@
 class valid_Core {
 
 	/**
-	 * Validate email, commonly used characters only
+	 * Checks if a value is empty and optionally checks that the type of the
+	 * value matches the required type.
 	 *
-	 * @param   string   email address
+	 * @param   mixed   value
+	 * @param   string  required type
 	 * @return  boolean
 	 */
-	public static function email($email)
+	public static function required( & $value, $type = TRUE)
 	{
-		return (bool) preg_match('/^[-_a-z0-9\'+*$^&%=~!?{}]++(?:\.[-_a-z0-9\'+*$^&%=~!?{}]+)*+@(?:(?![-.])[-a-z0-9.]+(?<![-.])\.[a-z]{2,6}|\d{1,3}(?:\.\d{1,3}){3})(?::\d++)?$/iD', (string) $email);
+		if (empty($value))
+		{
+			// The value is empty
+			return FALSE;
+		}
+
+		if ($type === TRUE)
+		{
+			// There is a value present
+			return TRUE;
+		}
+
+		return $type === gettype($value);
+	}
+
+	/**
+	 * Checks a field against a regular expression.
+	 *
+	 * @param   string  value
+	 * @param   string  regular expression to match
+	 * @return  boolean
+	 */
+	public static function regex($value, $expression)
+	{
+		return (bool) preg_match($expression, (string) $value);
+	}
+
+	/**
+	 * Checks that a field is long enough.
+	 *
+	 * @param   string   value
+	 * @param   integer  minimum length required
+	 * @return  boolean
+	 */
+	public static function min_length($value, $length)
+	{
+		return strlen($value) >= $length;
+	}
+
+	/**
+	 * Checks that a field is short enough.
+	 *
+	 * @param   string   value
+	 * @param   integer  maximum length required
+	 * @return  boolean
+	 */
+	public static function max_length($value, $length)
+	{
+		return strlen($value) <= $length;
+	}
+
+	/**
+	 * Check a email address for correct format.
+	 *
+	 * @see  http://www.iamcal.com/publish/articles/php/parsing_email/
+	 * @see  http://www.w3.org/Protocols/rfc822/
+	 *
+	 * @param   string   email address
+	 * @param   boolean  strict RFC compatibility
+	 * @return  boolean
+	 */
+	public static function email($email, $strict = FALSE)
+	{
+		if ($strict === TRUE)
+		{
+			$qtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
+			$dtext = '[^\\x0d\\x5b-\\x5d\\x80-\\xff]';
+			$atom  = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c\\x3e\\x40\\x5b-\\x5d\\x7f-\\xff]+';
+			$pair  = '\\x5c[\\x00-\\x7f]';
+
+			$domain_literal = "\\x5b($dtext|$pair)*\\x5d";
+			$quoted_string  = "\\x22($qtext|$pair)*\\x22";
+			$sub_domain     = "($atom|$domain_literal)";
+			$word           = "($atom|$quoted_string)";
+			$domain         = "$sub_domain(\\x2e$sub_domain)*";
+			$local_part     = "$word(\\x2e$word)*";
+
+			$expression     = "/^$local_part\\x40$domain$/D";
+		}
+		else
+		{
+			$expression = '/^[-_a-z0-9\'+*$^&%=~!?{}]++(?:\.[-_a-z0-9\'+*$^&%=~!?{}]+)*+@(?:(?![-.])[-a-z0-9.]+(?<![-.])\.[a-z]{2,6}|\d{1,3}(?:\.\d{1,3}){3})(?::\d++)?$/iD';
+		}
+
+		return (bool) preg_match($expression, (string) $email);
 	}
 
 	/**
 	 * Validate the domain of an email address by checking if the domain has a
 	 * valid MX record.
 	 *
+	 * Note: checkdnsrr() was not added to Windows until PHP 5.3.0
+	 *
 	 * @param   string   email address
 	 * @return  boolean
 	 */
 	public static function email_domain($email)
 	{
-		// If we can't prove the domain is invalid, consider it valid
-		// Note: checkdnsrr() is not implemented on Windows platforms
-		// until PHP 5.3.0
-		if ( ! function_exists('checkdnsrr'))
-			return TRUE;
-
 		// Check if the email domain has a valid MX record
 		return (bool) checkdnsrr(preg_replace('/^[^@]+@/', '', $email), 'MX');
-	}
-
-	/**
-	 * Validate email, RFC compliant version
-	 * Note: This function is LESS strict than valid_email. Choose carefully.
-	 *
-	 * @see  Originally by Cal Henderson, modified to fit Kohana syntax standards:
-	 * @see  http://www.iamcal.com/publish/articles/php/parsing_email/
-	 * @see  http://www.w3.org/Protocols/rfc822/
-	 *
-	 * @param   string   email address
-	 * @return  boolean
-	 */
-	public static function email_rfc($email)
-	{
-		$qtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
-		$dtext = '[^\\x0d\\x5b-\\x5d\\x80-\\xff]';
-		$atom  = '[^\\x00-\\x20\\x22\\x28\\x29\\x2c\\x2e\\x3a-\\x3c\\x3e\\x40\\x5b-\\x5d\\x7f-\\xff]+';
-		$pair  = '\\x5c[\\x00-\\x7f]';
-
-		$domain_literal = "\\x5b($dtext|$pair)*\\x5d";
-		$quoted_string  = "\\x22($qtext|$pair)*\\x22";
-		$sub_domain     = "($atom|$domain_literal)";
-		$word           = "($atom|$quoted_string)";
-		$domain         = "$sub_domain(\\x2e$sub_domain)*";
-		$local_part     = "$word(\\x2e$word)*";
-		$addr_spec      = "$local_part\\x40$domain";
-
-		return (bool) preg_match('/^'.$addr_spec.'$/D', (string) $email);
 	}
 
 	/**
@@ -83,21 +136,21 @@ class valid_Core {
 	 * Validate IP
 	 *
 	 * @param   string   IP address
-	 * @param   boolean  allow IPv6 addresses
 	 * @param   boolean  allow private IP networks
 	 * @return  boolean
 	 */
-	public static function ip($ip, $ipv6 = FALSE, $allow_private = TRUE)
+	public static function ip($ip, $allow_private = TRUE)
 	{
-		// By default do not allow private and reserved range IPs
-		$flags = FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
-		if ($allow_private === TRUE)
-			$flags =  FILTER_FLAG_NO_RES_RANGE;
+		// Do not allow reserved addresses
+		$flags = FILTER_FLAG_IPV4 & FILTER_FLAG_IPV6 & FILTER_FLAG_NO_RES_RANGE;
 
-		if ($ipv6 === TRUE)
-			return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
+		if ($allow_private === FALSE)
+		{
+			// Do not allow private or reserved addresses
+			$flags = $flags | FILTER_FLAG_NO_PRIV_RANGE;
+		}
 
-		return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags | FILTER_FLAG_IPV4);
+		return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
 	}
 
 	/**
@@ -198,7 +251,7 @@ class valid_Core {
 
 	/**
 	 * Tests if a string is a valid date string.
-	 * 
+	 *
 	 * @param   string   date to check
 	 * @return  boolean
 	 */
@@ -268,7 +321,7 @@ class valid_Core {
 	 *
 	 * @see Uses locale conversion to allow decimal point to be locale specific.
 	 * @see http://www.php.net/manual/en/function.localeconv.php
-	 * 
+	 *
 	 * @param   string   input string
 	 * @return  boolean
 	 */
