@@ -334,7 +334,7 @@ class date_Core {
 	}
 
 	/**
-	 * Returns the difference between two times in a "fuzzy" way.
+	 * Returns the difference between a time and now in a "fuzzy" way.
 	 *
 	 * @param   integer  past UNIX timestamp
 	 * @return  string
