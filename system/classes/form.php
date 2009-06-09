@@ -283,7 +283,7 @@ class form_Core {
 	 * @param   array   html attributes
 	 * @return  string
 	 */
-	public static function submit($name, $value = '', array $attributes = NULL)
+	public static function submit($name, $value, array $attributes = NULL)
 	{
 		$attributes['type'] = 'submit';
 
