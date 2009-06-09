@@ -152,4 +152,9 @@ class arr_core {
 		return array($command, $params);
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End arr

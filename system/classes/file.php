@@ -161,4 +161,9 @@ class file_Core {
 		return $pieces;
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End file

@@ -139,4 +139,9 @@ class cookie_Core {
 		return sha1($agent.$name.$value.cookie::$salt);
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End cookie

@@ -329,4 +329,9 @@ class form_Core {
 		return '<label'.html::attributes($attributes).'>'.$text.'</label>';
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End form

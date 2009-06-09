@@ -142,7 +142,7 @@ class valid_Core {
 	public static function ip($ip, $allow_private = TRUE)
 	{
 		// Do not allow reserved addresses
-		$flags = FILTER_FLAG_IPV4 & FILTER_FLAG_IPV6 & FILTER_FLAG_NO_RES_RANGE;
+		$flags = FILTER_FLAG_NO_RES_RANGE;
 
 		if ($allow_private === FALSE)
 		{
@@ -413,6 +413,11 @@ class valid_Core {
 	public static function color($str)
 	{
 		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
+	}
+
+	final private function __construct()
+	{
+		// This is a static class
 	}
 
 } // End valid

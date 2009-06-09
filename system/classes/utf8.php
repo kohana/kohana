@@ -703,6 +703,11 @@ final class utf8 {
 		return _from_unicode($arr);
 	}
 
+	private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End utf8
 
 if (utf8::$server_utf8 === NULL)

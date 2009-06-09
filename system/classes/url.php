@@ -132,4 +132,9 @@ class url_Core {
 		return trim($title, $separator);
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End url

@@ -81,4 +81,9 @@ class i18n_Core {
 		return i18n::$_cache[$lang];
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End i18n

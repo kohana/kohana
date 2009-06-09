@@ -116,4 +116,9 @@ class remote_Core {
 		return $response;
 	}
 
+	final private function __construct()
+	{
+		// This is a static class
+	}
+
 } // End remote
