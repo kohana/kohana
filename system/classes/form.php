@@ -124,11 +124,11 @@ class form_Core {
 	 * @param   array   html attributes
 	 * @return  string
 	 */
-	public static function file($name, $value = '', array $attributes = NULL)
+	public static function file($name, array $attributes = NULL)
 	{
 		$attributes['type'] = 'file';
 
-		return form::input($name, $value, $attributes);
+		return form::input($name, NULL, $attributes);
 	}
 
 	/**
