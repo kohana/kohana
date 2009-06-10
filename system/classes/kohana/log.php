@@ -140,7 +140,7 @@ class Kohana_Log_Core {
 		}
 	}
 
-	private function __construct()
+	final private function __construct()
 	{
 		// Enforce singleton behavior
 	}
