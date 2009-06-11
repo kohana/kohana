@@ -44,6 +44,16 @@ class Validation extends ArrayObject {
 	}
 
 	/**
+	 * Returns the array representation of the current object.
+	 *
+	 * @return  array
+	 */
+	public function as_array()
+	{
+		return $this->getArrayCopy();
+	}
+
+	/**
 	 * Sets or overwrites the label name for a field.
 	 *
 	 * @param   string  field name
