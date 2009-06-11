@@ -86,16 +86,22 @@ class Validation extends ArrayObject {
 		return $this;
 	}
 
-	public function validate( array & $errors = array())
+	/**
+	 * Executes all validation rules.
+	 *
+	 * @param   array    error list
+	 * @return  boolean
+	 */
+	public function validate( & $errors)
 	{
 		// Data to validate
 		$data = array();
 
-		// Get the expected fields
-		$expected = array_keys($this->_rules);
-
 		// Assume nothing has been submitted
 		$submitted = FALSE;
+
+		// Get the expected fields
+		$expected = array_keys($this->_rules);
 
 		foreach ($expected as $field)
 		{
@@ -116,6 +122,9 @@ class Validation extends ArrayObject {
 
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
+
+		// Make sure that the errors are an array
+		$errors = (array) $errors;
 
 		if ($submitted === FALSE)
 		{
