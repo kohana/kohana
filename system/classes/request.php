@@ -593,6 +593,28 @@ class Request_Core {
 	}
 
 	/**
+	 * Redirects as the request response.
+	 *
+	 * @param   string   redirect location
+	 * @param   integer  status code
+	 * @return  void
+	 */
+	public function redirect($url, $code = 302)
+	{
+		// Set the response status
+		$this->status = $code;
+
+		// Set the location header
+		$this->set_header('location', $url);
+
+		// Send headers
+		$this->send_headers();
+
+		// Stop execution
+		exit(0);
+	}
+
+	/**
 	 * Sends a file as the request response.
 	 *
 	 * @param   string   file path
