@@ -40,7 +40,7 @@ class Validation extends ArrayObject {
 	 */
 	public function __construct(array $array)
 	{
-		parent::__construct($array, ArrayObject::ARRAY_AS_PROPS | ArrayObject::STD_PROP_LIST);
+		parent::__construct($array, ArrayObject::STD_PROP_LIST);
 	}
 
 	/**
