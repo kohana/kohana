@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Error_Core extends ErrorException {
+class Kohana_Error extends ErrorException {
 
 	protected $codes = array
 	(

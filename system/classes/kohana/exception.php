@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_Exception_Core extends Exception {
+class Kohana_Exception extends Exception {
 
 	/**
 	 * Creates a new translated exception.
