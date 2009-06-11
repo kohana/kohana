@@ -7,3 +7,6 @@
 [submodule "modules/image"]
 	path = modules/image
 	url = git://github.com/shadowhand/kohana-image.git
+[submodule "modules/paypal"]
+	path = modules/paypal
+	url = git://github.com/shadowhand/kohana-paypal.git
