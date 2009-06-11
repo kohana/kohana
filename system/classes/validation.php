@@ -50,7 +50,7 @@ class Validation extends ArrayObject {
 	 * @param   string  label
 	 * @return  $this;
 	 */
-	public function set_label($field, $label)
+	public function label($field, $label)
 	{
 		// Set the label for this field
 		$this->_labels[$field] = $label;
@@ -65,7 +65,7 @@ class Validation extends ArrayObject {
 	 * @param   array   rules to append or overwrite
 	 * @return  $this
 	 */
-	public function set_rules($field, array $rules = NULL)
+	public function rules($field, array $rules = NULL)
 	{
 		if ( ! isset($this->_labels[$field]))
 		{
