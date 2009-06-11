@@ -590,7 +590,7 @@ final class Kohana {
 		$file = sha1($name).EXT;
 
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = APPPATH."cache/{$file[0]}/";
+		$dir = APPPATH."cache/{$file[0]}{$file[1]}/";
 
 		if ($data === NULL)
 		{
@@ -614,11 +614,19 @@ final class Kohana {
 
 		if ( ! is_dir($dir))
 		{
-			// Create the cache directory
-			mkdir($dir, 0777, TRUE);
+			try
+			{
+				// Create the cache directory
+				mkdir($dir, 0777, TRUE);
 
-			// Set permissions (must be manually set to fix umask issues)
-			chmod($dir, 0777);
+				// Set permissions (must be manually set to fix umask issues)
+				chmod($dir, 0777);
+			}
+			catch (Exception $e)
+			{
+				throw new Kohana_Exception('Directory :dir must be writable',
+					array(':dir' => Kohana::debug_path(APPPATH.'cache')));
+			}
 		}
 
 		if ( ! is_file($dir.$file))
