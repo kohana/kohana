@@ -14,7 +14,7 @@ class Session_Cookie_Core extends Session {
 	 *
 	 * @return  string
 	 */
-	protected function _read()
+	protected function _read($id = NULL)
 	{
 		return cookie::get($this->_name, NULL);
 	}

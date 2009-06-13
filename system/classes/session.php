@@ -13,13 +13,15 @@ abstract class Session_Core {
 	protected static $instances = array();
 
 	/**
-	 * Creates a singleton session of the given type.
+	 * Creates a singleton session of the given type. Some session types
+	 * (native, database) also support restarting a session by passing a
+	 * session id as the second parameter.
 	 *
-	 * @param   string   session type (native, cookie, etc)
-	 * @param   boolean  bind $_SESSION to the internal array
+	 * @param   string   type of session (native, cookie, etc)
+	 * @param   string   session identifier
 	 * @return  Session
 	 */
-	public static function instance($type = 'native', $bind = FALSE)
+	public static function instance($type = 'native', $id = NULL)
 	{
 		if ( ! isset(Session::$instances[$type]))
 		{
@@ -30,19 +32,7 @@ abstract class Session_Core {
 			$class = 'Session_'.ucfirst($type);
 
 			// Create a new session instance
-			Session::$instances[$type] = new $class($config);
-
-			if ($bind === TRUE)
-			{
-				if ( ! isset($_SESSION))
-				{
-					// Create the $_SESSION global
-					$GLOBALS['_SESSION'] = array();
-				}
-
-				// Bind to the global $_SESSION array
-				$_SESSION =& Session::$instances[$type]->data();
-			}
+			Session::$instances[$type] = new $class($config, $id);
 		}
 
 		return Session::$instances[$type];
@@ -63,10 +53,11 @@ abstract class Session_Core {
 	/**
 	 * Overloads the name, lifetime, and encrypted session settings.
 	 *
-	 * @param   array  configuration
+	 * @param   array   configuration
+	 * @param   string  session id
 	 * @return  void
 	 */
-	protected function __construct(array $config = NULL)
+	protected function __construct(array $config = NULL, $id = NULL)
 	{
 		if (isset($config['name']))
 		{
@@ -93,7 +84,7 @@ abstract class Session_Core {
 		}
 
 		// Load the session
-		$this->read();
+		$this->read($id);
 	}
 
 	/**
@@ -172,11 +163,12 @@ abstract class Session_Core {
 	/**
 	 * Loads the session data.
 	 *
+	 * @param   string   session id
 	 * @return  void
 	 */
-	public function read()
+	public function read($id = NULL)
 	{
-		if (is_string($data = $this->_read()))
+		if (is_string($data = $this->_read($id)))
 		{
 			try
 			{
@@ -233,9 +225,10 @@ abstract class Session_Core {
 	/**
 	 * Loads the raw session data string and returns it.
 	 *
+	 * @param   string   session id
 	 * @return  string
 	 */
-	abstract protected function _read();
+	abstract protected function _read($id = NULL);
 
 	/**
 	 * Generate a new session id and return it.
