@@ -9,9 +9,6 @@
  */
 class Kohana_Config_Core extends ArrayObject {
 
-	// Cache prefix string
-	const CACHE_PREFIX = 'kohana_configuration_';
-
 	/**
 	 * Loads all of the files in a configuration group and returns a merged
 	 * array of the values.
@@ -50,23 +47,35 @@ class Kohana_Config_Core extends ArrayObject {
 	 * @param   boolean  cache the group array
 	 * @return  void
 	 */
-	public function __construct($group, $cache = TRUE)
+	public function __construct($group, $cache = NULL)
 	{
 		// Set the configuration group name
 		$this->_configuration_group = $group;
+
+		if ($cache === NULL)
+		{
+			// Use the global caching
+			$cache = Kohana::$cached;
+		}
 
 		if ($cache === FALSE)
 		{
 			// Load the configuration
 			$config = Kohana_Config::load($group);
 		}
-		elseif (($config = Kohana::cache(self::CACHE_PREFIX.$group)) === NULL)
+		else
 		{
-			// Load the configuration, it has not been cached
-			$config = Kohana_Config::load($group);
+			// Set the cache key
+			$cache_key = 'Kohana_Config::load("'.$group.'")';
 
-			// Create a cache of the configuration group
-			Kohana::cache(self::CACHE_PREFIX.$group, $config);
+			if (($config = Kohana::cache($cache_key)) === NULL)
+			{
+				// Load the configuration, it has not been cached
+				$config = Kohana_Config::load($group);
+
+				// Create a cache of the configuration group
+				Kohana::cache($cache_key, $config);
+			}
 		}
 
 		// Load the array using the values as properties
