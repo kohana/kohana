@@ -75,9 +75,9 @@ final class Kohana {
 	public static $index_file = 'index.php';
 
 	/**
-	 * @var  boolean  cache the location of files across requests?
+	 * @var  boolean  enabling internal caching?
 	 */
-	public static $cache_paths = FALSE;
+	public static $caching = TRUE;
 
 	/**
 	 * @var  object  logging object
@@ -175,10 +175,10 @@ final class Kohana {
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
-		if (isset($settings['cache_paths']))
+		if (isset($settings['caching']))
 		{
-			// Enable or disable the caching of paths
-			self::$cache_paths = (bool) $settings['cache_paths'];
+			// Enable or disable internal caching
+			self::$caching = (bool) $settings['caching'];
 		}
 
 		if (isset($settings['charset']))
@@ -421,6 +421,18 @@ final class Kohana {
 		// Create a partial path of the filename
 		$path = $dir.'/'.$file.$ext;
 
+		if (self::$caching === TRUE)
+		{
+			// Set the cache key for this path
+			$cache_key = 'Kohana::find_file("'.$path.'")';
+
+			if (($found = self::cache($cache_key)) !== NULL)
+			{
+				// Return the cached path
+				return $found;
+			}
+		}
+
 		if ($dir === 'config' OR $dir === 'i18n')
 		{
 			// Include paths must be searched in reverse
@@ -454,6 +466,12 @@ final class Kohana {
 					break;
 				}
 			}
+		}
+
+		if (isset($cache_key))
+		{
+			// Save the path cache
+			Kohana::cache($cache_key, $found);
 		}
 
 		if (isset($benchmark))
