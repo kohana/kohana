@@ -77,7 +77,7 @@ final class Kohana {
 	/**
 	 * @var  boolean  enabling internal caching?
 	 */
-	public static $caching = TRUE;
+	public static $caching = FALSE;
 
 	/**
 	 * @var  object  logging object
