@@ -56,7 +56,7 @@ class Validate extends ArrayObject {
 	 */
 	public static function min_length($value, $length)
 	{
-		return strlen($value) >= $length;
+		return utf8::strlen($value) >= $length;
 	}
 
 	/**
@@ -68,7 +68,7 @@ class Validate extends ArrayObject {
 	 */
 	public static function max_length($value, $length)
 	{
-		return strlen($value) <= $length;
+		return utf8::strlen($value) <= $length;
 	}
 
 	/**
