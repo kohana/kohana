@@ -84,7 +84,21 @@ class Session_Database_Core extends Session {
 	 */
 	protected function _regenerate()
 	{
-		return $this->_session_id = uniqid(NULL, TRUE);
+		// Create the query to find an ID
+		$query = DB::query(Database::SELECT, "SELECT session_id FROM {$this->_table} WHERE session_id = :id LIMIT 1")
+			->bind(':id' => $id);
+
+		do
+		{
+			// Create a new session id
+			$id = uniqid(NULL, TRUE);
+
+			// Get the the id from the database
+			$result = $query->execute($this->_db);
+		}
+		while ($result->count() > 0);
+
+		return $this->_session_id = $id;
 	}
 
 	/**
