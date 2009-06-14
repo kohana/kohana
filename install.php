@@ -130,6 +130,23 @@
 		<p id="results" class="pass">✔ Your environment passed all requirements.<br />
 			Remove or rename the <code>install<?php echo EXT ?></code> file now.</p>
 	<?php endif ?>
+	
+	<h1>Optional Tests</h1>
+
+	<p>
+		The following extensions are not required to run the Kohana core, but if enabled can provide access to additional classes.
+	</p>
+
+	<table cellspacing="0">
+		<tr>
+			<th>cURL Enabled</th>
+			<?php if (function_exists('curl_exec')): ?>
+				<td class="pass">Pass</td>
+			<?php else: ?>
+				<td class="fail">Kohana requires cURL to use the remote helper.</td>
+			<?php endif ?>
+		</tr>
+	</table>
 
 </body>
 </html>
