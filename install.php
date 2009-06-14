@@ -140,7 +140,7 @@
 	<table cellspacing="0">
 		<tr>
 			<th>cURL Enabled</th>
-			<?php if (function_exists('curl_exec')): ?>
+			<?php if (extension_loaded('curl')): ?>
 				<td class="pass">Pass</td>
 			<?php else: ?>
 				<td class="fail">Kohana requires cURL to use the remote helper.</td>
