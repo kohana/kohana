@@ -39,7 +39,7 @@ class Validate extends ArrayObject {
 	 * Checks a field against a regular expression.
 	 *
 	 * @param   string  value
-	 * @param   string  regular expression to match
+	 * @param   string  regular expression to match (including delimeters)
 	 * @return  boolean
 	 */
 	public static function regex($value, $expression)
@@ -72,7 +72,7 @@ class Validate extends ArrayObject {
 	}
 
 	/**
-	 * Check a email address for correct format.
+	 * Check an email address for correct format.
 	 *
 	 * @see  http://www.iamcal.com/publish/articles/php/parsing_email/
 	 * @see  http://www.w3.org/Protocols/rfc822/
@@ -657,7 +657,7 @@ class Validate extends ArrayObject {
 		unset($filters[TRUE], $rules[TRUE], $callbacks[TRUE]);
 
 		// Execute the filters
-		
+
 		foreach ($filters as $field => $set)
 		{
 			// Skip empty fields
