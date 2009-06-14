@@ -146,6 +146,14 @@
 				<td class="fail">Kohana requires cURL to use the remote helper.</td>
 			<?php endif ?>
 		</tr>
+		<tr>
+			<th>Multibyte Enabled</th>
+			<?php if (extension_loaded('mbstring')): ?>
+				<td class="pass">Pass</td>
+			<?php else: ?>
+				<td class="fail">Kohana can perform UTF8 actions faster when mbstring is enabled.</td>
+			<?php endif ?>
+		</tr>
 	</table>
 
 </body>
