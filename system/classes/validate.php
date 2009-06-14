@@ -39,7 +39,7 @@ class Validate extends ArrayObject {
 	 * Checks a field against a regular expression.
 	 *
 	 * @param   string  value
-	 * @param   string  regular expression to match (including delimeters)
+	 * @param   string  regular expression to match (including delimiters)
 	 * @return  boolean
 	 */
 	public static function regex($value, $expression)
