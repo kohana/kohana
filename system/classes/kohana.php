@@ -155,7 +155,7 @@ final class Kohana {
 			$global_variables = array_keys($GLOBALS);
 
 			// Remove the standard global variables from the list
-			$global_variables = array_diff($global_vars,
+			$global_variables = array_diff($global_variables,
 				array('GLOBALS', '_REQUEST', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER', '_ENV', '_SESSION'));
 
 			foreach ($global_variables as $name)
