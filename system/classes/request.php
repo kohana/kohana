@@ -205,7 +205,6 @@ class Request_Core {
 	/**
 	 * Creates a new request object for the given URI.
 	 *
-	 * @chainable
 	 * @param   string  URI of the request
 	 * @return  Request
 	 */

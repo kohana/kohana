@@ -140,7 +140,6 @@ class Route_Core {
 	 *
 	 *     $route->defaults(array('controller' => 'welcome', 'action' => 'index'));
 	 *
-	 * @chainable
 	 * @param   array  key values
 	 * @return  Route
 	 */
