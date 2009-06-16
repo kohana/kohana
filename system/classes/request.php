@@ -451,6 +451,16 @@ class Request_Core {
 	}
 
 	/**
+	 * Returns the response as the string representation of a request.
+	 *
+	 * @return  string
+	 */
+	public function __toString()
+	{
+		return (string) $this->response;
+	}
+
+	/**
 	 * Generates a complete URL for the current route.
 	 *
 	 * @param   array   additional route parameters
