@@ -17,7 +17,6 @@ class View_Core {
 	/**
 	 * Returns a new View object.
 	 *
-	 * @chainable
 	 * @param   string  view filename
 	 * @param   array   array of values
 	 * @return  View
@@ -84,6 +83,7 @@ class View_Core {
 
 		if ( ! empty($data))
 		{
+			// Add the values to the current data
 			$this->_data = array_merge($this->_data, $data);
 		}
 	}
@@ -137,13 +137,12 @@ class View_Core {
 		}
 		catch (Exception $e)
 		{
-			return (string) $e->getMessage().' in '.Kohana::debug_path($e->getFile()).' [ '.$e->getLine().' ]';
+			return $e->getMessage().' in '.Kohana::debug_path($e->getFile()).' [ '.$e->getLine().' ]';
 		}
 	}
 
 	/**
-	 * Sets the view filename. If the view file cannot be found, an exception
-	 * will be thrown.
+	 * Sets the view filename.
 	 *
 	 * @throws  View_Exception
 	 * @param   string  filename
@@ -151,16 +150,15 @@ class View_Core {
 	 */
 	public function set_filename($file)
 	{
-		if ($path = Kohana::find_file('views', $file))
-		{
-			$this->_file = $path;
-		}
-		else
+		if (($path = Kohana::find_file('views', $file)) === FALSE)
 		{
 			throw new View_Exception('The requested view :file could not be found', array(
 				':file' => $file,
 			));
 		}
+
+		// Store the file path locally
+		$this->_file = $path;
 
 		return $this;
 	}
@@ -172,7 +170,11 @@ class View_Core {
 	 *     // This value can be accessed as $foo within the view
 	 *     $view->set('foo', 'my value');
 	 *
-	 * @chainable
+	 * You can also use an array to set several values at once:
+	 *
+	 *     // Create the values $food and $beverage in the view
+	 *     $view->set(array('food' => 'bread', 'beverage' => 'water'));
+	 *
 	 * @param   string   variable name or an array of variables
 	 * @param   mixed    value
 	 * @return  View
@@ -181,9 +183,9 @@ class View_Core {
 	{
 		if (is_array($key))
 		{
-			foreach ($key as $key2 => $value)
+			foreach ($key as $name => $value)
 			{
-				$this->_data[$key2] = $value;
+				$this->_data[$name] = $value;
 			}
 		}
 		else
@@ -197,7 +199,6 @@ class View_Core {
 	/**
 	 * Exactly the same as set, but assigns the value globally.
 	 *
-	 * @chainable
 	 * @param   string   variable name or an array of variables
 	 * @param   mixed    value
 	 * @return  View
@@ -228,7 +229,6 @@ class View_Core {
 	 *     // This reference can be accessed as $ref within the view
 	 *     $view->bind('ref', $bar);
 	 *
-	 * @chainable
 	 * @param   string   variable name
 	 * @param   mixed    referenced variable
 	 * @return  View
@@ -243,7 +243,6 @@ class View_Core {
 	/**
 	 * Exactly the same as bind, but assigns the value globally.
 	 *
-	 * @chainable
 	 * @param   string   variable name
 	 * @param   mixed    referenced variable
 	 * @return  View
@@ -258,22 +257,17 @@ class View_Core {
 	/**
 	 * Renders the view object to a string. Global and local data are merged
 	 * and extracted to create local variables within the view file.
-	 * Optionally, the view filename can be set before rendering.
 	 *
-	 * @throws   Kohana_Exception
-	 * @param    string  filename
+	 * Note: Global variables with the same key name as local variables will be
+	 * overwritten by the local variable.
+	 *
+	 * @throws   View_Exception
 	 * @return   string
 	 */
 	public function render($file = NULL)
 	{
-		if ( ! empty($file))
-		{
-			$this->set_filename($file);
-		}
-
 		if (empty($this->_file))
 		{
-			// The user has not specified a view file yet
 			throw new View_Exception('You must set the file to use within your view before rendering');
 		}
 
