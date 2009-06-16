@@ -11,11 +11,11 @@ RewriteBase /kohana/
 </Files>
 
 # Protect application and system files from being viewed
-RewriteRule ^(?:application|modules|system) - [F,L]
+RewriteRule ^(?:application|modules|system)\b - [F,L]
 
 # Allow any files or directories that exist to be displayed directly
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # Rewrite all other URLs to index.php/URL
-RewriteRule .* index.php/$0 [PT,L]
+RewriteRule .* index.php/$0 [PT]
