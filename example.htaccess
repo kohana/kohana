@@ -18,4 +18,4 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # Rewrite all other URLs to index.php/URL
-RewriteRule .* index.php/$0 [PT,L]
+RewriteRule .* index.php/$0 [PT]
