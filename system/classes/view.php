@@ -145,8 +145,7 @@ class View_Core {
 	 * Sets the view filename. If the view file cannot be found, an exception
 	 * will be thrown.
 	 *
-	 * @chainable
-	 * @throws  Kohana_Exception
+	 * @throws  View_Exception
 	 * @param   string  filename
 	 * @return  View
 	 */
@@ -158,8 +157,9 @@ class View_Core {
 		}
 		else
 		{
-			throw new Kohana_Exception('The requested :type :file was not found',
-				array(':type' => 'view', ':file' => $file));
+			throw new View_Exception('The requested view :file could not be found', array(
+				':file' => $file,
+			));
 		}
 
 		return $this;
@@ -274,7 +274,7 @@ class View_Core {
 		if (empty($this->_file))
 		{
 			// The user has not specified a view file yet
-			throw new Kohana_Exception('No file specified for view, unable to render');
+			throw new View_Exception('You must set the file to use within your view before rendering');
 		}
 
 		// Combine global and local data. Global variables with the same name
