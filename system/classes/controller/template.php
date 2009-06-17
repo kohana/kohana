@@ -6,6 +6,11 @@ class Controller_Template_Core extends Controller {
 	 * @var  string  page template
 	 */
 	public $template = 'template';
+	
+	/**
+	 * @var bool auto render template
+	 **/
+	public $auto_render = TRUE;
 
 	/**
 	 * Loads the template View object.
@@ -25,8 +30,17 @@ class Controller_Template_Core extends Controller {
 	 */
 	public function after()
 	{
-		// Assigns the template as the request response
-		$this->request->response = $this->template;
+		if ($this->auto_render === TRUE)
+		{
+			// Assigns the template as the request response
+			$this->request->response = $this->template;
+		}
+		else
+		{
+			// Nothing to render here.
+			$this->request->reposnse = '';
+		}
+		
 	}
 
 } // End Controller_Template
