@@ -32,15 +32,9 @@ class Controller_Template_Core extends Controller {
 	{
 		if ($this->auto_render === TRUE)
 		{
-			// Assigns the template as the request response
-			$this->request->response = $this->template;
+			// Assign the template as the request response and render it
+			$this->request->response = $this->template->render();
 		}
-		else
-		{
-			// Nothing to render here.
-			$this->request->reposnse = '';
-		}
-		
 	}
 
 } // End Controller_Template
