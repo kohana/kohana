@@ -269,12 +269,6 @@ final class Kohana {
 	 */
 	public static function auto_load($class)
 	{
-		if (self::$profile === TRUE AND class_exists('Profiler', FALSE))
-		{
-			// Start a benchmark
-			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
-		}
-
 		// Transform the class name into a path
 		$file = str_replace('_', '/', strtolower($class));
 
@@ -282,53 +276,13 @@ final class Kohana {
 		{
 			// Load the class file
 			require $path;
-		}
-		else
-		{
-			// Class is not in the filesystem
-			return FALSE;
+
+			// Class has been found
+			return TRUE;
 		}
 
-		if ($path = self::find_file('extensions', $file))
-		{
-			// Load the extension file
-			require $path;
-		}
-		elseif (class_exists($class.'_Core', FALSE))
-		{
-			// Set the extension cache key
-			$cache_key = 'Kohana::auto_load('.$class.')';
-
-			if (($extension = Kohana::cache($cache_key)) === NULL)
-			{
-				// Class extension to be evaluated
-				$extension = 'class '.$class.' extends '.$class.'_Core { }';
-
-				// Use reflection to find out of the class is abstract
-				$class = new ReflectionClass($class.'_Core');
-
-				if ($class->isAbstract())
-				{
-					// Make the extension abstract, too
-					$extension = 'abstract '.$extension;
-				}
-
-				// Cache the extension string so that Reflection will be avoided
-				Kohana::cache($cache_key, $extension);
-			}
-
-			// Transparent class extensions are possible using eval. Not very
-			// clean, but it can be avoided by creating empty extension files.
-			eval($extension);
-		}
-
-		if (isset($benchmark))
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
-		}
-
-		return TRUE;
+		// Class is not in the filesystem
+		return FALSE;
 	}
 
 	/**

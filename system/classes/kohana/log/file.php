@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_Log_File_Core extends Kohana_Log_Writer {
+class Kohana_Log_File extends Kohana_Log_Writer {
 
 	// Directory to place log files in
 	protected $_directory;

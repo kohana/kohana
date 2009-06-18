@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_Config_Core extends ArrayObject {
+class Kohana_Config extends ArrayObject {
 
 	/**
 	 * Loads all of the files in a configuration group and returns a merged
