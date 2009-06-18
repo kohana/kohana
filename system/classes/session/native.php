@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class remote extends remote_Core {}
+class Session_Native extends Kohana_Session_Native {}

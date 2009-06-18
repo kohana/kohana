@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Route extends Route_Core {}
+class Route extends Kohana_Route {}

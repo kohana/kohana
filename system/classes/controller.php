@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class cookie extends cookie_Core {}
+abstract class Controller extends Kohana_Controller {}

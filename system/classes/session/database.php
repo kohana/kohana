@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class text extends text_Core {}
+class Session_Database extends Kohana_Session_Database {}
