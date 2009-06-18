@@ -28,7 +28,7 @@ class Kohana_i18n {
 	public static function get($string)
 	{
 		// Load the translation table
-		$table = i18n::load(i18n::$lang);
+		$table = I18n::load(I18n::$lang);
 
 		// Return the translated string if it exists
 		return isset($table[$string]) ? $table[$string] : $string;
@@ -42,7 +42,7 @@ class Kohana_i18n {
 	 */
 	protected static function load($lang)
 	{
-		if ( ! isset(i18n::$_cache[$lang]))
+		if ( ! isset(I18n::$_cache[$lang]))
 		{
 			// Separate the language and locale
 			list ($language, $locale) = explode('-', strtolower($lang), 2);
@@ -75,10 +75,10 @@ class Kohana_i18n {
 			}
 
 			// Cache the translation table locally
-			i18n::$_cache[$lang] = $table;
+			I18n::$_cache[$lang] = $table;
 		}
 
-		return i18n::$_cache[$lang];
+		return I18n::$_cache[$lang];
 	}
 
 	final private function __construct()

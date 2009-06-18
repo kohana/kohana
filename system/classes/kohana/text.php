@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_text {
+class Kohana_Text {
 
 	/**
 	 * Limits a phrase to a given number of words.
@@ -50,7 +50,7 @@ class Kohana_text {
 
 		$limit = (int) $limit;
 
-		if (trim($str) === '' OR utf8::strlen($str) <= $limit)
+		if (trim($str) === '' OR UTF8::strlen($str) <= $limit)
 			return $str;
 
 		if ($limit <= 0)
@@ -58,7 +58,7 @@ class Kohana_text {
 
 		if ($preserve_words == FALSE)
 		{
-			return rtrim(utf8::substr($str, 0, $limit)).$end_char;
+			return rtrim(UTF8::substr($str, 0, $limit)).$end_char;
 		}
 
 		preg_match('/^.{'.($limit - 1).'}\S*/us', $str, $matches);
@@ -126,12 +126,12 @@ class Kohana_text {
 			break;
 			default:
 				$pool = (string) $type;
-				$utf8 = ! utf8::is_ascii($pool);
+				$utf8 = ! UTF8::is_ascii($pool);
 			break;
 		}
 
 		// Split the pool into an array of characters
-		$pool = ($utf8 === TRUE) ? utf8::str_split($pool, 1) : str_split($pool, 1);
+		$pool = ($utf8 === TRUE) ? UTF8::str_split($pool, 1) : str_split($pool, 1);
 
 		// Largest pool key
 		$max = count($pool) - 1;
@@ -198,10 +198,10 @@ class Kohana_text {
 
 		$regex = '!'.$regex.'!ui';
 
-		if (utf8::strlen($replacement) == 1)
+		if (UTF8::strlen($replacement) == 1)
 		{
 			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, utf8::strlen(\'$1\'))', $str);
+			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
 		}
 
 		return preg_replace($regex, $replacement, $str);
@@ -241,7 +241,7 @@ class Kohana_text {
 	public static function auto_link($text)
 	{
 		// Auto link emails first to prevent problems with "www.domain.com@example.com"
-		return text::auto_link_urls(text::auto_link_emails($text));
+		return Text::auto_link_urls(Text::auto_link_emails($text));
 	}
 
 	/**
@@ -258,7 +258,7 @@ class Kohana_text {
 			foreach ($matches[0] as $match)
 			{
 				// Replace each link with an anchor
-				$text = str_replace($match, html::anchor($match), $text);
+				$text = str_replace($match, HTML::anchor($match), $text);
 			}
 		}
 
@@ -268,7 +268,7 @@ class Kohana_text {
 			foreach ($matches[0] as $match)
 			{
 				// Replace each link with an anchor
-				$text = str_replace($match, html::anchor('http://'.$match, $match), $text);
+				$text = str_replace($match, HTML::anchor('http://'.$match, $match), $text);
 			}
 		}
 
@@ -291,7 +291,7 @@ class Kohana_text {
 			foreach ($matches[0] as $match)
 			{
 				// Replace each email with an encoded mailto
-				$text = str_replace($match, html::mailto($match), $text);
+				$text = str_replace($match, HTML::mailto($match), $text);
 			}
 		}
 

@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_security {
+class Kohana_Security {
 
 	/**
 	 * Remove XSS from user input.

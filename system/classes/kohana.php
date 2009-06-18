@@ -297,7 +297,7 @@ final class Kohana {
 		elseif (class_exists($class.'_Core', FALSE))
 		{
 			// Set the extension cache key
-			$cache_key = 'kohana::auto_load('.$class.')';
+			$cache_key = 'Kohana::auto_load('.$class.')';
 
 			if (($extension = Kohana::cache($cache_key)) === NULL)
 			{
@@ -918,7 +918,7 @@ final class Kohana {
 				return 'object '.get_class($var);
 			break;
 			case 'array':
-				if (arr::is_assoc($var))
+				if (Arr::is_assoc($var))
 					return print_r($var, TRUE);
 
 				return 'array('.implode(', ', array_map(array(__CLASS__, __FUNCTION__), $var)).')';

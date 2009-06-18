@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::str_ireplace
+ * UTF8::str_ireplace
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -10,14 +10,14 @@
  */
 function _str_ireplace($search, $replace, $str, & $count = NULL)
 {
-	if (utf8::is_ascii($search) AND utf8::is_ascii($replace) AND utf8::is_ascii($str))
+	if (UTF8::is_ascii($search) AND UTF8::is_ascii($replace) AND UTF8::is_ascii($str))
 		return str_ireplace($search, $replace, $str, $count);
 
 	if (is_array($str))
 	{
 		foreach ($str as $key => $val)
 		{
-			$str[$key] = utf8::str_ireplace($search, $replace, $val, $count);
+			$str[$key] = UTF8::str_ireplace($search, $replace, $val, $count);
 		}
 		return $str;
 	}
@@ -32,23 +32,23 @@ function _str_ireplace($search, $replace, $str, & $count = NULL)
 			{
 				if (array_key_exists($k, $replace))
 				{
-					$str = utf8::str_ireplace($search[$k], $replace[$k], $str, $count);
+					$str = UTF8::str_ireplace($search[$k], $replace[$k], $str, $count);
 				}
 				else
 				{
-					$str = utf8::str_ireplace($search[$k], '', $str, $count);
+					$str = UTF8::str_ireplace($search[$k], '', $str, $count);
 				}
 			}
 			else
 			{
-				$str = utf8::str_ireplace($search[$k], $replace, $str, $count);
+				$str = UTF8::str_ireplace($search[$k], $replace, $str, $count);
 			}
 		}
 		return $str;
 	}
 
-	$search = utf8::strtolower($search);
-	$str_lower = utf8::strtolower($str);
+	$search = UTF8::strtolower($search);
+	$str_lower = UTF8::strtolower($str);
 
 	$total_matched_strlen = 0;
 	$i = 0;

@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::stristr
+ * UTF8::stristr
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -10,14 +10,14 @@
  */
 function _stristr($str, $search)
 {
-	if (utf8::is_ascii($str) AND utf8::is_ascii($search))
+	if (UTF8::is_ascii($str) AND UTF8::is_ascii($search))
 		return stristr($str, $search);
 
 	if ($search == '')
 		return $str;
 
-	$str_lower = utf8::strtolower($str);
-	$search_lower = utf8::strtolower($search);
+	$str_lower = UTF8::strtolower($str);
+	$search_lower = UTF8::strtolower($search);
 
 	preg_match('/^(.*?)'.preg_quote($search, '/').'/s', $str_lower, $matches);
 

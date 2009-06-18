@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_url {
+class Kohana_URL {
 
 	public static $suffix = '';
 
@@ -78,7 +78,7 @@ class Kohana_url {
 		}
 
 		// Concat the URL
-		return url::base(TRUE, $protocol).$path.$query.$fragment;
+		return URL::base(TRUE, $protocol).$path.$query.$fragment;
 	}
 
 	/**

@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_cookie {
+class Kohana_Cookie {
 
 	/**
 	 * @var  string  Magic salt to add to the cookie
@@ -60,21 +60,21 @@ class Kohana_cookie {
 		$cookie = $_COOKIE[$key];
 
 		// Find the position of the split between salt and contents
-		$split = strlen(cookie::salt($key, NULL));
+		$split = strlen(Cookie::salt($key, NULL));
 
 		if (isset($cookie[$split]) AND $cookie[$split] === '~')
 		{
 			// Separate the salt and the value
 			list ($hash, $value) = explode('~', $cookie, 2);
 
-			if (cookie::salt($key, $value) === $hash)
+			if (Cookie::salt($key, $value) === $hash)
 			{
 				// Cookie signature is valid
 				return $value;
 			}
 
 			// The cookie signature is invalid, delete it
-			cookie::delete($key);
+			Cookie::delete($key);
 		}
 
 		return $default;
@@ -94,7 +94,7 @@ class Kohana_cookie {
 		if ($expiration === NULL)
 		{
 			// Use the default expiration
-			$expiration = cookie::$expiration;
+			$expiration = Cookie::$expiration;
 		}
 
 		if ($expiration !== 0)
@@ -104,9 +104,9 @@ class Kohana_cookie {
 		}
 
 		// Add the salt to the cookie value
-		$value = cookie::salt($name, $value).'~'.$value;
+		$value = Cookie::salt($name, $value).'~'.$value;
 
-		return setcookie($name, $value, $expiration, cookie::$path, cookie::$domain, cookie::$secure, cookie::$httponly);
+		return setcookie($name, $value, $expiration, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class Kohana_cookie {
 		unset($_COOKIE[$name]);
 
 		// Nullify the cookie and make it expire
-		return cookie::set($name, NULL, -86400);
+		return Cookie::set($name, NULL, -86400);
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Kohana_cookie {
 		// Determine the user agent
 		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 
-		return sha1($agent.$name.$value.cookie::$salt);
+		return sha1($agent.$name.$value.Cookie::$salt);
 	}
 
 	final private function __construct()

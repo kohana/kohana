@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::substr
+ * UTF8::substr
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -10,12 +10,12 @@
  */
 function _substr($str, $offset, $length = NULL)
 {
-	if (utf8::is_ascii($str))
+	if (UTF8::is_ascii($str))
 		return ($length === NULL) ? substr($str, $offset) : substr($str, $offset, $length);
 
 	// Normalize params
 	$str    = (string) $str;
-	$strlen = utf8::strlen($str);
+	$strlen = UTF8::strlen($str);
 	$offset = (int) ($offset < 0) ? max(0, $strlen + $offset) : $offset; // Normalize to positive offset
 	$length = ($length === NULL) ? NULL : (int) $length;
 

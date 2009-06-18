@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::to_unicode
+ * UTF8::to_unicode
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -81,7 +81,7 @@ function _to_unicode($str)
 			else
 			{
 				// Current octet is neither in the US-ASCII range nor a legal first octet of a multi-octet sequence.
-				trigger_error('utf8::to_unicode: Illegal sequence identifier in UTF-8 at byte '.$i, E_USER_WARNING);
+				trigger_error('UTF8::to_unicode: Illegal sequence identifier in UTF-8 at byte '.$i, E_USER_WARNING);
 				return FALSE;
 			}
 		}
@@ -111,7 +111,7 @@ function _to_unicode($str)
 						// Codepoints outside the Unicode range are illegal
 						($mUcs4 > 0x10FFFF))
 					{
-						trigger_error('utf8::to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
+						trigger_error('UTF8::to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
 						return FALSE;
 					}
 
@@ -131,7 +131,7 @@ function _to_unicode($str)
 			{
 				// ((0xC0 & (*in) != 0x80) AND (mState != 0))
 				// Incomplete multi-octet sequence
-				trigger_error('utf8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte '.$i, E_USER_WARNING);
+				trigger_error('UTF8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte '.$i, E_USER_WARNING);
 				return FALSE;
 			}
 		}

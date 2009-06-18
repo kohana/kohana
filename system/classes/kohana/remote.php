@@ -9,7 +9,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_remote {
+class Kohana_Remote {
 
 	// Default curl options
 	public static $default_options = array
@@ -30,7 +30,7 @@ class Kohana_remote {
 	public static function get($url, array $options = NULL)
 	{
 		// Add default options
-		$options = array_merge((array) $options, remote::$default_options);
+		$options = array_merge((array) $options, Remote::$default_options);
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;

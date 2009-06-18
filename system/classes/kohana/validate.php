@@ -1,5 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Array and variable validation.
+ *
+ * @package    Core
+ * @author     Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
+ * @license    http://kohanaphp.com/license.html
+ */
 class Validate extends ArrayObject {
 
 	public static $messages = array(
@@ -56,7 +63,7 @@ class Validate extends ArrayObject {
 	 */
 	public static function min_length($value, $length)
 	{
-		return utf8::strlen($value) >= $length;
+		return UTF8::strlen($value) >= $length;
 	}
 
 	/**
@@ -68,7 +75,7 @@ class Validate extends ArrayObject {
 	 */
 	public static function max_length($value, $length)
 	{
-		return utf8::strlen($value) <= $length;
+		return UTF8::strlen($value) <= $length;
 	}
 
 	/**
@@ -178,7 +185,7 @@ class Validate extends ArrayObject {
 			foreach ($type as $t)
 			{
 				// Test each type for validity
-				if (valid::credit_card($number, $t))
+				if (Validate::credit_card($number, $t))
 					return TRUE;
 			}
 
@@ -406,7 +413,7 @@ class Validate extends ArrayObject {
 	 * Checks if a string is a proper hexadecimal HTML color value. The validation
 	 * is quite flexible as it does not require an initial "#" and also allows for
 	 * the short notation using only three instead of six hexadecimal characters.
-	 * You may want to normalize these values with format::color().
+	 * You may want to normalize these values with Format::color().
 	 *
 	 * @param   string   input string
 	 * @return  boolean
@@ -687,7 +694,7 @@ class Validate extends ArrayObject {
 					// Use a static method call
 					$method = new ReflectionMethod($class, $method);
 
-					// Call $class::$method($this[$field], $param, ...) with Reflection
+					// Call $Class::$method($this[$field], $param, ...) with Reflection
 					$value = $method->invokeArgs(NULL, $params);
 				}
 			}
@@ -732,7 +739,7 @@ class Validate extends ArrayObject {
 					// Use a static method call
 					$method = new ReflectionMethod($class, $method);
 
-					// Call $class::$method($this[$field], $param, ...) with Reflection
+					// Call $Class::$method($this[$field], $param, ...) with Reflection
 					$passed = $method->invokeArgs(NULL, $params);
 				}
 

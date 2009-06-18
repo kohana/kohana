@@ -24,7 +24,7 @@
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
-final class utf8 {
+final class UTF8 {
 
 	// Does the server support UTF-8 natively?
 	public static $server_utf8 = NULL;
@@ -138,7 +138,7 @@ final class utf8 {
 	 */
 	public static function strlen($str)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return mb_strlen($str);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -166,7 +166,7 @@ final class utf8 {
 	 */
 	public static function strpos($str, $search, $offset = 0)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return mb_strpos($str, $search, $offset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -194,7 +194,7 @@ final class utf8 {
 	 */
 	public static function strrpos($str, $search, $offset = 0)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return mb_strrpos($str, $search, $offset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -221,7 +221,7 @@ final class utf8 {
 	 */
 	public static function substr($str, $offset, $length = NULL)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return ($length === NULL) ? mb_substr($str, $offset) : mb_substr($str, $offset, $length);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -270,7 +270,7 @@ final class utf8 {
 	 */
 	public static function strtolower($str)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return mb_strtolower($str);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -295,7 +295,7 @@ final class utf8 {
 	 */
 	public static function strtoupper($str)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return mb_strtoupper($str);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -342,7 +342,7 @@ final class utf8 {
 	 */
 	public static function ucwords($str)
 	{
-		if (utf8::$server_utf8)
+		if (UTF8::$server_utf8)
 			return mb_convert_case($str, MB_CASE_TITLE);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
@@ -710,8 +710,8 @@ final class utf8 {
 
 } // End utf8
 
-if (utf8::$server_utf8 === NULL)
+if (UTF8::$server_utf8 === NULL)
 {
 	// Determine if this server supports UTF-8 natively
-	utf8::$server_utf8 = extension_loaded('mbstring');
+	UTF8::$server_utf8 = extension_loaded('mbstring');
 }

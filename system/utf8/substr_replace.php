@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::substr_replace
+ * UTF8::substr_replace
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -10,10 +10,10 @@
  */
 function _substr_replace($str, $replacement, $offset, $length = NULL)
 {
-	if (utf8::is_ascii($str))
+	if (UTF8::is_ascii($str))
 		return ($length === NULL) ? substr_replace($str, $replacement, $offset) : substr_replace($str, $replacement, $offset, $length);
 
-	$length = ($length === NULL) ? utf8::strlen($str) : (int) $length;
+	$length = ($length === NULL) ? UTF8::strlen($str) : (int) $length;
 	preg_match_all('/./us', $str, $str_array);
 	preg_match_all('/./us', $replacement, $replacement_array);
 

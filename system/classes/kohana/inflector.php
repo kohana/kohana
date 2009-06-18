@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_inflector {
+class Kohana_Inflector {
 
 	// Cached inflections
 	protected static $cache = array();
@@ -24,16 +24,16 @@ class Kohana_inflector {
 	 */
 	public static function uncountable($str)
 	{
-		if (inflector::$uncountable === NULL)
+		if (Inflector::$uncountable === NULL)
 		{
 			// Cache uncountables
-			inflector::$uncountable = Kohana::config('inflector')->uncountable;
+			Inflector::$uncountable = Kohana::config('inflector')->uncountable;
 
 			// Make uncountables mirrored
-			inflector::$uncountable = array_combine(inflector::$uncountable, inflector::$uncountable);
+			Inflector::$uncountable = array_combine(Inflector::$uncountable, Inflector::$uncountable);
 		}
 
-		return isset(inflector::$uncountable[strtolower($str)]);
+		return isset(Inflector::$uncountable[strtolower($str)]);
 	}
 
 	/**
@@ -61,19 +61,19 @@ class Kohana_inflector {
 		// Cache key name
 		$key = 'singular_'.$str.$count;
 
-		if (isset(inflector::$cache[$key]))
-			return inflector::$cache[$key];
+		if (isset(Inflector::$cache[$key]))
+			return Inflector::$cache[$key];
 
-		if (inflector::uncountable($str))
-			return inflector::$cache[$key] = $str;
+		if (Inflector::uncountable($str))
+			return Inflector::$cache[$key] = $str;
 
-		if (empty(inflector::$irregular))
+		if (empty(Inflector::$irregular))
 		{
 			// Cache irregular words
-			inflector::$irregular = Kohana::config('inflector')->irregular;
+			Inflector::$irregular = Kohana::config('inflector')->irregular;
 		}
 
-		if ($irregular = array_search($str, inflector::$irregular))
+		if ($irregular = array_search($str, Inflector::$irregular))
 		{
 			$str = $irregular;
 		}
@@ -91,7 +91,7 @@ class Kohana_inflector {
 			$str = substr($str, 0, -1);
 		}
 
-		return inflector::$cache[$key] = $str;
+		return Inflector::$cache[$key] = $str;
 	}
 
 	/**
@@ -118,21 +118,21 @@ class Kohana_inflector {
 		// Cache key name
 		$key = 'plural_'.$str.$count;
 
-		if (isset(inflector::$cache[$key]))
-			return inflector::$cache[$key];
+		if (isset(Inflector::$cache[$key]))
+			return Inflector::$cache[$key];
 
-		if (inflector::uncountable($str))
-			return inflector::$cache[$key] = $str;
+		if (Inflector::uncountable($str))
+			return Inflector::$cache[$key] = $str;
 
-		if (empty(inflector::$irregular))
+		if (empty(Inflector::$irregular))
 		{
 			// Cache irregular words
-			inflector::$irregular = Kohana::config('inflector')->irregular;
+			Inflector::$irregular = Kohana::config('inflector')->irregular;
 		}
 
-		if (isset(inflector::$irregular[$str]))
+		if (isset(Inflector::$irregular[$str]))
 		{
-			$str = inflector::$irregular[$str];
+			$str = Inflector::$irregular[$str];
 		}
 		elseif (preg_match('/[sxz]$/', $str) OR preg_match('/[^aeioudgkprt]h$/', $str))
 		{
@@ -149,7 +149,7 @@ class Kohana_inflector {
 		}
 
 		// Set the cache and return
-		return inflector::$cache[$key] = $str;
+		return Inflector::$cache[$key] = $str;
 	}
 
 	/**

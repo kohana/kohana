@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_date {
+class Kohana_Date {
 
 	// Second amounts for various time increments
 	const YEAR   = 31556926;
@@ -34,7 +34,7 @@ class Kohana_date {
 		}
 
 		// Set the cache key, matches the method name
-		$cache_key = "date::offset({$remote},{$local})";
+		$cache_key = "Date::offset({$remote},{$local})";
 
 		if (($offset = Kohana::cache($cache_key)) === NULL)
 		{
@@ -91,7 +91,7 @@ class Kohana_date {
 		// we choose to re-use seconds(), rather than creating an entirely new
 		// function. Shhhh, it's cheating! ;) There are several more of these
 		// in the following methods.
-		return date::seconds($step);
+		return Date::seconds($step);
 	}
 
 	/**
@@ -211,7 +211,7 @@ class Kohana_date {
 	 */
 	public static function months()
 	{
-		return date::hours();
+		return Date::hours();
 	}
 
 	/**
@@ -270,32 +270,32 @@ class Kohana_date {
 
 		if (isset($years))
 		{
-			$timespan -= date::YEAR * ($years = (int) floor($timespan / date::YEAR));
+			$timespan -= Date::YEAR * ($years = (int) floor($timespan / Date::YEAR));
 		}
 
 		if (isset($months))
 		{
-			$timespan -= date::MONTH * ($months = (int) floor($timespan / date::MONTH));
+			$timespan -= Date::MONTH * ($months = (int) floor($timespan / Date::MONTH));
 		}
 
 		if (isset($weeks))
 		{
-			$timespan -= date::WEEK * ($weeks = (int) floor($timespan / date::WEEK));
+			$timespan -= Date::WEEK * ($weeks = (int) floor($timespan / Date::WEEK));
 		}
 
 		if (isset($days))
 		{
-			$timespan -= date::DAY * ($days = (int) floor($timespan / date::DAY));
+			$timespan -= Date::DAY * ($days = (int) floor($timespan / Date::DAY));
 		}
 
 		if (isset($hours))
 		{
-			$timespan -= date::HOUR * ($hours = (int) floor($timespan / date::HOUR));
+			$timespan -= Date::HOUR * ($hours = (int) floor($timespan / Date::HOUR));
 		}
 
 		if (isset($minutes))
 		{
-			$timespan -= date::MINUTE * ($minutes = (int) floor($timespan / date::MINUTE));
+			$timespan -= Date::MINUTE * ($minutes = (int) floor($timespan / Date::MINUTE));
 		}
 
 		// Seconds ago, 1
@@ -344,79 +344,79 @@ class Kohana_date {
 		// Determine the difference in seconds
 		$offset = abs(time() - $timestamp);
 
-		if ($offset <= date::MINUTE)
+		if ($offset <= Date::MINUTE)
 		{
 			$span = 'moments';
 		}
-		elseif ($offset < (date::MINUTE * 20))
+		elseif ($offset < (Date::MINUTE * 20))
 		{
 			$span = 'a few minutes';
 		}
-		elseif ($offset < date::HOUR)
+		elseif ($offset < Date::HOUR)
 		{
 			$span = 'less than an hour';
 		}
-		elseif ($offset < (date::HOUR * 4))
+		elseif ($offset < (Date::HOUR * 4))
 		{
 			$span = 'a couple of hours';
 		}
-		elseif ($offset < date::DAY)
+		elseif ($offset < Date::DAY)
 		{
 			$span = 'less than a day';
 		}
-		elseif ($offset < (date::DAY * 2))
+		elseif ($offset < (Date::DAY * 2))
 		{
 			$span = 'about a day';
 		}
-		elseif ($offset < (date::DAY * 4))
+		elseif ($offset < (Date::DAY * 4))
 		{
 			$span = 'a couple of days';
 		}
-		elseif ($offset < date::WEEK)
+		elseif ($offset < Date::WEEK)
 		{
 			$span = 'less than a week';
 		}
-		elseif ($offset < (date::WEEK * 2))
+		elseif ($offset < (Date::WEEK * 2))
 		{
 			$span = 'about a week';
 		}
-		elseif ($offset < date::MONTH)
+		elseif ($offset < Date::MONTH)
 		{
 			$span = 'less than a month';
 		}
-		elseif ($offset < (date::MONTH * 2))
+		elseif ($offset < (Date::MONTH * 2))
 		{
 			$span = 'about a month';
 		}
-		elseif ($offset < (date::MONTH * 4))
+		elseif ($offset < (Date::MONTH * 4))
 		{
 			$span = 'a couple of months';
 		}
-		elseif ($offset < date::YEAR)
+		elseif ($offset < Date::YEAR)
 		{
 			$span = 'less than a year';
 		}
-		elseif ($offset < (date::YEAR * 2))
+		elseif ($offset < (Date::YEAR * 2))
 		{
 			$span = 'about a year';
 		}
-		elseif ($offset < (date::YEAR * 4))
+		elseif ($offset < (Date::YEAR * 4))
 		{
 			$span = 'a couple of years';
 		}
-		elseif ($offset < (date::YEAR * 8))
+		elseif ($offset < (Date::YEAR * 8))
 		{
 			$span = 'a few years';
 		}
-		elseif ($offset < (date::YEAR * 12))
+		elseif ($offset < (Date::YEAR * 12))
 		{
 			$span = 'about a decade';
 		}
-		elseif ($offset < (date::YEAR * 24))
+		elseif ($offset < (Date::YEAR * 24))
 		{
 			$span = 'a couple of decades';
 		}
-		elseif ($offset < (date::YEAR * 64))
+		elseif ($offset < (Date::YEAR * 64))
 		{
 			$span = 'several decades';
 		}

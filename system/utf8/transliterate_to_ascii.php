@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::transliterate_to_ascii
+ * UTF8::transliterate_to_ascii
  *
  * @package    Kohana
  * @author     Kohana Team

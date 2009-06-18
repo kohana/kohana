@@ -55,7 +55,7 @@ class Kohana_Session_Database extends Session {
 	 */
 	public function _read($id = NULL)
 	{
-		if ($id OR $id = cookie::get($this->_name))
+		if ($id OR $id = Cookie::get($this->_name))
 		{
 			$result = DB::query(Database::SELECT, "SELECT data FROM {$this->_table} WHERE session_id = :id LIMIT 1")
 				->set(':id', $id)
@@ -143,7 +143,7 @@ class Kohana_Session_Database extends Session {
 		$this->_update_id = $this->_session_id;
 
 		// Update the cookie with the new session id
-		cookie::set($this->_name, $this->_session_id, $this->_lifetime);
+		Cookie::set($this->_name, $this->_session_id, $this->_lifetime);
 
 		return TRUE;
 	}

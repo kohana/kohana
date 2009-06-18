@@ -119,7 +119,7 @@ class Kohana_Route {
 		$this->_uri = $uri;
 
 		// Set the cache key
-		$cache_key = 'route::compile("'.$uri.'")';
+		$cache_key = 'Route::compile("'.$uri.'")';
 
 		if (($regex = Kohana::cache($cache_key)) === NULL)
 		{

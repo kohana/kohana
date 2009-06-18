@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::strlen
+ * UTF8::strlen
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -10,7 +10,7 @@
  */
 function _strlen($str)
 {
-	if (utf8::is_ascii($str))
+	if (UTF8::is_ascii($str))
 		return strlen($str);
 
 	return strlen(utf8_decode($str));

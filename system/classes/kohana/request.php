@@ -106,7 +106,7 @@ class Kohana_Request {
 				Request::$protocol = 'cli';
 
 				// Get the command line options
-				$options = cli::options('uri', 'method', 'get', 'post');
+				$options = CLI::options('uri', 'method', 'get', 'post');
 
 				if (isset($options['uri']))
 				{
@@ -663,7 +663,7 @@ class Kohana_Request {
 		$this->set_header('content-disposition', 'attachment; filename="'.$nicename.'"');
 
 		// Set the content type of the response
-		$this->set_header('content-type', file::mime($filename));
+		$this->set_header('content-type', File::mime($filename));
 
 		// Set the content size in bytes
 		$this->set_header('content-length', $size);

@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::rtrim
+ * UTF8::rtrim
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -13,7 +13,7 @@ function _rtrim($str, $charlist = NULL)
 	if ($charlist === NULL)
 		return rtrim($str);
 
-	if (utf8::is_ascii($charlist))
+	if (UTF8::is_ascii($charlist))
 		return rtrim($str, $charlist);
 
 	$charlist = preg_replace('#[-\[\]:\\\\^/]#', '\\\\$0', $charlist);

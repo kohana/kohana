@@ -11,10 +11,10 @@
  */
 function __($string, array $values = NULL)
 {
-	if (i18n::$lang !== i18n::$default_lang)
+	if (I18n::$lang !== I18n::$default_lang)
 	{
 		// Get the translation for this string
-		$string = i18n::get($string);
+		$string = I18n::get($string);
 	}
 
 	return empty($values) ? $string : strtr($string, $values);

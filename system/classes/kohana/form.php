@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_form {
+class Kohana_Form {
 
 	/**
 	 * Generates an opening HTML form tag.
@@ -32,7 +32,7 @@ class Kohana_form {
 		elseif (strpos($action, '://') === FALSE)
 		{
 			// Make the URI absolute
-			$action = url::site($action);
+			$action = URL::site($action);
 		}
 
 		// Add the form action to the attributes
@@ -47,7 +47,7 @@ class Kohana_form {
 			$attributes['method'] = 'post';
 		}
 
-		return '<form'.html::attributes($attributes).'>';
+		return '<form'.HTML::attributes($attributes).'>';
 	}
 
 	/**
@@ -83,7 +83,7 @@ class Kohana_form {
 			$attributes['type'] = 'text';
 		}
 
-		return '<input'.html::attributes($attributes).' />';
+		return '<input'.HTML::attributes($attributes).' />';
 	}
 
 	/**
@@ -98,7 +98,7 @@ class Kohana_form {
 	{
 		$attributes['type'] = 'hidden';
 
-		return form::input($name, $value, $attributes);
+		return Form::input($name, $value, $attributes);
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Kohana_form {
 	{
 		$attributes['type'] = 'password';
 
-		return form::input($name, $value, $attributes);
+		return Form::input($name, $value, $attributes);
 	}
 
 	/**
@@ -128,7 +128,7 @@ class Kohana_form {
 	{
 		$attributes['type'] = 'file';
 
-		return form::input($name, NULL, $attributes);
+		return Form::input($name, NULL, $attributes);
 	}
 
 	/**
@@ -150,7 +150,7 @@ class Kohana_form {
 			$attributes['checked'] = 'checked';
 		}
 
-		return form::input($name, $value, $attributes);
+		return Form::input($name, $value, $attributes);
 	}
 
 	/**
@@ -172,7 +172,7 @@ class Kohana_form {
 			$attributes['checked'] = 'checked';
 		}
 
-		return form::input($name, $value, $attributes);
+		return Form::input($name, $value, $attributes);
 	}
 
 	/**
@@ -192,7 +192,7 @@ class Kohana_form {
 		// Make the textarea body HTML-safe
 		$body = htmlspecialchars($title, ENT_NOQUOTES, Kohana::$charset, $double_encode);
 
-		return '<textarea'.html::attributes($attributes).'>'.$body.'</textarea>';
+		return '<textarea'.HTML::attributes($attributes).'>'.$body.'</textarea>';
 	}
 
 	/**
@@ -241,13 +241,13 @@ class Kohana_form {
 						$title = htmlspecialchars($_name, ENT_NOQUOTES, Kohana::$charset, FALSE);
 
 						// Change the option to the HTML string
-						$_options[] = '<option'.html::attributes($option).'>'.$title.'</option>';
+						$_options[] = '<option'.HTML::attributes($option).'>'.$title.'</option>';
 					}
 
 					// Compile the options into a string
 					$_options = "\n".implode("\n", $_options)."\n";
 
-					$options[$value] = '<optgroup'.html::attributes($group).'>'.$_options.'</optgroup>';
+					$options[$value] = '<optgroup'.HTML::attributes($group).'>'.$_options.'</optgroup>';
 				}
 				else
 				{
@@ -264,7 +264,7 @@ class Kohana_form {
 					$title = htmlspecialchars($name, ENT_NOQUOTES, Kohana::$charset, FALSE);
 
 					// Change the option to the HTML string
-					$options[$value] = '<option'.html::attributes($option).'>'.$title.'</option>';
+					$options[$value] = '<option'.HTML::attributes($option).'>'.$title.'</option>';
 				}
 			}
 
@@ -272,7 +272,7 @@ class Kohana_form {
 			$options = "\n".implode("\n", $options)."\n";
 		}
 
-		return '<select'.html::attributes($attributes).'>'.$options.'</select>';
+		return '<select'.HTML::attributes($attributes).'>'.$options.'</select>';
 	}
 
 	/**
@@ -287,7 +287,7 @@ class Kohana_form {
 	{
 		$attributes['type'] = 'submit';
 
-		return form::input($name, $value, $attributes);
+		return Form::input($name, $value, $attributes);
 	}
 
 	/**
@@ -304,7 +304,7 @@ class Kohana_form {
 		// Set the input name
 		$attributes['name'] = $name;
 
-		return '<button'.html::attributes($attributes).'>'.$body.'</button>';
+		return '<button'.HTML::attributes($attributes).'>'.$body.'</button>';
 	}
 
 	/**
@@ -326,7 +326,7 @@ class Kohana_form {
 		// Set the label target
 		$attributes['for'] = $input;
 
-		return '<label'.html::attributes($attributes).'>'.$text.'</label>';
+		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
 	}
 
 	final private function __construct()

@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_html {
+class Kohana_HTML {
 
 	/**
 	 * @var  array  preferred order of attributes
@@ -70,13 +70,13 @@ class Kohana_html {
 		if ($uri === '')
 		{
 			// Only use the base URL
-			$uri = url::base(FALSE, $protocol);
+			$uri = URL::base(FALSE, $protocol);
 		}
 		else
 		{
 			if (strpos($uri, '://') !== FALSE)
 			{
-				if (html::$windowed_urls === TRUE AND empty($attributes['target']))
+				if (HTML::$windowed_urls === TRUE AND empty($attributes['target']))
 				{
 					// Make the link open in a new window
 					$attributes['target'] = '_blank';
@@ -85,14 +85,14 @@ class Kohana_html {
 			elseif ($uri[0] !== '#')
 			{
 				// Make the URI absolute for non-id anchors
-				$uri = url::site($uri, $protocol);
+				$uri = URL::site($uri, $protocol);
 			}
 		}
 
 		// Add the sanitized link to the attributes
 		$attributes['href'] = $uri;
 
-		return '<a'.html::attributes($attributes).'>'.$title.'</a>';
+		return '<a'.HTML::attributes($attributes).'>'.$title.'</a>';
 	}
 
 	/**
@@ -114,9 +114,9 @@ class Kohana_html {
 		}
 
 		// Add the file link to the attributes
-		$attributes['href'] = url::base(FALSE, $protocol).$file;
+		$attributes['href'] = URL::base(FALSE, $protocol).$file;
 
-		return '<a'.html::attributes($attributes).'">'.$title.'</a>';
+		return '<a'.HTML::attributes($attributes).'">'.$title.'</a>';
 
 	}
 
@@ -157,7 +157,7 @@ class Kohana_html {
 	public static function mailto($email, $title = NULL, array $attributes = NULL)
 	{
 		// Obfuscate email address
-		$email = html::email($email);
+		$email = HTML::email($email);
 
 		if ($title === NULL)
 		{
@@ -165,7 +165,7 @@ class Kohana_html {
 			$title = $email;
 		}
 
-		return '<a href="&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email.'"'.html::attributes($attributes).'>'.$title.'</a>';
+		return '<a href="&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email.'"'.HTML::attributes($attributes).'>'.$title.'</a>';
 	}
 
 	/**
@@ -180,7 +180,7 @@ class Kohana_html {
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = url::base(FALSE).$file;
+			$file = URL::base(FALSE).$file;
 		}
 
 		// Set the stylesheet link
@@ -192,7 +192,7 @@ class Kohana_html {
 		// Set the stylesheet type
 		$attributes['type'] = 'text/css';
 
-		return '<link'.html::attributes($attributes).' />';
+		return '<link'.HTML::attributes($attributes).' />';
 	}
 
 	/**
@@ -207,7 +207,7 @@ class Kohana_html {
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = url::base(FALSE).$file;
+			$file = URL::base(FALSE).$file;
 		}
 
 		// Set the script link
@@ -216,7 +216,7 @@ class Kohana_html {
 		// Set the script type
 		$attributes['type'] = 'text/javascript';
 
-		return '<script'.html::attributes($attributes).'></script>';
+		return '<script'.HTML::attributes($attributes).'></script>';
 	}
 
 	/**
@@ -231,13 +231,13 @@ class Kohana_html {
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = url::base(FALSE).$file;
+			$file = URL::base(FALSE).$file;
 		}
 
 		// Add the image link
 		$attributes['src'] = $file;
 
-		return '<img'.html::attributes($attributes).' />';
+		return '<img'.HTML::attributes($attributes).' />';
 	}
 
 	/**
@@ -252,7 +252,7 @@ class Kohana_html {
 			return '';
 
 		$sorted = array();
-		foreach (html::$attribute_order as $key)
+		foreach (HTML::$attribute_order as $key)
 		{
 			if (isset($attributes[$key]))
 			{

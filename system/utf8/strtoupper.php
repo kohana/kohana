@@ -1,6 +1,6 @@
 <?php
 /**
- * utf8::strtoupper
+ * UTF8::strtoupper
  *
  * @package    Kohana
  * @author     Kohana Team
@@ -10,7 +10,7 @@
  */
 function _strtoupper($str)
 {
-	if (utf8::is_ascii($str))
+	if (UTF8::is_ascii($str))
 		return strtoupper($str);
 
 	static $UTF8_LOWER_TO_UPPER = NULL;
@@ -64,7 +64,7 @@ function _strtoupper($str)
 		);
 	}
 
-	$uni = utf8::to_unicode($str);
+	$uni = UTF8::to_unicode($str);
 
 	if ($uni === FALSE)
 		return FALSE;
@@ -77,5 +77,5 @@ function _strtoupper($str)
 		}
 	}
 
-	return utf8::from_unicode($uni);
+	return UTF8::from_unicode($uni);
 }

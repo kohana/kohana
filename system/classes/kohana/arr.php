@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_arr {
+class Kohana_Arr {
 
 	/**
 	 * Tests if an array is associative or or not.
@@ -82,7 +82,7 @@ class Kohana_arr {
 					if (is_array($val))
 					{
 						// Arrays are merged recursively
-						$result[$key] = arr::merge($result[$key], $val);
+						$result[$key] = Arr::merge($result[$key], $val);
 					}
 					elseif (is_int($key))
 					{
@@ -111,7 +111,7 @@ class Kohana_arr {
 	 * Note that this function does not validate the callback string.
 	 *
 	 *     // Get the callback function and parameters
-	 *     list($func, $params) = arr::callback('foo::bar[apple,orange]');
+	 *     list($func, $params) = Arr::callback('Foo::bar[apple,orange]');
 	 *
 	 *     // Get the result of the callback
 	 *     $result = call_user_func_array($func, $params);
