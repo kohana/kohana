@@ -55,7 +55,7 @@ class Kohana_Config_Core extends ArrayObject {
 		if ($cache === NULL)
 		{
 			// Use the global caching
-			$cache = Kohana::$cached;
+			$cache = Kohana::$caching;
 		}
 
 		if ($cache === FALSE)
