@@ -493,7 +493,7 @@ final class Kohana {
 	 */
 	public static function list_files($directory = NULL)
 	{
-		if ( ! empty($directory))
+		if ($directory !== NULL)
 		{
 			// Add the directory separator
 			$directory .= DIRECTORY_SEPARATOR;
