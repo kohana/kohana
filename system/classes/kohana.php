@@ -799,7 +799,7 @@ final class Kohana {
 					$var = $var ? 'TRUE' : 'FALSE';
 				break;
 				default:
-					$var = htmlspecialchars(print_r($var, TRUE), NULL, self::$charset, TRUE);
+					$var = htmlspecialchars(print_r($var, TRUE), NULL, self::$charset);
 				break;
 			}
 
