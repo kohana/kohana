@@ -15,8 +15,8 @@
 final class Kohana {
 
 	// Release version and codename
-	const VERSION   = '3.0';
-	const CODENAME  = 'renaissance';
+	const VERSION  = '3.0';
+	const CODENAME = 'renaissance';
 
 	// Log message types
 	const ERROR = 'ERROR';
@@ -45,7 +45,7 @@ final class Kohana {
 	public static $is_cli = FALSE;
 
 	/**
-	 * @var  boolean   Windows environment?
+	 * @var  boolean  Windows environment?
 	 */
 	public static $is_windows = FALSE;
 
@@ -103,7 +103,7 @@ final class Kohana {
 	 *
 	 * > boolean "display_errors" : display errors and exceptions
 	 * > boolean "log_errors"     : log errors and exceptions
-	 * > boolean "cache_paths"    : cache the location of files between requests
+	 * > boolean "caching"        : cache the location of files between requests
 	 * > string  "charset"        : character set used for all input and output
 	 *
 	 * @param   array   global settings
@@ -220,7 +220,7 @@ final class Kohana {
 	/**
 	 * Recursively sanitizes an input variable:
 	 *
-	 * - Removes slashes if magic quotes are enabled
+	 * - Strips slashes if magic quotes are enabled
 	 * - Normalizes all newlines to LF
 	 *
 	 * @param   mixed  any variable
@@ -669,8 +669,8 @@ final class Kohana {
 	 * PHP error handler, converts all errors into ErrorExceptions. This handler
 	 * respects error_reporting settings.
 	 *
-	 * @throws   ErrorException
-	 * @return   TRUE
+	 * @throws  ErrorException
+	 * @return  TRUE
 	 */
 	public static function error_handler($code, $error, $file = NULL, $line = NULL)
 	{
@@ -721,7 +721,7 @@ final class Kohana {
 
 			if ($e instanceof ErrorException AND version_compare(PHP_VERSION, '5.3', '<'))
 			{
-				// Work around for a bug in ErrorException::getTrace() that exists in
+				// Workaround for a bug in ErrorException::getTrace() that exists in
 				// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
 				for ($i = count($trace) - 1; $i > 0; --$i)
 				{
