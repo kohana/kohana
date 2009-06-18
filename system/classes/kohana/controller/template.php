@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Controller_Template extends Controller {
+abstract class Kohana_Controller_Template extends Controller {
 
 	/**
 	 * @var  string  page template
