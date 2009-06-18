@@ -95,7 +95,7 @@ class Kohana_View {
 	 * @param   string  variable name
 	 * @return  mixed
 	 */
-	public function __get($key)
+	public function & __get($key)
 	{
 		if (isset($this->_data[$key]))
 		{
