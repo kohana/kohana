@@ -10,3 +10,6 @@
 [submodule "modules/paypal"]
 	path = modules/paypal
 	url = git://github.com/shadowhand/kohana-paypal.git
+[submodule "modules/orm"]
+	path = modules/orm
+	url = git://github.com/jheathco/kohana-orm.git
