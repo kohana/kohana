@@ -152,7 +152,7 @@ class Kohana_View {
 	{
 		if (($path = Kohana::find_file('views', $file)) === FALSE)
 		{
-			throw new View_Exception('The requested view :file could not be found', array(
+			throw new Kohana_View_Exception('The requested view :file could not be found', array(
 				':file' => $file,
 			));
 		}
@@ -268,7 +268,7 @@ class Kohana_View {
 	{
 		if (empty($this->_file))
 		{
-			throw new View_Exception('You must set the file to use within your view before rendering');
+			throw new Kohana_View_Exception('You must set the file to use within your view before rendering');
 		}
 
 		// Combine global and local data. Global variables with the same name

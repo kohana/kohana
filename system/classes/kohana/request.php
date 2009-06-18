@@ -446,7 +446,7 @@ class Kohana_Request {
 			}
 		}
 
-		throw new Request_Exception('Unable to find a route to handle :uri', array(':uri' => $uri));
+		throw new Kohana_Request_Exception('Unable to find a route to handle :uri', array(':uri' => $uri));
 	}
 
 	/**
