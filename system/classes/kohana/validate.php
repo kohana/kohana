@@ -79,6 +79,18 @@ class Validate extends ArrayObject {
 	}
 
 	/**
+	 * Checks that a field is exactly the right length.
+	 *
+	 * @param   string   value
+	 * @param   integer  exact length required
+	 * @return  boolean
+	 */
+	public static function exact_length($value, $length)
+	{
+		return UTF8::strlen($value) === $length;
+	}
+
+	/**
 	 * Check an email address for correct format.
 	 *
 	 * @see  http://www.iamcal.com/publish/articles/php/parsing_email/
