@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-abstract class Session_Core {
+abstract class Kohana_Session {
 
 	// Session instances
 	protected static $instances = array();

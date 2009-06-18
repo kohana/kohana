@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class inflector_Core {
+class Kohana_inflector {
 
 	// Cached inflections
 	protected static $cache = array();

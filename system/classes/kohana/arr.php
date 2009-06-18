@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class arr_core {
+class Kohana_arr {
 
 	/**
 	 * Tests if an array is associative or or not.

@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class file_Core {
+class Kohana_file {
 
 	/**
 	 * Attempt to get the mime type from a file. This method is horribly

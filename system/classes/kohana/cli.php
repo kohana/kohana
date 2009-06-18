@@ -7,7 +7,7 @@
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class cli_Core {
+class Kohana_cli {
 
 	/**
 	 * Returns one or more command-line options. Options are specified using

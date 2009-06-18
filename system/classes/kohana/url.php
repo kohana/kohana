@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class url_Core {
+class Kohana_url {
 
 	public static $suffix = '';
 

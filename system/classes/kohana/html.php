@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class html_Core {
+class Kohana_html {
 
 	/**
 	 * @var  array  preferred order of attributes

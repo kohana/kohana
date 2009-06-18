@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-abstract class Model_Core {
+abstract class Kohana_Model {
 
 	// Database instance
 	protected $_db = 'default';

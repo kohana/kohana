@@ -7,7 +7,7 @@
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Profiler_Core {
+class Kohana_Profiler {
 
 	// Collected benchmarks
 	protected static $_marks = array();

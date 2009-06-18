@@ -9,7 +9,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class remote_Core {
+class Kohana_remote {
 
 	// Default curl options
 	public static $default_options = array

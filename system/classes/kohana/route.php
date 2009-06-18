@@ -32,7 +32,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Route_Core {
+class Kohana_Route {
 
 	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
 	const REGEX_SEGMENT = '[^/.,;?]++';

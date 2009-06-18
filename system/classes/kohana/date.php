@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class date_Core {
+class Kohana_date {
 
 	// Second amounts for various time increments
 	const YEAR   = 31556926;

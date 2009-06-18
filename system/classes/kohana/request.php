@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Request_Core {
+class Kohana_Request {
 
 	// HTTP status codes and messages
 	public static $messages = array(

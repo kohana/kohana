@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Session_Native_Core extends Session {
+class Kohana_Session_Native extends Session {
 
 	/**
 	 * Starts the session and references the $_SESSION global internally.

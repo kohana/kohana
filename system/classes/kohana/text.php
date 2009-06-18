@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class text_Core {
+class Kohana_text {
 
 	/**
 	 * Limits a phrase to a given number of words.

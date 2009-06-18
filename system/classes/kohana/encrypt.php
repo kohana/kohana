@@ -9,7 +9,7 @@
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Encrypt_Core {
+class Kohana_Encrypt {
 
 	/**
 	 * @var  array  Encrypt class instances

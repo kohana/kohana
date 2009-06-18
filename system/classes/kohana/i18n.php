@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class i18n_Core {
+class Kohana_i18n {
 
 	// The default language of all messages
 	public static $default_lang = 'en-US';

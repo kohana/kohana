@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class cookie_Core {
+class Kohana_cookie {
 
 	/**
 	 * @var  string  Magic salt to add to the cookie

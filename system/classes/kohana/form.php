@@ -7,7 +7,7 @@
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class form_Core {
+class Kohana_form {
 
 	/**
 	 * Generates an opening HTML form tag.
