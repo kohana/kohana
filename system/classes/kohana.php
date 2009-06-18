@@ -35,11 +35,6 @@ final class Kohana {
 	public static $environment = 'development';
 
 	/**
-	 * @var  boolean  enable core profiling
-	 */
-	public static $profile = TRUE;
-
-	/**
 	 * @var  boolean  command line environment?
 	 */
 	public static $is_cli = FALSE;
@@ -78,6 +73,11 @@ final class Kohana {
 	 * @var  boolean  enabling internal caching?
 	 */
 	public static $caching = FALSE;
+
+	/**
+	 * @var  boolean  enable core profiling?
+	 */
+	public static $profiling = TRUE;
 
 	/**
 	 * @var  object  logging object
@@ -119,10 +119,10 @@ final class Kohana {
 		if (isset($settings['profile']))
 		{
 			// Enable profiling
-			self::$profile = (bool) $settings['profile'];
+			self::$profiling = (bool) $settings['profile'];
 		}
 
-		if (self::$profile === TRUE)
+		if (self::$profiling === TRUE)
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
@@ -299,7 +299,7 @@ final class Kohana {
 		if ($modules === NULL)
 			return self::$_modules;
 
-		if (self::$profile === TRUE)
+		if (self::$profiling === TRUE)
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
@@ -363,7 +363,7 @@ final class Kohana {
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
-		if (self::$profile === TRUE AND class_exists('Profiler', FALSE))
+		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);

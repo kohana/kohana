@@ -730,8 +730,11 @@ class Kohana_Request {
 			$prefix .= str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
 		}
 
-		// Start benchmarking
-		$benchmark = Profiler::start('Requests', $this->uri);
+		if (Kohana::$profiling === TRUE)
+		{
+			// Start benchmarking
+			$benchmark = Profiler::start('Requests', $this->uri);
+		}
 
 		try
 		{
@@ -770,8 +773,11 @@ class Kohana_Request {
 			throw $e;
 		}
 
-		// Stop the benchmark
-		Profiler::stop($benchmark);
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			Profiler::stop($benchmark);
+		}
 
 		return $this;
 	}
