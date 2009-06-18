@@ -981,7 +981,7 @@ final class Kohana {
 				else
 				{
 					// Sanitize the function arguments
-					$function .= '('.implode(', ', $args = array_map('Kohana::debug_var', $step['args'])).')';
+					$function .= '('.implode(', ', $args = array_map(array('Kohana', 'debug_var'), $step['args'])).')';
 				}
 			}
 
