@@ -333,10 +333,10 @@ final class Kohana {
 
 		foreach (self::$_modules as $path)
 		{
-			if (is_file($path.'init'.EXT))
+			if (is_file($path.'/init'.EXT))
 			{
 				// Include the module initialization file once
-				require_once $path.'init'.EXT;
+				require_once $path.'/init'.EXT;
 			}
 		}
 
