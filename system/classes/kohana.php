@@ -325,17 +325,28 @@ final class Kohana {
 		// Finish the include paths by adding SYSPATH
 		$paths[] = SYSPATH;
 
+		// Set the new include paths
+		self::$_paths = $paths;
+
+		// Set the current module list
+		self::$_modules = $modules;
+
+		foreach (self::$_modules as $path)
+		{
+			if (file_exists($path.'init'.EXT))
+			{
+				// Include the module initialization file once
+				require_once $path.'init'.EXT;
+			}
+		}
+
 		if (isset($benchmark))
 		{
 			// Stop the benchmark
 			Profiler::stop($benchmark);
 		}
 
-		// Set the new include paths
-		self::$_paths = $paths;
-
-		// Set the current module list
-		return self::$_modules = $modules;
+		return self::$_modules;
 	}
 
 	/**
