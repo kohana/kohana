@@ -753,7 +753,7 @@ final class Kohana {
 					$var = $var ? 'TRUE' : 'FALSE';
 				break;
 				default:
-					$var = htmlspecialchars(print_r($var, TRUE), NULL, self::$charset);
+					$var = htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, self::$charset);
 				break;
 			}
 
@@ -827,7 +827,7 @@ final class Kohana {
 			if ($line >= $range['start'])
 			{
 				// Trim whitespace and sanitize the row
-				$row = htmlspecialchars(rtrim($row));
+				$row = htmlspecialchars(rtrim($row), ENT_NOQUOTES, self::$charset);
 
 				if ($line === $line_number)
 				{
