@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Validate extends ArrayObject {
+class Kohana_Validate extends ArrayObject {
 
 	public static $messages = array(
 		'required'    => ':field is required',
