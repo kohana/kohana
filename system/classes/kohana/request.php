@@ -80,6 +80,11 @@ class Kohana_Request {
 	public static $referrer;
 
 	/**
+	 * @var  string  client IP address
+	 */
+	public static $client_ip = '0.0.0.0';
+
+	/**
 	 * @var  boolean  AJAX-generated request
 	 */
 	public static $is_ajax = FALSE;
@@ -156,6 +161,24 @@ class Kohana_Request {
 				{
 					// There is a referrer for this request
 					Request::$referrer = $_SERVER['HTTP_REFERER'];
+				}
+
+				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+				{
+					// Use the forwarded IP address, typically set when the
+					// client is using a proxy server.
+					Request::$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				}
+				elseif (isset($_SERVER['HTTP_CLIENT_IP']))
+				{
+					// Use the forwarded IP address, typically set when the
+					// client is using a proxy server.
+					Request::$client_ip = $_SERVER['HTTP_CLIENT_IP'];
+				}
+				elseif (isset($_SERVER['REMOTE_ADDR']))
+				{
+					// The remote IP address
+					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
 				if (Request::$method !== 'GET' AND Request::$method !== 'POST')
