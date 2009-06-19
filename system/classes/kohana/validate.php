@@ -763,11 +763,8 @@ class Kohana_Validate extends ArrayObject {
 						$rule = 'default';
 					}
 
-					if (is_array($params))
-					{
-						// Make a text list of the parameters
-						$params = implode(', ', $params);
-					}
+					// Make a text list of the parameters without the value
+					$params = implode(', ', array_slice($params, 1));
 
 					// Translate the field name
 					$field = __($this->labels[$field]);
