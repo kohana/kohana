@@ -7,14 +7,11 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Database_Query_Core {
-
-	// Enable profiling?
-	public $profile = TRUE;
+class Database_Query {
 
 	protected $_type;
 	protected $_sql;
-	protected $_values = array();
+	protected $_parameters = array();
 
 	public function __construct($type, $sql)
 	{
@@ -22,10 +19,18 @@ class Database_Query_Core {
 		$this->_sql = $sql;
 	}
 
-	public function __toString()
+	final public function __toString()
 	{
-		// Return the SQL of this query
-		return $this->_sql;
+		try
+		{
+			// Return the SQL string
+			return $this->compile(Database::instance());
+		}
+		catch (Exception $e)
+		{
+			// Return the exception message
+			return $e->getMessage().' in '.Kohana::debug_path($e->getFile()).' [ '.$e->getLine().' ]';
+		}
 	}
 
 	public function replace($key, $value)
@@ -36,31 +41,31 @@ class Database_Query_Core {
 		return $this;
 	}
 
-	public function values(array $values)
+	public function parameters(array $params)
 	{
-		// Merge the new values in
-		$this->_values = $values + $this->_values;
+		// Merge the new parameters in
+		$this->_parameters = $params + $this->_values;
 
 		return $this;
 	}
 
-	public function value($key, $value)
+	public function param($param, $value)
 	{
-		// Add or overload a new value
-		$this->_values[$key] = $value;
+		// Add or overload a new parameter
+		$this->_parameters[$param] = $value;
 
 		return $this;
 	}
 
-	public function bind($key, & $var)
+	public function bind($param, & $var)
 	{
 		// Bind a value to a variable
-		$this->_values[$key] =& $var;
+		$this->_parameters[$param] =& $var;
 
 		return $this;
 	}
 
-	public function execute($db = 'default')
+	public function compile($db = 'default')
 	{
 		if ( ! is_object($db))
 		{
@@ -71,28 +76,42 @@ class Database_Query_Core {
 		// Import the SQL locally
 		$sql = $this->_sql;
 
-		if ( ! empty($this->_values))
+		if ( ! empty($this->_parameters))
 		{
 			// Quote all of the values
-			$values = array_map(array($db, 'quote'), $this->_values);
+			$values = array_map(array($db, 'quote'), $this->_parameters);
 
 			// Replace the values in the SQL
 			$sql = strtr($sql, $values);
 		}
 
-		if ($this->profile === TRUE)
+		return $sql;
+	}
+
+	public function execute($db = 'default')
+	{
+		if ( ! is_object($db))
+		{
+			// Get the database instance
+			$db = Database::instance($db);
+		}
+
+		// Compile the SQL for this query
+		$sql = $this->compile();
+
+		if ( ! empty($this->_config['profiling']))
 		{
 			// Start profiling this query
-			$token = Profiler::start('database ('.(string) $db.')', $sql);
+			$benchmark = Profiler::start('Query ('.(string) $db.')', $sql);
 		}
 
 		// Load the result
 		$result = $db->query($this->_type, $sql);
 
-		if (isset($token))
+		if (isset($benchmark))
 		{
 			// Stop profiling
-			Profiler::stop($token);
+			Profiler::stop($benchmark);
 		}
 
 		return $result;
