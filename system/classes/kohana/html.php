@@ -274,7 +274,7 @@ class Kohana_HTML {
 			}
 
 			// Add the attribute value
-			$compiled .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES, Kohana::$charset, TRUE).'"';
+			$compiled .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES, Kohana::$charset).'"';
 		}
 
 		return $compiled;
