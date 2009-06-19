@@ -195,6 +195,12 @@ class Kohana_Request {
 				}
 			}
 
+			// Reduce multiple slashes to a single slash
+			$uri = preg_replace('#//+#', '/', $uri);
+
+			// Remove all dot-paths from the URI, they are not valid
+			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
+
 			// Create the instance singleton
 			Request::$instance = new Request($uri);
 		}
