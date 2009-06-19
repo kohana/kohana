@@ -587,7 +587,7 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public function check( & $errors)
 	{
-		if (Kohana::$profile === TRUE)
+		if (Kohana::$profiling === TRUE)
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start('Validation', __FUNCTION__);
