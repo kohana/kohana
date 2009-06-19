@@ -10,15 +10,15 @@
 class Kohana_Validate extends ArrayObject {
 
 	public static $messages = array(
-		'required'    => ':field is required',
-		'default'     => ':field value is invalid',
+		'required'     => ':field is required',
+		'default'      => ':field value is invalid',
 
-		'regex'       => ':field does not match the required format',
-		'length'      => ':field must be exactly :params characters long',
-		'min_length'  => ':field must be at least :params characters long',
-		'max_length'  => ':field must be less than :params characters long',
+		'regex'        => ':field does not match the required format',
+		'exact_length' => ':field must be exactly :params characters long',
+		'min_length'   => ':field must be at least :params characters long',
+		'max_length'   => ':field must be less than :params characters long',
 
-		'in_array'    => ':field must be of the these options: :params',
+		'in_array'     => ':field must be of the these options: :params',
 	);
 
 	/**
