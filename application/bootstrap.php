@@ -58,6 +58,7 @@ Kohana::modules(array(
 	// 'pagination' => MODPATH.'pagination', // Paging of results (not complete)
 	// 'paypal'     => MODPATH.'paypal',     // PayPal integration (not complete)
 	// 'todoist'    => MODPATH.'todoist',    // Todoist integration
+	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	));
 
 /**

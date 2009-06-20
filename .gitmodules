@@ -4,6 +4,9 @@
 [submodule "modules/pagination"]
 	path = modules/pagination
 	url = git://github.com/GeertDD/kohana-pagination.git
+[submodule "modules/codebench"]
+	path = modules/codebench
+	url = git://github.com/GeertDD/kohana-codebench.git
 [submodule "modules/image"]
 	path = modules/image
 	url = git://github.com/shadowhand/kohana-image.git
