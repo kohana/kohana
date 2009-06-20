@@ -9,7 +9,12 @@ class DB {
 
 	public static function select($columns = NULL)
 	{
-		return new Database_Query_Select(func_get_args());
+		return new Database_Query_Builder_Select(func_get_args());
+	}
+
+	public static function insert($table)
+	{
+		return new Database_Query_Builder_Insert($table);
 	}
 
 	public static function expr($string)
