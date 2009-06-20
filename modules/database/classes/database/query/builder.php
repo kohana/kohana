@@ -59,7 +59,7 @@ abstract class Database_Query_Builder extends Database_Query {
 					list($column, $op, $value) = $condition;
 
 					// Append the statement to the query
-					$sql .= $db->quote_column($column).' '.strtoupper($op).' '.$db->quote($value);
+					$sql .= $db->quote_identifier($column).' '.strtoupper($op).' '.$db->quote($value);
 				}
 
 				$last_condition = $condition;
@@ -89,7 +89,7 @@ abstract class Database_Query_Builder extends Database_Query {
 				$direction = ' '.strtoupper($direction);
 			}
 
-			$sort[] = $db->quote_column($column).$direction;
+			$sort[] = $db->quote_identifier($column).$direction;
 		}
 
 		return 'ORDER BY '.implode(', ', $sort);

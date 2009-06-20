@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Database_Query_Select extends Database_Query_Builder {
+class Database_Query_Builder_Select extends Database_Query_Builder {
 
 	// SELECT ...
 	protected $_columns = array('*');
@@ -383,12 +383,12 @@ class Database_Query_Select extends Database_Query_Builder {
 		}
 
 		// Start a selection query
-		$query = 'SELECT '.implode(', ', array_map(array($db, 'quote_column'), $this->_columns));
+		$query = 'SELECT '.implode(', ', array_map(array($db, 'quote_identifier'), $this->_columns));
 
 		if ( ! empty($this->_from))
 		{
 			// Set tables to select from
-			$query .= ' FROM '.implode(', ', array_map(array($db, 'quote_column'), $this->_from));
+			$query .= ' FROM '.implode(', ', array_map(array($db, 'quote_identifier'), $this->_from));
 		}
 
 		if ( ! empty($this->_join))
@@ -406,7 +406,7 @@ class Database_Query_Select extends Database_Query_Builder {
 		if ( ! empty($this->_group_by))
 		{
 			// Add sorting
-			$query .= ' GROUP BY '.implode(', ', array_map(array($db, 'quote_column'), $this->_group_by));
+			$query .= ' GROUP BY '.implode(', ', array_map(array($db, 'quote_identifier'), $this->_group_by));
 		}
 
 		if ( ! empty($this->_having))
