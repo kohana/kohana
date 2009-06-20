@@ -7,15 +7,14 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Database_MySQL_Result_Core extends Database_Result {
+class Database_MySQL_Result extends Database_Result {
 
-	public function __construct($result)
+	public function __construct($result, $sql)
 	{
 		// Find the number of rows in the result
 		$this->_total_rows = mysql_num_rows($result);
 
-		// Store the result locally
-		$this->_result = $result;
+		parent::__construct($result, $sql);
 	}
 
 	public function __destruct()

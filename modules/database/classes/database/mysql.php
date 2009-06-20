@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Database_MySQL_Core extends Database {
+class Database_MySQL extends Database {
 
 	protected $_config_required = array('hostname', 'username', 'database');
 
@@ -19,13 +19,26 @@ class Database_MySQL_Core extends Database {
 		if ($this->_connection)
 			return;
 
-		extract($this->_config);
+		extract($this->_config['connection'] + array(
+			'hostname'   => '',
+			'port'       => '',
+			'socket'     => '',
+			'username'   => '',
+			'password'   => '',
+			'persistent' => '',
+		));
 
-		// Clear the configuration for security
-		$this->_config = array();
+		// Clear the connection parameters for security
+		$this->_config['connection'] = array();
 
 		// Set the connection type
 		$connect = empty($persistent) ? 'mysql_connect' : 'mysql_pconnect';
+
+		if ( ! isset($hostname))
+		{
+			// 
+			$hostname = '';
+		}
 
 		try
 		{
@@ -41,7 +54,7 @@ class Database_MySQL_Core extends Database {
 			throw new Database_Exception(mysql_errno(), mysql_error());
 		}
 
-		if ( ! mysql_select_db($database, $this->_connection))
+		if ( ! mysql_select_db($this->_config['database'], $this->_connection))
 		{
 			// Unable to select database
 			throw new Database_Exception(':error',
@@ -49,13 +62,10 @@ class Database_MySQL_Core extends Database {
 				mysql_errno($this->_connection));
 		}
 
-		// Store the database name for use by meta functions
-		$this->_database = $database;
-
-		if (isset($charset))
+		if ( ! empty($this->_config['charset']))
 		{
 			// Set the character set
-			$this->set_charset($charset);
+			$this->set_charset($this->_config['charset']);
 		}
 	}
 
@@ -187,16 +197,32 @@ class Database_MySQL_Core extends Database {
 		return $value;
 	}
 
-	public function quote_column($column, $alias = NULL)
+	public function quote_column($column)
 	{
-		$column = '`'.$column.'`';
-
-		if ($alias !== NULL)
+		if ($column === '*')
 		{
-			$column .= ' AS `'.$alias.'`';
+			return $column;
+		}
+		elseif (is_object($column))
+		{
+			if ($column instanceof Database_Query)
+			{
+				return '('.$column.')';
+			}
+			else
+			{
+				return (string) $column;
+			}
+		}
+		elseif (is_array($column))
+		{
+			// Separate the column and alias
+			list ($column, $alias) = $column;
+
+			return $this->quote_column($column).' AS '.$this->quote_column($alias);
 		}
 
-		return $column;
+		return '`'.str_replace('.', '`.`', $column).'`';
 	}
 
 } // End Database_Connection_MySQL

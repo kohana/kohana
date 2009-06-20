@@ -7,7 +7,9 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-abstract class Database_Result_Core implements Countable, Iterator, SeekableIterator, ArrayAccess {
+abstract class Database_Result implements Countable, Iterator, SeekableIterator, ArrayAccess {
+
+	protected $_query;
 
 	protected $_result;
 
@@ -21,7 +23,14 @@ abstract class Database_Result_Core implements Countable, Iterator, SeekableIter
 	 * @param   string  SQL query
 	 * @return  void
 	 */
-	abstract public function __construct($result, $sql);
+	public function __construct($result, $sql)
+	{
+		// Store the result locally
+		$this->_result = $result;
+
+		// Store the SQL locally
+		$this->_query = $sql;
+	}
 
 	/**
 	 * Result destruction cleans up all open result sets.

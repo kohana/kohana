@@ -7,24 +7,21 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-abstract class Database_Core {
+abstract class Database {
 
 	const SELECT =  1;
 	const INSERT =  2;
 	const UPDATE =  3;
 	const DELETE =  4;
-	const CREATE = -2;
-	const ALTER  = -3;
-	const DROP   = -4;
 
 	public static $instances = array();
 
-	public static function instance($name = 'default', $cached = TRUE)
+	public static function instance($name = 'default')
 	{
 		if ( ! isset(Database::$instances[$name]))
 		{
 			// Load the configuration for this database group
-			$config = Kohana::config('database', $cached)->$name;
+			$config = Kohana::config('database')->$name;
 
 			if ( ! isset($config['type']))
 			{
@@ -50,9 +47,6 @@ abstract class Database_Core {
 	// Configuration array
 	protected $_config;
 
-	// Required configuration keys
-	protected $_config_required = array();
-
 	// Raw server connection
 	protected $_connection;
 
@@ -63,15 +57,6 @@ abstract class Database_Core {
 
 		// Add the instance to the list
 		Database::$instances[$name] = $this;
-
-		foreach ($this->_config_required as $param)
-		{
-			if ( ! isset($config[$param]))
-			{
-				throw new Database_Exception('Required configuration parameter missing: :param',
-					array(':param', $param));
-			}
-		}
 
 		// Store the config locally
 		$this->_config = $config;
@@ -112,13 +97,24 @@ abstract class Database_Core {
 		{
 			return $value ? 'TRUE' : 'FALSE';
 		}
+		elseif (is_array($value))
+		{
+			return implode(', ', array_map(array($this, __FUNCTION__), $value));
+		}
 		elseif (is_int($value) OR (is_string($value) AND ctype_digit($value)))
 		{
 			return (int) $value;
 		}
-		elseif (is_array($value))
+		elseif (is_object($value))
 		{
-			return implode(', ', array_map(array($this, __FUNCTION__), $value));
+			if ($value instanceof Database_Query)
+			{
+				return '('.$value.')';
+			}
+			else
+			{
+				return (string) $value;
+			}
 		}
 
 		return '"'.$this->escape($value).'"';
