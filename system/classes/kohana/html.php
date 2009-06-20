@@ -56,7 +56,7 @@ class Kohana_HTML {
 	 * @param   boolean  encode existing entities
 	 * @return  string
 	 */
-	public static function specialchars($value, $double_encode = TRUE)
+	public static function chars($value, $double_encode = TRUE)
 	{
 		return htmlspecialchars((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
 	}
