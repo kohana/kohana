@@ -124,7 +124,7 @@ class Kohana_Profiler {
 				$min['time'] = $time;
 			}
 
-			// Incrase the total time
+			// Increase the total time
 			$total['time'] += $time;
 
 			if ($max['memory'] === NULL OR $memory > $max['memory'])
@@ -139,7 +139,7 @@ class Kohana_Profiler {
 				$min['memory'] = $memory;
 			}
 
-			// Incrase the total memory
+			// Increase the total memory
 			$total['memory'] += $memory;
 		}
 
