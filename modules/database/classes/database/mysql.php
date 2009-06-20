@@ -9,36 +9,29 @@
  */
 class Database_MySQL extends Database {
 
-	protected $_config_required = array('hostname', 'username', 'database');
-
-	// Database name
-	protected $_database;
+	// MySQL uses a backtick for identifiers
+	protected $_identifier = '`';
 
 	public function connect()
 	{
 		if ($this->_connection)
 			return;
 
+		// Extract the connection parameters, adding required variabels
 		extract($this->_config['connection'] + array(
 			'hostname'   => '',
-			'port'       => '',
-			'socket'     => '',
+			'port'       => NULL,
+			'socket'     => NULL,
 			'username'   => '',
 			'password'   => '',
-			'persistent' => '',
+			'persistent' => FALSE,
 		));
 
 		// Clear the connection parameters for security
-		$this->_config['connection'] = array();
+		unset($this->_config['connection']);
 
 		// Set the connection type
 		$connect = empty($persistent) ? 'mysql_connect' : 'mysql_pconnect';
-
-		if ( ! isset($hostname))
-		{
-			// 
-			$hostname = '';
-		}
 
 		try
 		{
@@ -51,7 +44,9 @@ class Database_MySQL extends Database {
 			$this->_connection = NULL;
 
 			// Unable to connect to the database
-			throw new Database_Exception(mysql_errno(), mysql_error());
+			throw new Database_Exception(':error',
+				array(':error' => mysql_error()),
+				mysql_errno());
 		}
 
 		if ( ! mysql_select_db($this->_config['database'], $this->_connection))
@@ -140,8 +135,8 @@ class Database_MySQL extends Database {
 
 	public function list_tables($like = NULL)
 	{
-		// Make sure the database is connected
-		$this->_connection or $this->connect();
+		// Quote the table name
+		$table = $this->quote_identifier($table);
 
 		if (is_string($like))
 		{
@@ -164,13 +159,21 @@ class Database_MySQL extends Database {
 		return $tables;
 	}
 
-	public function list_columns($table)
+	public function list_columns($table, $like = NULL)
 	{
-		// Make sure the database is connected
-		$this->_connection or $this->connect();
+		// Quote the table name
+		$table = $this->quote_identifier($table);
 
-		// Find all table names
-		$result = $this->query(Database::SELECT, 'SHOW COLUMNS FROM '.$table)->as_array();
+		if (is_string($like))
+		{
+			// Search for column names
+			$result = $this->query(Database::SELECT, 'SHOW COLUMNS FROM '.$table.' LIKE '.$this->quote($like));
+		}
+		else
+		{
+			// Find all column names
+			$result = $this->query(Database::SELECT, 'SHOW COLUMNS FROM '.$table)->as_array();
+		}
 
 		$columns = array();
 		foreach ($result as $row)
@@ -195,34 +198,6 @@ class Database_MySQL extends Database {
 		}
 
 		return $value;
-	}
-
-	public function quote_column($column)
-	{
-		if ($column === '*')
-		{
-			return $column;
-		}
-		elseif (is_object($column))
-		{
-			if ($column instanceof Database_Query)
-			{
-				return '('.$column.')';
-			}
-			else
-			{
-				return (string) $column;
-			}
-		}
-		elseif (is_array($column))
-		{
-			// Separate the column and alias
-			list ($column, $alias) = $column;
-
-			return $this->quote_column($column).' AS '.$this->quote_column($alias);
-		}
-
-		return '`'.str_replace('.', '`.`', $column).'`';
 	}
 
 } // End Database_Connection_MySQL
