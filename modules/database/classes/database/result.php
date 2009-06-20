@@ -44,13 +44,17 @@ abstract class Database_Result implements Countable, Iterator, SeekableIterator,
 
 	/**
 	 * Return the named column from the current row.
+	 *
+	 * @param   string  column to get
+	 * @param   mixed   default value if the column does not exist
+	 * @return  mixed
 	 */
-	public function get($name)
+	public function get($name, $default = NULL)
 	{
 		// Get the current row
 		$row = $this->current();
 
-		return $row[$name];
+		return array_key_exists($name, $row) ? $row[$name] : $default;
 	}
 
 	/**
