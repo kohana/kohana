@@ -20,12 +20,24 @@ abstract class Database {
 	 */
 	public static $instances = array();
 
-	public static function instance($name = 'default')
+	/**
+	 * Get a singleton Database instance. If configuration is not specified,
+	 * it will be loaded from the database configuration file using the same
+	 * group as the name.
+	 *
+	 * @param   string   instance name
+	 * @param   array    configuration parameters
+	 * @return  Database
+	 */
+	public static function instance($name = 'default', array $config = NULL)
 	{
 		if ( ! isset(Database::$instances[$name]))
 		{
-			// Load the configuration for this database group
-			$config = Kohana::config('database')->$name;
+			if ($config === NULL)
+			{
+				// Load the configuration for this database
+				$config = Kohana::config('database')->$name;
+			}
 
 			if ( ! isset($config['type']))
 			{
