@@ -9,10 +9,13 @@
  */
 abstract class Database_Result implements Countable, Iterator, SeekableIterator, ArrayAccess {
 
+	// Executed SQL for this result
 	protected $_query;
 
+	// Raw result resource
 	protected $_result;
 
+	// Total number of rows and current row
 	protected $_total_rows  = 0;
 	protected $_current_row = 0;
 
@@ -38,7 +41,9 @@ abstract class Database_Result implements Countable, Iterator, SeekableIterator,
 	abstract public function __destruct();
 
 	/**
-	 * Return all of the results in an array.
+	 * Return all of the rows in the result as an array.
+	 *
+	 * @return  array
 	 */
 	abstract public function as_array();
 
