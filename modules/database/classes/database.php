@@ -9,11 +9,15 @@
  */
 abstract class Database {
 
+	// Query types
 	const SELECT =  1;
 	const INSERT =  2;
 	const UPDATE =  3;
 	const DELETE =  4;
 
+	/**
+	 * @var  array  Database instances
+	 */
 	public static $instances = array();
 
 	public static function instance($name = 'default')
@@ -44,49 +48,115 @@ abstract class Database {
 	 */
 	public $last_query;
 
-	// Configuration array
-	protected $_config;
+	// Character that is used to quote identifiers
+	protected $_identifier = '"';
+
+	// Instance name
+	protected $_instance;
 
 	// Raw server connection
 	protected $_connection;
 
-	public function __construct($name, array $config)
+	// Configuration array
+	protected $_config;
+
+	/**
+	 * Stores the database configuration locally and name the instance.
+	 *
+	 * @return  void
+	 */
+	final protected function __construct($name, array $config)
 	{
 		// Set the instance name
-		$this->_name = $name;
-
-		// Add the instance to the list
-		Database::$instances[$name] = $this;
+		$this->_instance = $name;
 
 		// Store the config locally
 		$this->_config = $config;
+
+		// Store the database instance
+		Database::$instances[$name] = $this;
 	}
 
-	public function __destruct()
+	/**
+	 * Disconnect from the database when the object is destroyed.
+	 *
+	 * @return  void
+	 */
+	final public function __destruct()
 	{
 		$this->disconnect();
 	}
 
-	public function __toString()
+	/**
+	 * Returns the database instance name.
+	 *
+	 * @return  string
+	 */
+	final public function __toString()
 	{
-		// Return the instance name
-		return $this->_name;
+		return $this->_instance;
 	}
 
+	/**
+	 * Connect to the database.
+	 *
+	 * @throws  Database_Exception
+	 * @return  void
+	 */
 	abstract public function connect();
 
+	/**
+	 * Disconnect from the database
+	 *
+	 * @return  boolean
+	 */
 	abstract public function disconnect();
 
+	/**
+	 * Set the connection character set.
+	 *
+	 * @throws  Database_Exception
+	 * @param   string   character set name
+	 * @return  void
+	 */
 	abstract public function set_charset($charset);
 
+	/**
+	 * Perform an SQL query of the given type.
+	 *
+	 * @param   integer  Database::SELECT, Database::INSERT, etc
+	 * @param   string   SQL query
+	 * @return  object   Database_Result for SELECT queries
+	 * @return  mixed    the insert id for INSERT queries
+	 * @return  integer  number of affected rows for all other queries
+	 */
 	abstract public function query($type, $sql);
 
-	abstract public function list_tables();
+	/**
+	 * List all of the tables in the database. Optionally, a LIKE string can
+	 * be used to search for specific tables.
+	 *
+	 * @param   string   table to search for
+	 * @return  array
+	 */
+	abstract public function list_tables($like = NULL);
 
-	abstract public function list_columns($table);
+	/**
+	 * Lists all of the columns in a table. Optionally, a LIKE string can be
+	 * used to search for specific fields.
+	 *
+	 * @param   string  table to get columns from
+	 * @param   string  column to search for
+	 * @return  array
+	 */
+	abstract public function list_columns($table, $like = NULL);
 
-	abstract public function escape($value);
-
+	/**
+	 * Quote a value for an SQL query.
+	 *
+	 * @param   mixed   any value to quote
+	 * @return  string
+	 */
 	public function quote($value)
 	{
 		if ($value === NULL)
@@ -99,7 +169,7 @@ abstract class Database {
 		}
 		elseif (is_array($value))
 		{
-			return implode(', ', array_map(array($this, __FUNCTION__), $value));
+			return implode(', ', array_map(array($this, __FUNCION__), $value));
 		}
 		elseif (is_int($value) OR (is_string($value) AND ctype_digit($value)))
 		{
@@ -117,7 +187,58 @@ abstract class Database {
 			}
 		}
 
-		return '"'.$this->escape($value).'"';
+		// SQL standard is to use single-quotes for all values
+		return '\''.$this->escape($value).'\'';
 	}
+
+	/**
+	 * Quote a database identifier, such as a table or column name.
+	 *
+	 * @param   mixed   any identifier
+	 * @return  string
+	 */
+	public function quote_identifier($value)
+	{
+		if ($value === '*')
+		{
+			return $value;
+		}
+		elseif (is_object($value))
+		{
+			if ($value instanceof Database_Query)
+			{
+				// Make the identifier a sub-query
+				return '('.$value.')';
+			}
+			else
+			{
+				return (string) $value;
+			}
+		}
+		elseif (is_array($value))
+		{
+			// Separate the column and alias
+			list ($value, $alias) = $value;
+
+			return $this->quote_identifier($value).' AS '.$this->quote_identifier($alias);
+		}
+
+		if (strpos($value, '.') !== FALSE)
+		{
+			// Dots are used to separate schema, table, and column names
+			$value = str_replace('.', "{$this->_identifier}.{$this->_identifier}", $value);
+		}
+
+		return $this->_identifier.$value.$this->_identifier;
+	}
+
+	/**
+	 * Sanitize a string by escaping characters that could cause an SQL
+	 * injection attack.
+	 *
+	 * @param   string   value to quote
+	 * @return  string
+	 */
+	abstract public function escape($value);
 
 } // End Database_Connection
