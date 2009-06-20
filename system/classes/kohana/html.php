@@ -50,6 +50,18 @@ class Kohana_HTML {
 	public static $windowed_urls = FALSE;
 
 	/**
+	 * Convert special characters to HTML entities.
+	 *
+	 * @param   string   string to convert
+	 * @param   boolean  encode existing entities
+	 * @return  string
+	 */
+	public static function specialchars($value, $double_encode = TRUE)
+	{
+		return htmlspecialchars((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+	}
+
+	/**
 	 * Create HTML link anchors. Note that the title is not escaped, to allow
 	 * HTML elements within links (images, etc).
 	 *
