@@ -135,9 +135,6 @@ class Database_MySQL extends Database {
 
 	public function list_tables($like = NULL)
 	{
-		// Quote the table name
-		$table = $this->quote_identifier($table);
-
 		if (is_string($like))
 		{
 			// Search for table names
