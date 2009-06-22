@@ -179,6 +179,17 @@ abstract class Database {
 		{
 			return $value ? 'TRUE' : 'FALSE';
 		}
+		elseif (is_object($value))
+		{
+			if ($value instanceof Database_Query)
+			{
+				return '('.$value->compile($this).')';
+			}
+			else
+			{
+				return (string) $value;
+			}
+		}
 		elseif (is_array($value))
 		{
 			return implode(', ', array_map(array($this, __FUNCION__), $value));
@@ -186,17 +197,6 @@ abstract class Database {
 		elseif (is_int($value) OR (is_string($value) AND ctype_digit($value)))
 		{
 			return (int) $value;
-		}
-		elseif (is_object($value))
-		{
-			if ($value instanceof Database_Query)
-			{
-				return '('.$value.')';
-			}
-			else
-			{
-				return (string) $value;
-			}
 		}
 
 		// SQL standard is to use single-quotes for all values
@@ -219,8 +219,8 @@ abstract class Database {
 		{
 			if ($value instanceof Database_Query)
 			{
-				// Make the identifier a sub-query
-				return '('.$value.')';
+				// Compile the sub-query using the current database
+				return '('.$value->compile($this).')';
 			}
 			else
 			{
