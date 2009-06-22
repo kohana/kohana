@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Database_Query_Builder_Select extends Database_Query_Builder {
+class Database_Query_Builder_Select extends Database_Query_Builder_Where {
 
 	// SELECT ...
 	protected $_select = array('*');
@@ -10,9 +10,6 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 
 	// JOIN ...
 	protected $_join = array();
-
-	// WHERE ...
-	protected $_where = array();
 
 	// GROUP BY ...
 	protected $_group_by = array();
@@ -106,117 +103,6 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	public function on($c1, $c2)
 	{
 		$this->_last_join->on($c1, $c2);
-
-		return $this;
-	}
-
-	/**
-	 * Alias of and_where()
-	 *
-	 * @param   mixed   column name or array($column, $alias) or object
-	 * @param   string  logic operator
-	 * @param   mixed   column value
-	 * @return  $this
-	 */
-	public function where($column, $op, $value)
-	{
-		return $this->and_where($column, $op, $value);
-	}
-
-	/**
-	 * Creates a new "AND WHERE" condition for the query.
-	 *
-	 * @param   mixed   column name or array($column, $alias) or object
-	 * @param   string  logic operator
-	 * @param   mixed   column value
-	 * @return  $this
-	 */
-	public function and_where($column, $op, $value)
-	{
-		$this->_where[] = array('AND' => array($column, $op, $value));
-
-		return $this;
-	}
-
-	/**
-	 * Creates a new "OR WHERE" condition for the query.
-	 *
-	 * @param   mixed   column name or array($column, $alias) or object
-	 * @param   string  logic operator
-	 * @param   mixed   column value
-	 * @return  $this
-	 */
-	public function or_where($column, $op, $value)
-	{
-		$this->_where[] = array('OR' => array($column, $op, $value));
-
-		return $this;
-	}
-
-	/**
-	 * Alias of and_where_open()
-	 *
-	 * @return  $this
-	 */
-	public function where_open()
-	{
-		return $this->and_where_open();
-	}
-
-	/**
-	 * Opens a new "AND WHERE (...)" grouping.
-	 *
-	 * @return  $this
-	 */
-	public function and_where_open()
-	{
-		$this->_where[] = array('AND' => '(');
-
-		return $this;
-	}
-
-	/**
-	 * Opens a new "OR WHERE (...)" grouping.
-	 *
-	 * @return  $this
-	 */
-	public function or_where_open()
-	{
-		$this->_where[] = array('OR' => '(');
-
-		return $this;
-	}
-
-	/**
-	 * Closes an open "AND WHERE (...)" grouping.
-	 *
-	 * @return  $this
-	 */
-	public function where_close()
-	{
-		return $this->and_where_close();
-	}
-
-	/**
-	 * Closes an open "AND WHERE (...)" grouping.
-	 *
-	 * @return  $this
-	 */
-	public function and_where_close()
-	{
-		$this->_where[] = array('AND' => ')');
-
-		return $this;
-	}
-
-	/**
-	 * Closes an open "OR WHERE (...)" grouping.
-	 *
-	 * @return  $this
-	 */
-	public function or_where_close()
-	{
-		$this->_where[] = array('OR' => ')');
 
 		return $this;
 	}
