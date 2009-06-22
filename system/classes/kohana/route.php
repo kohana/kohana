@@ -79,7 +79,13 @@ class Kohana_Route {
 	 */
 	public static function get($name)
 	{
-		return isset(Route::$_routes[$name]) ? Route::$_routes[$name] : FALSE;
+		if ( ! isset(Route::$_routes[$name]))
+		{
+			throw new Kohana_Exception('The requested route does not exist: :route',
+				array(':route' => $name));
+		}
+
+		return Route::$_routes[$name];
 	}
 
 	/**
