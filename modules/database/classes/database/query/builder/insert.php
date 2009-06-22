@@ -13,7 +13,7 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 
 	/**
 	 * Set the table and columns for an insert.
-	 * 
+	 *
 	 * @param   mixed  table name or array($table, $alias) or object
 	 * @param   array  column names
 	 * @return  void
@@ -48,7 +48,7 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 
 	/**
 	 * Set the columns that will be inserted.
-	 * 
+	 *
 	 * @param   array  column names
 	 * @return  $this
 	 */
@@ -68,6 +68,11 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 	 */
 	public function values(array $values)
 	{
+		if ( ! is_array($this->_values))
+		{
+			throw new Kohana_Exception('INSERT INTO ... SELECT statements cannot be combined with INSERT INTO ... VALUES');
+		}
+
 		// Get all of the passed values
 		$values = func_get_args();
 
@@ -77,36 +82,59 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 	}
 
 	/**
+	 * Use a sub-query to for the inserted values.
+	 *
+	 * @param   object  Database_Query of SELECT type
+	 * @return  $this
+	 */
+	public function select(Database_Query $query)
+	{
+		if ($select->type() !== Database::SELECT)
+		{
+			throw new Kohana_Exception('Only SELECT queries can be combined with INSERT queries');
+		}
+
+		$this->_values = $select;
+
+		return $select;
+	}
+
+	/**
 	 * Compile the SQL query and return it.
 	 *
 	 * @param   object  Database instance
 	 * @return  string
 	 */
-	public function compile($db = 'default')
+	public function compile(Database $db)
 	{
-		if ( ! is_object($db))
-		{
-			// Get the database instance
-			$db = Database::instance($db);
-		}
-
 		// Callback for quoting values
 		$quote = array($db, 'quote');
 
 		// Start an insertion query
 		$query = 'INSERT INTO '.$db->quote_identifier($this->_table);
 
-		// Add the column names
-		$query .= ' ('.implode(', ', array_map(array($db, 'quote_identifier'), $this->_columns)).') ';
-
-		$groups = array();
-		foreach ($this->_values as $group)
+		if ( ! empty($this->_columns))
 		{
-			$groups[] = '('.implode(', ', array_map($quote, $group)).')';
+			// Add the column names
+			$query .= ' ('.implode(', ', array_map(array($db, 'quote_identifier'), $this->_columns)).')';
 		}
 
-		// Add the values
-		$query .= 'VALUES '.implode(', ', $groups);
+		if (is_array($this->_values))
+		{
+			$groups = array();
+			foreach ($this->_values as $group)
+			{
+				$groups[] = '('.implode(', ', array_map($quote, $group)).')';
+			}
+
+			// Add the values
+			$query .= ' VALUES '.implode(', ', $groups);
+		}
+		else
+		{
+			// Add the sub-query
+			$query .= (string) $this->_values;
+		}
 
 		return $query;
 	}
