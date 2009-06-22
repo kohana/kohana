@@ -117,7 +117,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	 * @param   mixed   column value
 	 * @return  $this
 	 */
-	public function where($column, $op, $value = NULL)
+	public function where($column, $op, $value)
 	{
 		return $this->and_where($column, $op, $value);
 	}
@@ -130,7 +130,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	 * @param   mixed   column value
 	 * @return  $this
 	 */
-	public function and_where($column, $op, $value = NULL)
+	public function and_where($column, $op, $value)
 	{
 		$this->_where[] = array('AND' => array($column, $op, $value));
 
@@ -145,7 +145,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	 * @param   mixed   column value
 	 * @return  $this
 	 */
-	public function or_where($column, $op, $value = NULL)
+	public function or_where($column, $op, $value)
 	{
 		$this->_where[] = array('OR' => array($column, $op, $value));
 
