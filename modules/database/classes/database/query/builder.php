@@ -11,8 +11,15 @@ abstract class Database_Query_Builder extends Database_Query {
 	 */
 	public static function compile_join(Database $db, array $joins)
 	{
-		// @todo
-		return '';
+		$statements = array();
+
+		foreach ($joins as $join)
+		{
+			// Compile each of the join statements
+			$statements[] = $join->compile($db);
+		}
+
+		return implode(' ', $statements);
 	}
 
 	/**
