@@ -12,9 +12,9 @@ class DB {
 		return new Database_Query_Builder_Select(func_get_args());
 	}
 
-	public static function insert($table)
+	public static function insert($table, array $columns = NULL)
 	{
-		return new Database_Query_Builder_Insert($table);
+		return new Database_Query_Builder_Insert($table, $columns);
 	}
 
 	public static function expr($string)
