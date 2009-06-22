@@ -17,6 +17,11 @@ class DB {
 		return new Database_Query_Builder_Insert($table, $columns);
 	}
 
+	public static function update($table)
+	{
+		return new Database_Query_Builder_Update($table);
+	}
+
 	public static function expr($string)
 	{
 		return new Database_Expression($string);
