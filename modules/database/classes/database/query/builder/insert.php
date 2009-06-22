@@ -107,9 +107,6 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 	 */
 	public function compile(Database $db)
 	{
-		// Callback for quoting values
-		$quote = array($db, 'quote');
-
 		// Start an insertion query
 		$query = 'INSERT INTO '.$db->quote_identifier($this->_table);
 
@@ -118,6 +115,9 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 
 		if (is_array($this->_values))
 		{
+			// Callback for quoting values
+			$quote = array($db, 'quote');
+
 			$groups = array();
 			foreach ($this->_values as $group)
 			{
