@@ -33,14 +33,6 @@ class Database_Query {
 		}
 	}
 
-	public function replace($key, $value)
-	{
-		// Replace the given value
-		$this->_sql = str_replace($key, $value, $this->_sql);
-
-		return $this;
-	}
-
 	public function parameters(array $params)
 	{
 		// Merge the new parameters in
