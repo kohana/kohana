@@ -104,13 +104,25 @@ class Database_MySQL extends Database {
 		// Make sure the database is connected
 		$this->_connection or $this->connect();
 
+		if ( ! empty($this->_config['profiling']))
+		{
+			$benchmark = Profiler::start("Database ({$this->_instance})", $sql);
+		}
+
 		// Execute the query
 		if (($result = mysql_query($sql, $this->_connection)) === FALSE)
 		{
-			// Query failed
+			// This benchmark is worthless
+			Profiler::delete($benchmark);
+
 			throw new Database_Exception(':error [ :query ]',
 				array(':error' => mysql_error($this->_connection), ':query' => $sql),
 				mysql_errno($this->_connection));
+		}
+
+		if (isset($benchmark))
+		{
+			Profiler::stop($benchmark);
 		}
 
 		// Set the last query

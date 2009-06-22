@@ -144,26 +144,8 @@ class Database_Query {
 			$db = Database::instance($db);
 		}
 
-		if ( ! empty($this->_config['profiling']))
-		{
-			// Start profiling this query
-			$benchmark = Profiler::start('Query ('.(string) $db.')');
-		}
-
-		// Compile the SQL for this query
-		$sql = $this->compile($db);
-
-		// Load the result
-		$result = $db->query($this->_type, $sql);
-
-		if (isset($benchmark))
-		{
-			// Stop profiling
-			Profiler::stop($benchmark);
-
-			// Add the SQL as the benchmark name
-			Profiler::name($benchmark, $sql);
-		}
+		// Compile the SQL and run the query
+		$result = $db->query($this->_type, $this->compile($db));
 
 		return $result;
 	}
