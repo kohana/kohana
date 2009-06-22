@@ -461,9 +461,14 @@ class Kohana_Request {
 					$this->directory = $params['directory'];
 				}
 
-				// Store the controller and action
+				// Store the controller
 				$this->controller = $params['controller'];
-				$this->action     = $params['action'];
+
+				if (isset($params['action']))
+				{
+					// Store the action
+					$this->action = $params['action'];
+				}
 
 				// These are accessible as public vars and can be overloaded
 				unset($params['controller'], $params['action'], $params['directory']);
@@ -776,8 +781,11 @@ class Kohana_Request {
 			// Execute the "before action" method
 			$class->getMethod('before')->invoke($controller);
 
+			// Determine the action to use
+			$action = empty($this->action) ? Route::$default_action : $this->action;
+
 			// Execute the main action with the parameters
-			$class->getMethod('action_'.$this->action)->invokeArgs($controller, $this->_params);
+			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);
 
 			// Execute the "after action" method
 			$class->getMethod('after')->invoke($controller);

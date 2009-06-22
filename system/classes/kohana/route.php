@@ -38,6 +38,11 @@ class Kohana_Route {
 	const REGEX_SEGMENT = '[^/.,;?]++';
 	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
+	/**
+	 * @var  string  default action for all routes
+	 */
+	public static $default_action = 'index';
+
 	protected static $_routes = array();
 
 	/**
