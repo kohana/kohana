@@ -156,11 +156,6 @@ class Kohana_Route {
 	 */
 	public function defaults(array $defaults = NULL)
 	{
-		if ( ! isset($defaults['action']))
-		{
-			$defaults['action'] = 'index';
-		}
-
 		$this->_defaults = $defaults;
 
 		return $this;
