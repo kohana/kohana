@@ -44,7 +44,7 @@ class Database_Query {
 	public function parameters(array $params)
 	{
 		// Merge the new parameters in
-		$this->_parameters = $params + $this->_values;
+		$this->_parameters = $params + $this->_parameters;
 
 		return $this;
 	}
