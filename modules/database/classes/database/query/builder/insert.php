@@ -113,11 +113,8 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 		// Start an insertion query
 		$query = 'INSERT INTO '.$db->quote_identifier($this->_table);
 
-		if ( ! empty($this->_columns))
-		{
-			// Add the column names
-			$query .= ' ('.implode(', ', array_map(array($db, 'quote_identifier'), $this->_columns)).')';
-		}
+		// Add the column names
+		$query .= ' ('.implode(', ', array_map(array($db, 'quote_identifier'), $this->_columns)).') ';
 
 		if (is_array($this->_values))
 		{
@@ -128,7 +125,7 @@ class Database_Query_Builder_Insert extends Database_Query_Builder {
 			}
 
 			// Add the values
-			$query .= ' VALUES '.implode(', ', $groups);
+			$query .= 'VALUES '.implode(', ', $groups);
 		}
 		else
 		{
