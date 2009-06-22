@@ -396,14 +396,8 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	 * @param   object  Database instance
 	 * @return  string
 	 */
-	public function compile($db = 'default')
+	public function compile(Database $db)
 	{
-		if ( ! is_object($db))
-		{
-			// Get the database instance
-			$db = Database::instance($db);
-		}
-
 		// Callback to quote identifiers
 		$quote_ident = array($db, 'quote_identifier')
 
