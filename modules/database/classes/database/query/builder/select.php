@@ -29,6 +29,9 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	// OFFSET ...
 	protected $_offset = NULL;
 
+	// The last JOIN statement created
+	protected $_last_join;
+
 	/**
 	 * Sets the initial columns to select from.
 	 *
@@ -79,17 +82,29 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	}
 
 	/**
-	 * Adds addition tables to "JOIN ...". Note that the conditions for joining
-	 * must also be defined.
+	 * Adds addition tables to "JOIN ...".
 	 *
 	 * @param   mixed   column name or array($column, $alias) or object
-	 * @param   array   conditions for joining
 	 * @param   string  join type (LEFT, RIGHT, INNER, etc)
 	 * @return  $this
 	 */
-	public function join($table, array $conditions = NULL, $type = NULL)
+	public function join($table, $type = NULL)
 	{
-		$this->_join[] = array($table, $conditions, $type);
+		$this->_join[] = $this->_last_join = new Database_Query_Builder_Join($table, $type);
+
+		return $this;
+	}
+
+	/**
+	 * Adds "ON ..." conditions for the last created JOIN statement.
+	 * 
+	 * @param   mixed   column name or array($column, $alias) or object
+	 * @param   mixed   column name or array($column, $alias) or object
+	 * @return  $this
+	 */
+	public function on($c1, $c2)
+	{
+		$this->_last_join->on($c1, $c2);
 
 		return $this;
 	}
