@@ -3,7 +3,7 @@
 class Database_Query_Builder_Select extends Database_Query_Builder {
 
 	// SELECT ...
-	protected $_columns = array('*');
+	protected $_select = array('*');
 
 	// FROM ...
 	protected $_from = array();
@@ -35,6 +35,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 	/**
 	 * Sets the initial columns to select from.
 	 *
+	 * @param   array  column list
 	 * @return  void
 	 */
 	public function __construct(array $columns = NULL)
@@ -365,6 +366,9 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 
 	/**
 	 * Return up to "LIMIT ..." results
+	 * 
+	 * @param   integer  maximum results to return
+	 * @return  $this
 	 */
 	public function limit($number)
 	{
@@ -375,6 +379,9 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 
 	/**
 	 * Start returning results after "OFFSET ..."
+	 * 
+	 * @param   integer   starting result number
+	 * @return  $this
 	 */
 	public function offset($number)
 	{
@@ -397,13 +404,16 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 			$db = Database::instance($db);
 		}
 
+		// Callback to quote identifiers
+		$quote_ident = array($db, 'quote_identifier')
+
 		// Start a selection query
-		$query = 'SELECT '.implode(', ', array_map(array($db, 'quote_identifier'), $this->_columns));
+		$query = 'SELECT '.implode(', ', array_map($quote_ident, $this->_select));
 
 		if ( ! empty($this->_from))
 		{
 			// Set tables to select from
-			$query .= ' FROM '.implode(', ', array_map(array($db, 'quote_identifier'), $this->_from));
+			$query .= ' FROM '.implode(', ', array_map($quote_ident, $this->_from));
 		}
 
 		if ( ! empty($this->_join))
@@ -421,7 +431,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder {
 		if ( ! empty($this->_group_by))
 		{
 			// Add sorting
-			$query .= ' GROUP BY '.implode(', ', array_map(array($db, 'quote_identifier'), $this->_group_by));
+			$query .= ' GROUP BY '.implode(', ', array_map($quote_ident, $this->_group_by));
 		}
 
 		if ( ! empty($this->_having))
