@@ -40,7 +40,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder_Where {
 		if ( ! empty($columns))
 		{
 			// Set the initial columns
-			$this->_columns = $columns;
+			$this->_select = $columns;
 		}
 
 		// Start the query with no actual SQL statement
@@ -285,7 +285,7 @@ class Database_Query_Builder_Select extends Database_Query_Builder_Where {
 	public function compile(Database $db)
 	{
 		// Callback to quote identifiers
-		$quote_ident = array($db, 'quote_identifier')
+		$quote_ident = array($db, 'quote_identifier');
 
 		// Start a selection query
 		$query = 'SELECT '.implode(', ', array_map($quote_ident, $this->_select));
