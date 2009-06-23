@@ -16,3 +16,6 @@
 [submodule "modules/orm"]
 	path = modules/orm
 	url = git://github.com/jheathco/kohana-orm.git
+[submodule "modules/database"]
+	path = modules/database
+	url = git://github.com/shadowhand/kohana-database.git
