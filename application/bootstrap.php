@@ -53,9 +53,9 @@ Kohana::init(array('charset' => 'utf-8', 'base_url' => '/ko3/'));
  */
 Kohana::modules(array(
 	// 'database'   => MODPATH.'database',   // Database access
-	// 'image'      => MODPATH.'image',      // Image manipulation (not complete)
+	// 'image'      => MODPATH.'image',      // Image manipulation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping (not complete)
-	// 'pagination' => MODPATH.'pagination', // Paging of results (not complete)
+	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'paypal'     => MODPATH.'paypal',     // PayPal integration (not complete)
 	// 'todoist'    => MODPATH.'todoist',    // Todoist integration
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
