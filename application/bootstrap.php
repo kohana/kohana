@@ -18,35 +18,21 @@ date_default_timezone_set('America/Chicago');
  */
 spl_autoload_register(array('Kohana', 'auto_load'));
 
-/**
- * Enable Kohana exception handling, adds stack traces and error source.
- *
- * @see  http://docs.kohanaphp.com/features/exceptions
- * @see  http://php.net/set_exception_handler
- */
-set_exception_handler(array('Kohana', 'exception_handler'));
-
-/**
- * Enable Kohana error handling, converts all PHP errors to exceptions.
- *
- * @see  http://docs.kohanaphp.com/features/exceptions
- * @see  http://php.net/set_error_handler
- */
-set_error_handler(array('Kohana', 'error_handler'));
-
 //-- Kohana configuration -----------------------------------------------------
 
 /**
  * Initialize Kohana, setting the default options.
  *
  * The following options are available:
- * - base_url:   path, and optionally domain, of your application
- * - index_file: name of your index file, usually "index.php"
- * - charset:    internal character set used for input and output
- * - profile:    enable or disable internal profiling
- * - caching:    enable or disable internal caching
+ *
+ * - string   base_url    path, and optionally domain, of your application   NULL
+ * - string   index_file  name of your index file, usually "index.php"       index.php
+ * - string   charset     internal character set used for input and output   utf-8
+ * - boolean  profile     enable or disable internal profiling               TRUE
+ * - boolean  errors      enable or disable error handling                   TRUE
+ * - boolean  caching     enable or disable internal caching                 FALSE
  */
-Kohana::init(array('charset' => 'utf-8', 'base_url' => '/ko3/'));
+Kohana::init(array('base_url' => '/ko3/'));
 
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
@@ -74,8 +60,8 @@ Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'welcome',
-		'action' => 'index',
-		'id' => NULL));
+		'action'     => 'index',
+	));
 
 /**
  * Execute the main request using PATH_INFO. If no URI source is specified,
