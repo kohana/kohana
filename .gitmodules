@@ -22,3 +22,6 @@
 [submodule "system"]
 	path = system
 	url = git://github.com/shadowhand/kohana-core.git
+[submodule "modules/unittest"]
+	path = modules/unittest
+	url = git://github.com/shadowhand/kohana-unittest.git
