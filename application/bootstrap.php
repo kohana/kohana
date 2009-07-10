@@ -44,6 +44,7 @@ Kohana::modules(array(
 	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'paypal'     => MODPATH.'paypal',     // PayPal integration (not complete)
 	// 'todoist'    => MODPATH.'todoist',    // Todoist integration
+	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	));
 
