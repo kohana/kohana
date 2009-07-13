@@ -40,6 +40,7 @@ Kohana::init(array('base_url' => '/ko3/'));
 Kohana::modules(array(
 	// 'database'   => MODPATH.'database',   // Database access
 	// 'image'      => MODPATH.'image',      // Image manipulation
+	// 'kodoc'      => MODPATH.'kodoc',      // Kohana documentation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping (not complete)
 	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'paypal'     => MODPATH.'paypal',     // PayPal integration (not complete)
