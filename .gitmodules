@@ -25,3 +25,6 @@
 [submodule "modules/unittest"]
 	path = modules/unittest
 	url = git://github.com/shadowhand/kohana-unittest.git
+[submodule "modules/kodoc"]
+	path = modules/kodoc
+	url = git://github.com/shadowhand/kohana-kodoc.git
