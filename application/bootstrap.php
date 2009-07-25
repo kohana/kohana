@@ -1,5 +1,14 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+//-- Extend Kohana class ------------------------------------------------------
+
+/**
+ * You can extend the Kohana class here or include file that extends it here.
+ * 
+ * @see  http://docs.kohanaphp.com/extensions/core
+ */
+final class Kohana extends Kohana_Core {}
+
 //-- Environment setup --------------------------------------------------------
 
 /**
