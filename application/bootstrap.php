@@ -45,6 +45,16 @@ spl_autoload_register(array('Kohana', 'auto_load'));
 Kohana::init(array('base_url' => '/ko3/'));
 
 /**
+ * Attach the file write to logging. Multiple writers are supported.
+ */
+Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
+
+/**
+ * Attach a file reader to config. Multiple readers are supported.
+ */
+Kohana::$config->attach(new Kohana_Config_File);
+
+/**
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
@@ -58,16 +68,6 @@ Kohana::modules(array(
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	));
-
-/**
- * Attach the file write to logging. Multiple writers are supported.
- */
-Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
-
-/**
- * Attach a file reader to config. Multiple readers are supported.
- */
-Kohana::$config->attach(new Kohana_Config_File);
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
