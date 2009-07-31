@@ -1,6 +1,3 @@
-[submodule "modules/todoist"]
-	path = modules/todoist
-	url = git://github.com/shadowhand/kohana-todoist.git
 [submodule "modules/pagination"]
 	path = modules/pagination
 	url = git://github.com/GeertDD/kohana-pagination.git
@@ -10,9 +7,6 @@
 [submodule "modules/image"]
 	path = modules/image
 	url = git://github.com/shadowhand/kohana-image.git
-[submodule "modules/paypal"]
-	path = modules/paypal
-	url = git://github.com/shadowhand/kohana-paypal.git
 [submodule "modules/orm"]
 	path = modules/orm
 	url = git://github.com/jheathco/kohana-orm.git
@@ -25,6 +19,3 @@
 [submodule "modules/unittest"]
 	path = modules/unittest
 	url = git://github.com/shadowhand/kohana-unittest.git
-[submodule "modules/kodoc"]
-	path = modules/kodoc
-	url = git://github.com/shadowhand/kohana-kodoc.git
