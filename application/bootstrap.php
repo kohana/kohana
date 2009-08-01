@@ -1,14 +1,5 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-//-- Extend Kohana class ------------------------------------------------------
-
-/**
- * You can extend the Kohana class here or include file that extends it here.
- * 
- * @see  http://docs.kohanaphp.com/extensions/core
- */
-final class Kohana extends Kohana_Core {}
-
 //-- Environment setup --------------------------------------------------------
 
 /**
@@ -42,7 +33,7 @@ spl_autoload_register(array('Kohana', 'auto_load'));
  * - boolean  profile     enable or disable internal profiling               TRUE
  * - boolean  caching     enable or disable internal caching                 FALSE
  */
-Kohana::init(array('base_url' => '/ko3/'));
+Kohana::init(array('base_url' => '/kohana/'));
 
 /**
  * Attach the file write to logging. Multiple writers are supported.

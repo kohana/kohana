@@ -86,7 +86,17 @@ define('KOHANA_START_TIME', microtime(TRUE));
 require SYSPATH.'base'.EXT;
 
 // Load the main Kohana class
-require SYSPATH.'classes/kohana'.EXT;
+require SYSPATH.'classes/kohana/core'.EXT;
+
+if (is_file(APPPATH.'classes/kohana'.EXT))
+{
+	// Load the Kohana class extension
+	require APPPATH.'classes/kohana'.EXT;
+}
+else
+{
+	require SYSPATH.'classes/kohana'.EXT;
+}
 
 // Bootstrap the application
 require APPPATH.'bootstrap'.EXT;
