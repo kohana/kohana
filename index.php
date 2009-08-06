@@ -85,16 +85,17 @@ define('KOHANA_START_TIME', microtime(TRUE));
 // Load the base, low-level functions
 require SYSPATH.'base'.EXT;
 
-// Load the main Kohana class
+// Load the core Kohana class
 require SYSPATH.'classes/kohana/core'.EXT;
 
 if (is_file(APPPATH.'classes/kohana'.EXT))
 {
-	// Load the Kohana class extension
+	// Application extends the core
 	require APPPATH.'classes/kohana'.EXT;
 }
 else
 {
+	// Load empty core extension
 	require SYSPATH.'classes/kohana'.EXT;
 }
 
