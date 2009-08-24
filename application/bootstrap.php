@@ -49,15 +49,13 @@ Kohana::$config->attach(new Kohana_Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
+	// 'auth'       => MODPATH.'auth',       // Basic authentication
+	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	// 'database'   => MODPATH.'database',   // Database access
 	// 'image'      => MODPATH.'image',      // Image manipulation
-	// 'kodoc'      => MODPATH.'kodoc',      // Kohana documentation
-	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping (not complete)
+	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'pagination' => MODPATH.'pagination', // Paging of results
-	// 'paypal'     => MODPATH.'paypal',     // PayPal integration (not complete)
-	// 'todoist'    => MODPATH.'todoist',    // Todoist integration
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
-	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	));
 
 /**
@@ -71,8 +69,8 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 	));
 
 /**
- * Execute the main request using PATH_INFO. If no URI source is specified,
- * the URI will be automatically detected.
+ * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
+ * If no source is specified, the URI will be automatically detected.
  */
 echo Request::instance()
 	->execute()
