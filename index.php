@@ -82,6 +82,9 @@ if (file_exists('install'.EXT))
 // Define the start time of the application
 define('KOHANA_START_TIME', microtime(TRUE));
 
+// Define the memory usage at the start of the application
+define('KOHANA_START_MEMORY', memory_get_usage());
+
 // Load the base, low-level functions
 require SYSPATH.'base'.EXT;
 
