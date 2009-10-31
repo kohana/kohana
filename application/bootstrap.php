@@ -18,6 +18,14 @@ date_default_timezone_set('America/Chicago');
  */
 spl_autoload_register(array('Kohana', 'auto_load'));
 
+/**
+ * Enable the Kohana auto-loader for unserialization.
+ *
+ * @see  http://php.net/spl_autoload_call
+ * @see  http://php.net/manual/var.configuration.php#unserialize-callback-func
+ */
+ini_set('unserialize_callback_func', 'spl_autoload_call');
+
 //-- Configuration and initialization -----------------------------------------
 
 /**
