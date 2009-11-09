@@ -14,33 +14,33 @@ Please read the following before working with this code:
 
 First, you will need to tell git about the remote repository:
 
-    git remote add shadowhand git://github.com/shadowhand/kohana.git
+    git remote add kohana git://github.com/kohana/kohana.git
 
-This adds "shadowhand" as a remote repository that can be pulled from.
+This adds "kohana" as a remote repository that can be pulled from.
 
-    git checkout -b shadowhand/master
+    git checkout -b kohana/master
 
-This creates a local branch "shadowhand/master" of the master branch of the "shadowhand" repository.
+This creates a local branch "kohana/master" of the master branch of the "kohana" repository.
 
 ## Merging Changes from Remote Repositories
 
 Now that you have a remote repository, you can pull changes into your local repository:
 
-    git checkout shadowhand/master
+    git checkout kohana/master
 
-This switches to the previously created "shadowhand/master" branch.
+This switches to the previously created "kohana/master" branch.
 
-    git pull shadowhand master
+    git pull kohana master
 
-This pulls all of the changes in the remote into the local "shadowhand/master" branch.
+This pulls all of the changes in the remote into the local "kohana/master" branch.
 
     git checkout master
 
 This switches back to your local master branch.
 
-    git merge shadowhand/master
+    git merge kohana/master
 
-This merges all of the changes in the "shadowhand/master" branch into your master branch.
+This merges all of the changes in the "kohana/master" branch into your master branch.
 
     git push
 
