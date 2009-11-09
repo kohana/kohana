@@ -32,7 +32,7 @@ This switches to the previously created "kohana/master" branch.
 
     git pull kohana master
 
-This pulls all of the changes in the remote into the local "kohana/master" branch.
+This pulls all of the changes from the remote into the local "kohana/master" branch.
 
     git checkout master
 
