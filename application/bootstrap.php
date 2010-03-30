@@ -5,15 +5,23 @@
 /**
  * Set the default time zone.
  *
- * @see  http://docs.kohanaphp.com/features/localization#time
+ * @see  http://docs.kohanaphp.com/about.configuration
  * @see  http://php.net/timezones
  */
 date_default_timezone_set('America/Chicago');
 
 /**
+ * Set the default locale.
+ *
+ * @see  http://docs.kohanaphp.com/about.configuration
+ * @see  http://php.net/setlocale
+ */
+setlocale(LC_ALL, 'en_US.utf-8');
+
+/**
  * Enable the Kohana auto-loader.
  *
- * @see  http://docs.kohanaphp.com/features/autoloading
+ * @see  http://docs.kohanaphp.com/about.autoloading
  * @see  http://php.net/spl_autoload_register
  */
 spl_autoload_register(array('Kohana', 'auto_load'));
