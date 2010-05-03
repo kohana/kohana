@@ -2,7 +2,7 @@
 
 /**
  * The directory in which your application specific resources are located.
- * The application directory must contain the config/kohana.php file.
+ * The application directory must contain the bootstrap.php file.
  *
  * @see  http://docs.kohanaphp.com/install#application
  */
