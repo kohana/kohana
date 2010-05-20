@@ -4,14 +4,14 @@
  * The directory in which your application specific resources are located.
  * The application directory must contain the bootstrap.php file.
  *
- * @see  http://docs.kohanaphp.com/install#application
+ * @see  http://kohanaframework.org/guide/about.install#application
  */
 $application = 'application';
 
 /**
  * The directory in which your modules are located.
  *
- * @see  http://docs.kohanaphp.com/install#modules
+ * @see  http://kohanaframework.org/guide/about.install#modules
  */
 $modules = 'modules';
 
@@ -19,7 +19,7 @@ $modules = 'modules';
  * The directory in which the Kohana resources are located. The system
  * directory must contain the classes/kohana.php file.
  *
- * @see  http://docs.kohanaphp.com/install#system
+ * @see  http://kohanaframework.org/guide/about.install#system
  */
 $system = 'system';
 
@@ -27,7 +27,7 @@ $system = 'system';
  * The default extension of resource files. If you change this, all resources
  * must be renamed to use the new extension.
  *
- * @see  http://docs.kohanaphp.com/install#ext
+ * @see  http://kohanaframework.org/guide/about.install#ext
  */
 define('EXT', '.php');
 
@@ -40,7 +40,7 @@ define('EXT', '.php');
  *
  * In a production environment, it is safe to ignore notices and strict warnings.
  * Disable them by using: E_ALL ^ E_NOTICE
- * 
+ *
  * When using a legacy application with PHP >= 5.3, it is recommended to disable
  * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
  */
@@ -50,7 +50,7 @@ error_reporting(E_ALL | E_STRICT);
  * End of standard configuration! Changing any of the code below should only be
  * attempted by those with a working knowledge of Kohana internals.
  *
- * @see  http://docs.kohanaphp.com/bootstrap
+ * @see  http://kohanaframework.org/guide/using.configuration
  */
 
 // Set the full path to the docroot
