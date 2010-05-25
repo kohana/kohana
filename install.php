@@ -31,8 +31,8 @@
 	<h1>Environment Tests</h1>
 
 	<p>
-		The following tests have been run to determine if <a href="http://kohanaphp.com/">Kohana</a> will work in your environment.
-		If any of the tests have failed, consult the <a href="http://docs.kohanaphp.com/installation">documentation</a>
+		The following tests have been run to determine if <a href="http://kohanaframework.org/">Kohana</a> will work in your environment.
+		If any of the tests have failed, consult the <a href="http://kohanaframework.org/guide/about.install">documentation</a>
 		for more information on how to correct the problem.
 	</p>
 
