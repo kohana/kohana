@@ -132,6 +132,14 @@
 		</tr>
 		<?php endif ?>
 		<tr>
+			<th>Character Type (CTYPE) Extension</th>
+			<?php if ( ! function_exists('ctype_digit')): $failed = TRUE ?>
+				<td class="fail">The <a href="http://php.net/ctype">ctype</a> extension is not enabled.</td>
+			<?php else: ?>
+				<td class="pass">Pass</td>
+			<?php endif ?>
+		</tr>
+		<tr>
 			<th>URI Determination</th>
 			<?php if (isset($_SERVER['REQUEST_URI']) OR isset($_SERVER['PHP_SELF']) OR isset($_SERVER['PATH_INFO'])): ?>
 				<td class="pass">Pass</td>
