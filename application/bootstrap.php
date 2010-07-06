@@ -89,7 +89,7 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'action'     => 'index',
 	));
 
-if ( ! defined('SUPRESS_REQUEST'))
+if ( ! defined('SUPPRESS_REQUEST'))
 {
 	/**
 	 * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
