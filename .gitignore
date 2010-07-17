@@ -1,3 +1,6 @@
 Icon?
 .DS_Store
 .svn
+code_coverage
+*~
+*.swp
