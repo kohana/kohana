@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true" bootstrap="application/test_bootstrap.php">
+	<filter addUncoveredFilesFromWhitelist="true">
+	  	<whitelist>
+			<directory suffix=".php">./system/classes/kohana/</directory>
+		</whitelist>
+	</filter>
+	<testsuites>
+		<testsuite name="Kohana Tests">
+			<directory suffix=".php">./system/tests/kohana/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
