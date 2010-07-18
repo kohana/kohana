@@ -3,7 +3,7 @@
 # It expects a valid git tag as the first parameter
 
 DEPLOY_DIR="kohana_release"
-TESTING_FILES="application/test_bootstrap.php phpunit.xml code_coverage.xml phpunitcc TESTING.md"
+TESTING_FILES="application/test_bootstrap.php phpunit.xml code_coverage.xml phpunitcc TESTING.md release-tag"
 KOHANA_REPO="git://github.com/kohana/kohana"
 USAGE="\nUsage: $0 {git-tag}
 \nWhere {git-tag} is a valid tag in the git repository"
