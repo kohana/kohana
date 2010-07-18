@@ -22,6 +22,12 @@ By default code coverage is not calculated, if you want to collect it then you n
 run phpunit with the config in `code_coverage.xml`.  Once the tests have finished running open `code_coverage/index.html` 
 in your browser.
 
+Things to Test (TODO)
+---
+
+* Need extra tests for Validate to make sure filters(), rules(), callbacks() will convert the field name to a label if a label
+  does not exist
+
 Known failing tests
 ---
 
