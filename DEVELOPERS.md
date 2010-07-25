@@ -43,7 +43,7 @@ It is highly recommended that you run the unit tests while developing to ensure 
 
 ### Creating new features
 
-New features or API breaking modifications should be developed in separate branches so as to isolate them until they're both stable and **fully tests have been written**.
+New features or API breaking modifications should be developed in separate branches so as to isolate them until they're both stable and **tests have been written for the feature**.
 When a new feature is complete and tested it can be merged into its respective release branch.
 
 If a change you make intentionally breaks the api then please correct the relevant tests.
