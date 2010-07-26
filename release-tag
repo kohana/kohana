@@ -1,0 +1,72 @@
+#!/bin/bash
+# This script deploys kohana to zip / tar / gzip format & removes development extras
+# It expects a valid git tag as the first parameter
+
+DEPLOY_DIR="kohana_release"
+TESTING_FILES="application/test_bootstrap.php phpunit.xml code_coverage.xml phpunitcc TESTING.md release-tag"
+KOHANA_REPO="git://github.com/kohana/kohana"
+USAGE="\nUsage: $0 {git-tag}
+\nWhere {git-tag} is a valid tag in the git repository"
+
+# A tag must be provided as the first argument
+if [ -z $1 ]; then
+	echo "$0 - A small script to prepare a kohana tag for relase."
+	echo "If unit tests complete it removes testing files and archives the codebase"
+	echo -e $USAGE
+	exit 1
+fi
+
+# Just setting this lest we need to refactor later on
+DEPLOY_TAG=$1
+
+# Bit of a hacky way to find if a tag exists
+git tag -l $DEPLOY_TAG | grep -E ".+" &> /dev/null
+
+# Check that the exit code of grep was 0 (i.e. it matched something 1+ times)
+if [ $? -ne 0 ]; then
+	echo "Could not find specified tag in git repo ($DEPLOY_TAG)"
+	echo -e $USAGE
+	exit 2
+fi
+
+echo "Creating a clean deploy environment called '$DEPLOY_DIR'..."
+
+# Create a clean temp area to deploy our stuff
+rm -rf $DEPLOY_DIR
+mkdir $DEPLOY_DIR
+cd $DEPLOY_DIR
+
+echo "Cloning the repo and checking out the tag to deploy..."
+# Bring down a fresh copy of the kohana repo
+git clone $KOHANA_REPO repo
+cd repo
+
+# Checkout the tag we want to deploy and fetch all the submodules
+git checkout --quiet $DEPLOY_TAG
+git submodule update --init
+
+echo "Running tests to ensure release is stable..."
+phpunit 
+
+# We cannot release something that's not stable
+if [ $? -ne 0 ]; then
+	echo "Some unit tests did not pass, exiting release"
+	exit 3
+fi
+
+echo "Removing testing files..."
+
+# Now we remove all unit testing files
+rm -vrf $TESTING_FILES
+
+# Including any tests across all modules
+find . -type d -regex ".*/tests$" | xargs rm -vrf
+
+# And now we package the whole thing up in archive form
+echo "Packaging repo into zip and tar.gz archives..."
+
+zip -r -q $DEPLOY_TAG.zip *
+mv $DEPLOY_TAG.zip ../
+
+tar -czf $DEPLOY_TAG.tar.gz *
+mv $DEPLOY_TAG.tar.gz ../
