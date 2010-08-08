@@ -6,3 +6,4 @@ code_coverage
 *.swp
 coverage
 kohana_release
+nbproject
