@@ -54,6 +54,15 @@ Kohana::init(array(
 ));
 
 /**
+ * Set Kohana::$environment if $_ENV['KOHANA_ENV'] has been supplied.
+ * 
+ */
+if (isset($_ENV['KOHANA_ENV']))
+{
+	Kohana::$environment = $_ENV['KOHANA_ENV'];
+}
+
+/**
  * Attach the file write to logging. Multiple writers are supported.
  */
 Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
