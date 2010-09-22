@@ -24,22 +24,32 @@
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
 	<property name="release-excludes" value="**/.git,**/.git*,build.xml,phpunit.xml,DEVELOPERS.md,phpunitcc,code_coverage.xml,release-tag,TESTING.md,**/tests"/>
 
+	<!-- Clean up -->
 	<target name="clean">
-		<!-- Clean up -->
 		<delete dir="${basedir}/build"/>
 		<!-- Create build directories -->
 		<mkdir dir="${basedir}/build/coverage"/>
 		<mkdir dir="${basedir}/build/logs"/>
 		<mkdir dir="${basedir}/build/release"/>
 	</target>
+
+	<!-- Check if a tag has been supplied -->
+	<target name="tag-supplied">
+		<echo message="TODO: Check if tag has been supplied."/>
+	</target>
+
+	<!-- Check if a specific tag exists -->
+	<target name="tag-exists" depends="tag-supplied">
+		<echo message="TODO: Check if tag (${tag}) exists."/>
+	</target>
 	
 	<!-- Run unit tests -->
-	<target name="phpunit">
+	<target name="test" depends="clean">
 		<exec executable="phpunit" failonerror="true"/>
 	</target>
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
-	<target name="phpunit-log">
+	<target name="test-log" depends="clean">
 		<exec executable="phpunit" failonerror="true">
 			<arg line="--coverage-html=${basedir}/build/coverage"/>
 			<arg line="--log-junit=${basedir}/build/logs/junit.xml"/>
@@ -49,95 +59,6 @@
 
 	<!-- Update submodules -->
 	<target name="update-submodules" depends="clean,clone-branch">
-		<!-- System -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/system">
-			<arg line="checkout 3.0.x"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/system">
-			<arg line="pull"/>
-		</exec>
-		<!-- Auth -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/auth">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/auth">
-			<arg line="pull"/>
-		</exec>
-		<!-- Cache -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/cache">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/cache">
-			<arg line="pull"/>
-		</exec>
-		<!-- Codebench -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/codebench">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/codebench">
-			<arg line="pull"/>
-		</exec>
-		<!-- Database -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/database">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/database">
-			<arg line="pull"/>
-		</exec>
-		<!-- Image -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/image">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/image">
-			<arg line="pull"/>
-		</exec>
-		<!-- OAuth -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/oauth">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/oauth">
-			<arg line="pull"/>
-		</exec>
-		<!-- ORM -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/orm">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/orm">
-			<arg line="pull"/>
-		</exec>
-		<!-- Pagination -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/pagination">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/pagination">
-			<arg line="pull"/>
-		</exec>
-		<!-- Unittest -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/unittest">
-			<arg line="checkout 3.0.x"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/unittest">
-			<arg line="pull"/>
-		</exec>
-		<!-- Userguide -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/userguide">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/modules/userguide">
-			<arg line="pull"/>
-		</exec>
-
-		<!-- Commit and Push -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
-			<arg line="commit -a -m 'Updating submodules'"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
-			<arg line="push"/>
-		</exec>
-	</target>
-
-	<!-- Update submodules - For when we sort out the submodule branch names -->
-	<target name="update-submodules2" depends="clean,clone-branch">
 		<for list="${submodules}" param="submodule">
 			<sequential>
 				<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/${submodule}">
@@ -156,11 +77,6 @@
 		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
 			<arg line="push"/>
 		</exec>
-	</target>
-
-	<!-- Check if a specific tag exists -->
-	<target name="tag-exists">
-		<echo message="TODO: Check if tag (${tag}) exists."/>
 	</target>
 
 	<!-- Clone a specific tag -->
@@ -189,21 +105,49 @@
 		</exec>
 	</target>
 
-	<!-- Build a release of a specific tag -->
-	<target name="release-tag" depends="clean,tag-exists,clone-tag,test-tag">
+	<!-- Prepare release -->
+	<target name="prepare-release" depends="tag-supplied">
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="checkout -b release/${tag}"/>
+		</exec>
+		<echo>Make any final changes now, and run "ant complete-release"</echo>
+	</target>
+
+	<!-- Complete release -->
+	<target name="complete-release" depends="tag-supplied">
+		<antcall target="test"/>
+
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="checkout master"/>
+		</exec>
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="merge release/${tag}"/>
+		</exec>
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="checkout ${branch}"/>
+		</exec>
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="merge release/${tag}"/>
+		</exec>
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="tag ${tag}"/>
+		</exec>
+
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="push --tags"/>
+		</exec>
+
+		<exec executable="git" failonerror="true" dir="${basedir}">
+			<arg line="branch -d release/${tag}"/>
+		</exec>
+
+		<antcall target="package-tag"/>
+	</target>
+	
+	<!-- Package a release of a specific tag -->
+	<target name="package-tag" depends="clean,tag-exists,clone-tag">
 		<zip destfile="${basedir}/build/kohana-${tag}.zip">
 			<fileset dir="${basedir}/build/release" excludes="${release-excludes}"/>
 		</zip>
 	</target>
-
-	<target name="test-tag">
-		<exec executable="phpunit" failonerror="true" dir="${basedir}/build/release/kohana-${tag}"/>
-	</target>
-
-	<target name="test-branch">
-		<exec executable="phpunit" failonerror="true" dir="${basedir}/build/release/kohana-${branch}"/>
-	</target>
-
-	<target name="test" depends="clean,phpunit"/>
-	<target name="test-log" depends="clean,phpunit-log"/>
 </project>
