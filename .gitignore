@@ -7,3 +7,5 @@ code_coverage
 coverage
 kohana_release
 nbproject
+*.komodoproject
+build
