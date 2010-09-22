@@ -6,7 +6,7 @@
 	Build a release.zip from a tag.
 	$ TAG=3.0.8 ant release-tag
 
-	Update submodules - This should only be ran in a 3.0.x clone.
+	Update submodules and push back. This won't affect your local clone.
 	$ ant update-submodules
 
 	Run unit tests
