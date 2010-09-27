@@ -37,12 +37,12 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 //-- Configuration and initialization -----------------------------------------
 
 /**
- * Set Kohana::$environment if $_ENV['KOHANA_ENV'] has been supplied.
+ * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
  * 
  */
-if (isset($_ENV['KOHANA_ENV']))
+if (getenv('KOHANA_ENV') !== FALSE)
 {
-	Kohana::$environment = $_ENV['KOHANA_ENV'];
+	Kohana::$environment = getenv('KOHANA_ENV');
 }
 
 /**
