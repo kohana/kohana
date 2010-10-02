@@ -55,7 +55,8 @@
 	<target name="phpcs">
 		<exec executable="phpcs" failonerror="false">
 			<arg line="--standard=Kohana"/>
-			<arg line="${basedir}/system/classes/kohana"/>
+			<arg line="--ignore=*.js,*.css,**/vendor/**"/>
+			<arg line="${basedir}"/>
 		</exec>
 	</target>
 
@@ -63,37 +64,42 @@
 	<target name="phpcs-log">
 		<exec executable="phpcs" failonerror="false" output="/dev/null">
 			<arg line="--standard=Kohana"/>
+			<arg line="--ignore=*.js,*.css,**/vendor/**"/>
 			<arg line="--report=checkstyle"/>
 			<arg line="--report-file=${basedir}/build/logs/checkstyle.xml"/>
-			<arg line="${basedir}/system/classes/kohana"/>
+			<arg line="${basedir}"/>
 		</exec>
 	</target>
 
 	<!-- Run PHP Mess Detector and generate pmd.xml -->
 	<target name="phpmd-log">
 		<exec executable="phpmd">
-			<arg line="${basedir}/system/classes/kohana xml codesize,unusedcode --reportfile ${basedir}/build/logs/pmd.xml" />
+			<arg line="${basedir}" />
+			<arg line="xml" />
+			<arg line="codesize,unusedcode" />
+			<arg line="--exclude=**/vendor/**" />
+			<arg line="--reportfile ${basedir}/build/logs/pmd.xml" />
 		</exec>
 	</target>
 
 	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
 	<target name="phpcpd-log">
 		<exec executable="phpcpd">
-			<arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ${basedir}/system/classes/kohana" />
+			<arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ${basedir}" />
 		</exec>
 	</target>
 
 	<!-- Run PHP Depend and generate jdepend.xml -->
 	<target name="pdepend-log">
 		<exec executable="pdepend">
-			<arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ${basedir}/system/classes/kohana" />
+			<arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ${basedir}" />
 		</exec>
 	</target>
 
 	<!-- Run PHP CodeBrowser and generate output -->
 	<target name="phpcb-log">
 		<exec executable="phpcb">
-			<arg line="--log ${basedir}/build/logs --source ${basedir}/system/classes/kohana --output ${basedir}/build/code-browser" />
+			<arg line="--log ${basedir}/build/logs --source ${basedir} --output ${basedir}/build/code-browser" />
 		</exec>
 	</target>
 
