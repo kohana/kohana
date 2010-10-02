@@ -50,7 +50,7 @@
 		</exec>
 	</target>
 
-	<!-- Run unit tests -->
+	<!-- Run PHP Code Sniffer -->
 	<target name="phpcs">
 		<exec executable="phpcs" failonerror="false">
 			<arg line="--standard=Kohana"/>
@@ -58,7 +58,7 @@
 		</exec>
 	</target>
 
-	<!-- Run unit tests and generate junit.xml and clover.xml -->
+	<!-- Run PHP Code Sniffer and generate checkstyle.xml -->
 	<target name="phpcs-log">
 		<exec executable="phpcs" failonerror="false" output="/dev/null">
 			<arg line="--standard=Kohana"/>
@@ -68,7 +68,21 @@
 		</exec>
 	</target>
 
+	<!-- Run PHP Mess Detector and generate pmd.xml -->
+	<target name="phpmd-log">
+		<exec executable="phpmd">
+			<arg line="${basedir}/system/classes/kohana xml codesize,unusedcode --reportfile ${basedir}/build/logs/pmd.xml" />
+		</exec>
+	</target>
+
+	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
+	<target name="phpcpd-log">
+		<exec executable="phpcpd">
+			<arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ${basedir}/system/classes/kohana" />
+		</exec>
+	</target>
+
 	<!-- Hudson CI target -->
-	<target name="hudson"  depends="clean,test-log,phpcs-log">
+	<target name="hudson"  depends="clean,test-log,phpcs-log,phpmd-log,phpcpd-log">
 	</target>
 </project>
