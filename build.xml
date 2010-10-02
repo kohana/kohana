@@ -24,6 +24,7 @@
 		<mkdir dir="${basedir}/build/coverage"/>
 		<mkdir dir="${basedir}/build/logs"/>
 		<mkdir dir="${basedir}/build/release"/>
+		<mkdir dir="${basedir}/build/code-browser"/>
 	</target>
 
 	<!-- Check if a tag has been supplied -->
@@ -89,7 +90,14 @@
 		</exec>
 	</target>
 
+	<!-- Run PHP CodeBrowser and generate output -->
+	<target name="phpcb-log">
+		<exec executable="phpcb">
+			<arg line="--log ${basedir}/build/logs --source ${basedir}/system/classes/kohana --output ${basedir}/build/code-browser" />
+		</exec>
+	</target>
+
 	<!-- Hudson CI target -->
-	<target name="hudson"  depends="clean,test-log,phpcs-log,phpmd-log,phpcpd-log,pdepend-log">
+	<target name="hudson"  depends="clean,test-log,phpcs-log,phpmd-log,phpcpd-log,pdepend-log,phpcb-log">
 	</target>
 </project>
