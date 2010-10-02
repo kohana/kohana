@@ -1,28 +1,21 @@
-<project name="kohana" default="test" basedir=".">
-	<!--
-	USAGE
-	=====
-	
-	Build a release.zip from a tag.
-	$ TAG=3.0.8 ant release-tag
-
-	Update submodules and push back. This won't affect your local clone.
-	$ ant update-submodules
-
-	Run unit tests
-	$ ant test
-
-	Run unit tests with logging enabled
-	$ ant test-log
-
-	-->
+<project name="kohana" default="help" basedir=".">
 	<property environment="env"/>
 	<property name="repo" value="git@github.com:kohana/kohana.git"/>
 	<property name="branch" value="3.0.x"/>
 	<property name="tag" value="${env.TAG}"/>
-	<!-- Used by update-submodules2 - not update-submodules -->
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
 	<property name="release-excludes" value="**/.git,**/.git*,build.xml,phpunit.xml,DEVELOPERS.md,phpunitcc,code_coverage.xml,release-tag,TESTING.md,**/tests"/>
+
+	<!-- Clean up -->
+	<target name="help">
+		<echo message="USAGE"/>
+		<echo message="====="/>
+		<echo message="ant test       Run unit tests."/>
+		<echo message="ant test-log   Run unit tests with logging enabled."/>
+		<echo message="ant phpcs      Run phpcs."/>
+		<echo message="ant phpcs-log  Run phpcs with logging enabled."/>
+
+	</target>
 
 	<!-- Clean up -->
 	<target name="clean">
@@ -44,12 +37,12 @@
 	</target>
 	
 	<!-- Run unit tests -->
-	<target name="test" depends="clean">
+	<target name="test">
 		<exec executable="phpunit" failonerror="true"/>
 	</target>
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
-	<target name="test-log" depends="clean">
+	<target name="test-log">
 		<exec executable="phpunit" failonerror="true">
 			<arg line="--coverage-html=${basedir}/build/coverage"/>
 			<arg line="--log-junit=${basedir}/build/logs/junit.xml"/>
@@ -57,97 +50,25 @@
 		</exec>
 	</target>
 
-	<!-- Update submodules -->
-	<target name="update-submodules" depends="clean,clone-branch">
-		<for list="${submodules}" param="submodule">
-			<sequential>
-				<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/${submodule}">
-					<arg line="checkout ${branch}"/>
-				</exec>
-				<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}/${submodule}">
-					<arg line="pull"/>
-				</exec>
-			</sequential>
-		</for>
-
-		<!-- Commit and Push -->
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
-			<arg line="commit -a -m 'Updating submodules'"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
-			<arg line="push"/>
+	<!-- Run unit tests -->
+	<target name="phpcs">
+		<exec executable="phpcs" failonerror="false">
+			<arg line="--standard=Kohana"/>
+			<arg line="${basedir}/system/classes/kohana"/>
 		</exec>
 	</target>
 
-	<!-- Clone a specific tag -->
-	<target name="clone-tag">
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release">
-			<arg line="clone ${repo} kohana-${tag}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${tag}">
-			<arg line="checkout ${tag}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${tag}">
-			<arg line="submodule update --init --recursive"/>
+	<!-- Run unit tests and generate junit.xml and clover.xml -->
+	<target name="phpcs-log">
+		<exec executable="phpcs" failonerror="false" output="/dev/null">
+			<arg line="--standard=Kohana"/>
+			<arg line="--report=checkstyle"/>
+			<arg line="--report-file=${basedir}/build/logs/checkstyle.xml"/>
+			<arg line="${basedir}/system/classes/kohana"/>
 		</exec>
 	</target>
 
-	<!-- Clone a specific branch -->
-	<target name="clone-branch">
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release">
-			<arg line="clone ${repo} kohana-${branch}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
-			<arg line="checkout ${branch}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}/build/release/kohana-${branch}">
-			<arg line="submodule update --init --recursive"/>
-		</exec>
-	</target>
-
-	<!-- Prepare release -->
-	<target name="prepare-release" depends="tag-supplied">
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="checkout -b release/${tag}"/>
-		</exec>
-		<echo>Make any final changes now, and run "ant complete-release"</echo>
-	</target>
-
-	<!-- Complete release -->
-	<target name="complete-release" depends="tag-supplied">
-		<antcall target="test"/>
-
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="checkout master"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="merge release/${tag}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="checkout ${branch}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="merge release/${tag}"/>
-		</exec>
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="tag ${tag}"/>
-		</exec>
-
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="push --tags"/>
-		</exec>
-
-		<exec executable="git" failonerror="true" dir="${basedir}">
-			<arg line="branch -d release/${tag}"/>
-		</exec>
-
-		<antcall target="package-tag"/>
-	</target>
-	
-	<!-- Package a release of a specific tag -->
-	<target name="package-tag" depends="clean,tag-exists,clone-tag">
-		<zip destfile="${basedir}/build/kohana-${tag}.zip">
-			<fileset dir="${basedir}/build/release" excludes="${release-excludes}"/>
-		</zip>
+	<!-- Hudson CI target -->
+	<target name="hudson"  depends="clean,test-log,phpcs-log">
 	</target>
 </project>
