@@ -82,7 +82,14 @@
 		</exec>
 	</target>
 
+	<!-- Run PHP Depend and generate jdepend.xml -->
+	<target name="pdepend-log">
+		<exec executable="pdepend">
+			<arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ${basedir}/system/classes/kohana" />
+		</exec>
+	</target>
+
 	<!-- Hudson CI target -->
-	<target name="hudson"  depends="clean,test-log,phpcs-log,phpmd-log,phpcpd-log">
+	<target name="hudson"  depends="clean,test-log,phpcs-log,phpmd-log,phpcpd-log,pdepend-log">
 	</target>
 </project>
