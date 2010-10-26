@@ -82,8 +82,21 @@ if (file_exists('install'.EXT))
 	return include 'install'.EXT;
 }
 
-// Load the base, low-level functions
-require SYSPATH.'base'.EXT;
+if ( ! defined('KOHANA_START_TIME'))
+{
+	/**
+	 * Define the start time of the application, used for profiling.
+	 */
+	define('KOHANA_START_TIME', microtime(TRUE));
+}
+
+if ( ! defined('KOHANA_START_MEMORY'))
+{
+	/**
+	 * Define the memory usage at the start of the application, used for profiling.
+	 */
+	define('KOHANA_START_MEMORY', memory_get_usage());
+}
 
 // Load the core Kohana class
 require SYSPATH.'classes/kohana/core'.EXT;
