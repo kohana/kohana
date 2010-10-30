@@ -37,6 +37,11 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 //-- Configuration and initialization -----------------------------------------
 
 /**
+ * Set the default language
+ */
+I18n::lang('en-us');
+
+/**
  * Set Kohana::$environment if $_ENV['KOHANA_ENV'] has been supplied.
  * 
  */
