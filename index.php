@@ -82,9 +82,6 @@ if (file_exists('install'.EXT))
 	return include 'install'.EXT;
 }
 
-// Load the base, low-level functions
-require SYSPATH.'base'.EXT;
-
 // Load the core Kohana class
 require SYSPATH.'classes/kohana/core'.EXT;
 
