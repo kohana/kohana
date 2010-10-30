@@ -63,6 +63,11 @@ Kohana::init(array(
 ));
 
 /**
+ * Set the language to be used for translations
+ */
+I18n::lang('en_US');
+
+/**
  * Attach the file write to logging. Multiple writers are supported.
  */
 Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));

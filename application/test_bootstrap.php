@@ -76,9 +76,6 @@ define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
 // Clean up the configuration vars
 unset($application, $modules, $system);
 
-// Load the base, low-level functions
-require SYSPATH.'base'.EXT;
-
 // Load the core Kohana class
 require SYSPATH.'classes/kohana/core'.EXT;
 
@@ -145,6 +142,8 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 Kohana::init(array(
 	'base_url'   => '/',
 ));
+
+I18n::lang('en-US');
 
 /**
  * Attach the file write to logging. Multiple writers are supported.
