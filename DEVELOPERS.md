@@ -21,27 +21,28 @@ fetching changes from the repository.
 
 ## Developing locally
 
-There are 3 branches in the kohana/kohana repository:
+There are 3 branches in all the kohana repositories:
 
 * **master** This branch always points to the latest release tag. In essence it points to the last stable edition of the codebase
 * **3.0.x**  This is a release branch for development of the 3.0.x series, i.e. 3.0, 3.0.3, 3.0.8 etc.
 * **3.1.x**  This is a release branch for development of the 3.1.x series, i.e. 3.1, 3.1.4, 3.1.14 etc.
 
-To work on a specific release branch you need to check it out then check out the appropriate system branch.
+To work on a specific release branch you need to check it out then check out the appropriate branches.
 Release branch names follow the same convention in both kohana/kohana and kohana/core.
 
 To work on 3.0.x you'd do the following:
 
 	> git clone git://github.com/kohana/kohana.git
-	# ....
+	....
 	
 	> cd kohana
 	> git submodule update --init
-	# ....
+	....
 
 	> git checkout 3.0.x
-	# Switched to branch '3.0.x'
-	
+	Switched to branch '3.0.x'
+	> git submodule update 
+
 	> cd system
 	> git checkout 3.0.x
 	# Switched to branch 3.0.x
@@ -52,6 +53,8 @@ a `git submodule update` and run `git status` you'll be told:
 
 	# Not currently on any branch.
 	nothing to commit (working directory clean)
+
+Similarly, if you want to work on modules, make sure you checkout the correct branch before you start working.
 
 **IMPORTANT:** It is highly recommended that you run the unit tests whilst developing to
 ensure that any changes you make do not break the api. *See TESTING.md for more info*
