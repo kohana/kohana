@@ -104,6 +104,14 @@
 	</target>
 
 	<!-- Hudson CI target -->
-	<target name="hudson"  depends="clean,test-log,phpcs-log,phpmd-log,phpcpd-log,pdepend-log,phpcb-log">
+	<target name="hudson">
+		<antcall target="test-log"/>
+		<parallel>
+			<antcall target="pdepend-log"/>
+			<antcall target="phpmd-log"/>
+			<antcall target="phpcpd-log"/>
+			<antcall target="phpcs-log"/>
+			<antcall target="phpcb-log"/>
+		</parallel>
 	</target>
 </project>
