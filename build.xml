@@ -75,7 +75,7 @@
 			<property name="dir" value="." />
 		</phingcall>
 
-		<!--<foreach list="${submodules}" param="dir" target="_git-checkout"/>-->
+		<foreach list="${submodules}" param="dir" target="_git-checkout"/>
 	</target>
 
 	<target name="_git-checkout">
@@ -92,10 +92,10 @@
 	</target>
 
 	<target name="git-push">
+		<foreach list="${submodules}" param="dir" target="_git-push"/>
 		<phingcall target="_git-push">
 			<property name="dir" value="." />
 		</phingcall>
-		<foreach list="${submodules}" param="dir" target="_git-push"/>
 	</target>
 
 	<target name="_git-push">
@@ -103,10 +103,10 @@
 	</target>
 
 	<target name="git-status">
+		<foreach list="${submodules}" param="dir" target="_git-status"/>
 		<phingcall target="_git-status">
 			<property name="dir" value="." />
 		</phingcall>
-		<foreach list="${submodules}" param="dir" target="_git-status"/>
 	</target>
 
 	<target name="_git-status">
@@ -171,17 +171,21 @@
 	</target>
 
 	<target name="dev-push">
-		<foreach list="${submodules}" param="submodule" target="dev-submodule-push"/>
+		<foreach list="${submodules}" param="submodule" target="_dev-push"/>
+		<phingcall target="_dev-push">
+			<property name="repository" value="git@github.com:kohana/userguide.git" />
+			<property name="dir"        value="${basedir}/modules/userguide" />
+		</phingcall>
 	</target>
 
-	<target name="dev-submodule-push">
+	<target name="_dev-push">
 		<if>
 			<isset property="submodule"/>
 			<else>
 				<fail message="A submodule propery must be supplied." />
 			</else>
 		</if>
-		<gitpush repository="${basedir}/${submodule}" destination="dev" refspec="${branch}:${branch}" tags="true" />
+		<!--<gitpush repository="${basedir}/${submodule}" destination="dev" refspec="${branch}:${branch}" tags="true" />-->
 	</target>
 
 	<!-- Run unit tests -->
