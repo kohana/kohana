@@ -170,24 +170,6 @@
 		<exec command="git remote add dev ${repository}" dir="${dir}"/>
 	</target>
 
-	<target name="dev-push">
-		<foreach list="${submodules}" param="submodule" target="_dev-push"/>
-		<phingcall target="_dev-push">
-			<property name="repository" value="git@github.com:kohana/userguide.git" />
-			<property name="dir"        value="${basedir}/modules/userguide" />
-		</phingcall>
-	</target>
-
-	<target name="_dev-push">
-		<if>
-			<isset property="submodule"/>
-			<else>
-				<fail message="A submodule propery must be supplied." />
-			</else>
-		</if>
-		<!--<gitpush repository="${basedir}/${submodule}" destination="dev" refspec="${branch}:${branch}" tags="true" />-->
-	</target>
-
 	<!-- Run unit tests -->
 	<target name="test">
 		<exec command="phpunit" checkreturn="true" passthru="true"/>
