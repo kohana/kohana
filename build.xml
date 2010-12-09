@@ -188,12 +188,12 @@
 
 	<!-- Run PHP Code Sniffer -->
 	<target name="phpcs">
-		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/** ${basedir}" passthru="true"/>
+		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/**,**/tests/** ${basedir}" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer and generate checkstyle.xml -->
 	<target name="phpcs-log">
-		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/** --report=checkstyle --report-file=${builddir}/logs/checkstyle.xml ${basedir}"  passthru="false"/>
+		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/**,**/tests/** --report=checkstyle --report-file=${builddir}/logs/checkstyle.xml ${basedir}"  passthru="false"/>
 	</target>
 
 	<!-- Run PHP Mess Detector -->
