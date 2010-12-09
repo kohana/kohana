@@ -172,12 +172,12 @@
 
 	<!-- Run unit tests -->
 	<target name="test">
-		<exec command="phpunit" checkreturn="true" passthru="true"/>
+		<exec command="phpunit --bootstrap=application/test_bootstrap.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-		<exec command="phpunit --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml" checkreturn="true" passthru="true"/>
+		<exec command="phpunit --bootstrap=application/test_bootstrap.php modules/unittest/tests.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->
