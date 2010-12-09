@@ -19,16 +19,19 @@
 		<echo message="phing test-log          Run unit tests with logging enabled."/>
 		<echo message="phing phpcs             Run phpcs."/>
 		<echo message="phing phpcs-log         Run phpcs with logging enabled."/>
-		<echo message="phing add-dev-remote    Add a dev remote to all submodules for pushing to"/>
 		<echo message="phing phpmd             Run phpmd."/>
 		<echo message="phing phpmd-log         Run phpmd with logging enabled."/>
-		<echo message="phing submodule-update  Update all submodules"/>
+		<echo message="phing phpcpd-log        Run phpcpd with logging enabled."/>
+		<echo message="phing pdepend-log       Run pdepend with logging enabled."/>
+		<echo message="phing phpcb-log         Run phpcb with logging enabled."/>
 		<echo message=""/>
 		<echo message="phing dev-setup         Setup for development on Kohana itself."/>
 		<echo message="phing git-status        Show the git status of each submodule."/>
 		<echo message="phing git-checkout      Checkout a branch accross all submodules."/>
 		<echo message="phing git-pull          Perform a pull for each submodule."/>
 		<echo message="phing git-push          Perform a push for each submodule."/>
+		<echo message=""/>
+		<echo message="phing ci                Alias task for continuous integration servers"/>
 
 	</target>
 
@@ -216,7 +219,7 @@
 	</target>
 
 	<!-- Hudson CI target -->
-	<target name="hudson" depends="clean">
+	<target name="ci" depends="clean">
 		<phingcall target="test-log"/>
 		<phingcall target="pdepend-log"/>
 		<phingcall target="phpmd-log"/>
