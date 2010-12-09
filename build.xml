@@ -193,7 +193,7 @@
 
 	<!-- Run PHP Code Sniffer and generate checkstyle.xml -->
 	<target name="phpcs-log">
-		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/** --report=checkstyle --report-file=${builddir}/logs/checkstyle.xml ${basedir}"  passthru="true"/>
+		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/** --report=checkstyle --report-file=${builddir}/logs/checkstyle.xml ${basedir}"  passthru="false"/>
 	</target>
 
 	<!-- Run PHP Mess Detector -->
