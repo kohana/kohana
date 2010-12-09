@@ -1,117 +1,233 @@
 <project name="kohana" default="help" basedir=".">
 	<property environment="env"/>
+
+	<property name="basedir" value="${project.basedir}"/>
+	<property name="builddir" value="${basedir}/build"/>
+
 	<property name="repo" value="git@github.com:kohana/kohana.git"/>
-	<property name="branch" value="3.0.x"/>
+	<property name="branch" value="3.1.x"/>
 	<property name="tag" value="${env.TAG}"/>
+
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
 	<property name="release-excludes" value="**/.git,**/.git*,build.xml,phpunit.xml,DEVELOPERS.md,phpunitcc,code_coverage.xml,release-tag,TESTING.md,**/tests"/>
 
-	<!-- Clean up -->
+	<!-- Shows the help message -->
 	<target name="help">
-		<echo message="USAGE"/>
-		<echo message="====="/>
-		<echo message="ant test       Run unit tests."/>
-		<echo message="ant test-log   Run unit tests with logging enabled."/>
-		<echo message="ant phpcs      Run phpcs."/>
-		<echo message="ant phpcs-log  Run phpcs with logging enabled."/>
-
+		<echo message="General Targets"/>
+		<echo message="==============="/>
+		<echo message="phing test              Run unit tests."/>
+		<echo message="phing test-log          Run unit tests with logging enabled."/>
+		<echo message="phing phpcs             Run phpcs."/>
+		<echo message="phing phpcs-log         Run phpcs with logging enabled."/>
+		<echo message="phing phpmd             Run phpmd."/>
+		<echo message="phing phpmd-log         Run phpmd with logging enabled."/>
+		<echo message="phing phpcpd-log        Run phpcpd with logging enabled."/>
+		<echo message="phing pdepend-log       Run pdepend with logging enabled."/>
+		<echo message="phing phpcb-log         Run phpcb with logging enabled."/>
+		<echo message=""/>
+		<echo message="Kohana Developer Targets"/>
+		<echo message="========================"/>
+		<echo message="phing dev-setup         Setup for development on Kohana itself."/>
+		<echo message="phing git-status        Show the git status of each submodule."/>
+		<echo message="phing git-checkout      Checkout a branch accross all submodules."/>
+		<echo message="phing git-pull          Perform a pull for each submodule."/>
+		<echo message="phing git-push          Perform a push for each submodule."/>
+		<echo message=""/>
+		<echo message="Misc Targets"/>
+		<echo message="============"/>
+		<echo message="phing ci                Alias task for continuous integration servers"/>
 	</target>
 
 	<!-- Clean up -->
 	<target name="clean">
-		<delete dir="${basedir}/build"/>
+		<delete dir="${builddir}"/>
 		<!-- Create build directories -->
-		<mkdir dir="${basedir}/build/coverage"/>
-		<mkdir dir="${basedir}/build/logs"/>
-		<mkdir dir="${basedir}/build/release"/>
-		<mkdir dir="${basedir}/build/code-browser"/>
+		<mkdir dir="${builddir}/coverage"/>
+		<mkdir dir="${builddir}/logs"/>
+		<mkdir dir="${builddir}/release"/>
+		<mkdir dir="${builddir}/code-browser"/>
 	</target>
 
-	<!-- Check if a tag has been supplied -->
-	<target name="tag-supplied">
-		<echo message="TODO: Check if tag has been supplied."/>
+	<target name="dev-setup">
+		<property name="git-checkout-branch" value="${branch}"/> <!-- Prevents git-checkout asking for a branch name -->
+		<exec command="git submodule update --init --recursive" dir="${basedir}" />
+		<phingcall target="_dev-setup-remotes" />
+		<phingcall target="git-pull" />
+		<phingcall target="git-checkout" />
 	</target>
 
-	<!-- Check if a specific tag exists -->
-	<target name="tag-exists" depends="tag-supplied">
-		<echo message="TODO: Check if tag (${tag}) exists."/>
+	<target name="git-pull">
+		<phingcall target="_git-pull">
+			<property name="dir" value="." />
+		</phingcall>
+		<foreach list="${submodules}" param="dir" target="_git-pull"/>
 	</target>
-	
+
+	<target name="_git-pull">
+		<exec command="git pull dev" dir="${dir}"/>
+	</target>
+
+	<target name="git-checkout">
+		<if>
+			<not>
+				<isset property="git-checkout-branch"/>
+			</not>
+			<then>
+				<propertyprompt propertyName="git-checkout-branch" defaultValue="${branch}" promptText="Branch name:" />
+			</then>
+		</if>
+
+		<phingcall target="_git-checkout">
+			<property name="dir" value="." />
+		</phingcall>
+
+		<foreach list="${submodules}" param="dir" target="_git-checkout"/>
+	</target>
+
+	<target name="_git-checkout">
+		<exec returnProperty="git-checkout-branch-exists" command="git show-ref --quiet --verify -- 'refs/remotes/dev/${git-checkout-branch}'" dir="${dir}"  passthru="true"/>
+		<if>
+			<equals arg1="${git-checkout-branch-exists}" arg2="0"/>
+			<then>
+				<exec command="git checkout --track -b ${git-checkout-branch} dev/${git-checkout-branch}" dir="${dir}" passthru="true"/>
+			</then>
+			<else>
+				<exec command="git checkout -b ${git-checkout-branch}" dir="${dir}" passthru="true"/>
+			</else>
+		</if>
+	</target>
+
+	<target name="git-push">
+		<foreach list="${submodules}" param="dir" target="_git-push"/>
+		<phingcall target="_git-push">
+			<property name="dir" value="." />
+		</phingcall>
+	</target>
+
+	<target name="_git-push">
+		<exec command="git push dev" dir="${dir}" passthru="true"/>
+	</target>
+
+	<target name="git-status">
+		<foreach list="${submodules}" param="dir" target="_git-status"/>
+		<phingcall target="_git-status">
+			<property name="dir" value="." />
+		</phingcall>
+	</target>
+
+	<target name="_git-status">
+		<exec command="git status" dir="${dir}" passthru="true"/>
+	</target>
+
+	<target name="_dev-setup-remotes">
+		<!-- TODO: Clean up... -->
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/kohana.git" />
+			<property name="dir"        value="${basedir}" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/core.git" />
+			<property name="dir"        value="${basedir}/system" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/auth.git" />
+			<property name="dir"        value="${basedir}/modules/auth" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/cache.git" />
+			<property name="dir"        value="${basedir}/modules/cache" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/codebench.git" />
+			<property name="dir"        value="${basedir}/modules/codebench" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/database.git" />
+			<property name="dir"        value="${basedir}/modules/database" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/image.git" />
+			<property name="dir"        value="${basedir}/modules/image" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/oauth.git" />
+			<property name="dir"        value="${basedir}/modules/oauth" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/orm.git" />
+			<property name="dir"        value="${basedir}/modules/orm" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/pagination.git" />
+			<property name="dir"        value="${basedir}/modules/pagination" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/unittest.git" />
+			<property name="dir"        value="${basedir}/modules/unittest" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/userguide.git" />
+			<property name="dir"        value="${basedir}/modules/userguide" />
+		</phingcall>
+	</target>
+
+	<target name="_dev-setup-remote">
+		<exec command="git remote rm dev" dir="${dir}"/>
+		<exec command="git remote add dev ${repository}" dir="${dir}"/>
+	</target>
+
 	<!-- Run unit tests -->
 	<target name="test">
-		<exec executable="phpunit" failonerror="true"/>
+		<exec command="phpunit --bootstrap=application/test_bootstrap.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-		<exec executable="phpunit" failonerror="true">
-			<arg line="--coverage-html=${basedir}/build/coverage"/>
-			<arg line="--log-junit=${basedir}/build/logs/junit.xml"/>
-			<arg line="--coverage-clover=${basedir}/build/logs/clover.xml"/>
-		</exec>
+		<exec command="phpunit --bootstrap=application/test_bootstrap.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->
 	<target name="phpcs">
-		<exec executable="phpcs" failonerror="false">
-			<arg line="--standard=Kohana"/>
-			<arg line="--ignore=*.js,*.css,**/vendor/**"/>
-			<arg line="${basedir}"/>
-		</exec>
+		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/** ${basedir}" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer and generate checkstyle.xml -->
 	<target name="phpcs-log">
-		<exec executable="phpcs" failonerror="false" output="/dev/null">
-			<arg line="--standard=Kohana"/>
-			<arg line="--ignore=*.js,*.css,**/vendor/**"/>
-			<arg line="--report=checkstyle"/>
-			<arg line="--report-file=${basedir}/build/logs/checkstyle.xml"/>
-			<arg line="${basedir}"/>
-		</exec>
+		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/** --report=checkstyle --report-file=${builddir}/logs/checkstyle.xml ${basedir}"  passthru="false"/>
+	</target>
+
+	<!-- Run PHP Mess Detector -->
+	<target name="phpmd">
+		<exec command="phpmd ${basedir} text codesize,unusedcode --exclude=**/vendor/**"  passthru="true"/>
 	</target>
 
 	<!-- Run PHP Mess Detector and generate pmd.xml -->
 	<target name="phpmd-log">
-		<exec executable="phpmd">
-			<arg line="${basedir}" />
-			<arg line="xml" />
-			<arg line="codesize,unusedcode" />
-			<arg line="--exclude=**/vendor/**" />
-			<arg line="--reportfile ${basedir}/build/logs/pmd.xml" />
-		</exec>
+		<exec command="phpmd ${basedir} xml codesize,unusedcode --exclude=**/vendor/** --reportfile ${builddir}/logs/pmd.xml"  passthru="true"/>
 	</target>
 
 	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
 	<target name="phpcpd-log">
-		<exec executable="phpcpd">
-			<arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ${basedir}" />
-		</exec>
+		<exec command="phpcpd --log-pmd ${builddir}/logs/pmd-cpd.xml ${basedir}"  passthru="true"/>
 	</target>
 
 	<!-- Run PHP Depend and generate jdepend.xml -->
 	<target name="pdepend-log">
-		<exec executable="pdepend">
-			<arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ${basedir}" />
-		</exec>
+		<exec command="pdepend --jdepend-xml=${builddir}/logs/jdepend.xml ${basedir}"  passthru="true"/>
 	</target>
 
 	<!-- Run PHP CodeBrowser and generate output -->
 	<target name="phpcb-log">
-		<exec executable="phpcb">
-			<arg line="--log ${basedir}/build/logs --source ${basedir} --output ${basedir}/build/code-browser" />
-		</exec>
+		<exec command="phpcb --log ${builddir}/logs --source ${basedir} --output ${builddir}/code-browser"  passthru="true"/>
 	</target>
 
 	<!-- Hudson CI target -->
-	<target name="hudson">
-		<antcall target="test-log"/>
-		<parallel>
-			<antcall target="pdepend-log"/>
-			<antcall target="phpmd-log"/>
-			<antcall target="phpcpd-log"/>
-			<antcall target="phpcs-log"/>
-			<antcall target="phpcb-log"/>
-		</parallel>
+	<target name="ci" depends="clean">
+		<phingcall target="test-log"/>
+		<phingcall target="pdepend-log"/>
+		<phingcall target="phpmd-log"/>
+		<phingcall target="phpcpd-log"/>
+		<phingcall target="phpcs-log"/>
+		<phingcall target="phpcb-log"/>
 	</target>
 </project>
