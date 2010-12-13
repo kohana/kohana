@@ -43,7 +43,7 @@ I18n::lang('en-us');
 
 /**
  * Set Kohana::$environment if $_ENV['KOHANA_ENV'] has been supplied.
- * 
+ *
  */
 if (isset($_ENV['KOHANA_ENV']))
 {
@@ -109,8 +109,8 @@ if ( ! defined('SUPPRESS_REQUEST'))
 	 * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
 	 * If no source is specified, the URI will be automatically detected.
 	 */
-	echo Request::instance()
+	echo Request::factory()
 		->execute()
 		->send_headers()
-		->response;
+		->body;
 }
