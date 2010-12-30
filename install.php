@@ -3,8 +3,16 @@
 // Sanity check, install should only be checked from index.php
 defined('SYSPATH') or exit('Install tests must be loaded from within index.php!');
 
-// Clear out the cache to prevent errors. This typically happens on Windows/FastCGI.
-clearstatcache(TRUE);
+if (version_compare(PHP_VERSION, '5.3', '<'))
+{
+	// Clear out the cache to prevent errors. This typically happens on Windows/FastCGI.
+	clearstatcache();
+}
+else
+{
+	// Clearing the realpath() cache is only possible PHP 5.3+
+	clearstatcache(TRUE);
+}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
