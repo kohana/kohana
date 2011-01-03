@@ -222,7 +222,7 @@
 
 	<!-- Build a release .zip -->
 	<target name="dist">
-		<-- There has to be a better way to allow this to be overridden, and allow for detecting Hudson vars -->
+		<!-- There has to be a better way to allow this to be overridden, and allow for detecting Hudson vars -->
 		<if>
 			<isset property="dist.filename" />
 			<else>
@@ -256,6 +256,7 @@
 				<exclude name="build.xml" />
 				<exclude name="phpunit.xml" />
 				<exclude name="**/tests/**" />
+				
 				<!-- SCM Files -->
 				<exclude name="**/.git/**" />
 				<exclude name="**/.git*" />
