@@ -222,22 +222,18 @@
 
 	<!-- Build a release .zip -->
 	<target name="dist">
-		<!-- There has to be a better way to allow this to be overridden, and allow for detecting Hudson vars -->
+		<!-- Pick an appropriate dist filename -->
 		<if>
 			<isset property="dist.filename" />
 			<else>
 				<if>
-					<isset property="env.BUILD_NUMBER" />
+					<and>
+						<!-- basically - are we running inside hudson? -->
+						<isset property="env.BUILD_NUMBER" />
+						<isset property="env.JOB_NAME" />
+					</and>
 					<then>
-						<if>
-							<isset property="env.JOB_NAME" />
-							<then>
-								<property name="dist.filename" value="${env.JOB_NAME}-${env.BUILD_NUMBER}" />
-							</then>
-							<else>
-								<property name="dist.filename" value="kohana" />
-							</else>
-						</if>
+						<property name="dist.filename" value="${env.JOB_NAME}-${env.BUILD_NUMBER}" />
 					</then>
 					<else>
 						<property name="dist.filename" value="kohana" />
