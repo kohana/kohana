@@ -232,21 +232,21 @@
 						<if>
 							<isset property="env.JOB_NAME" />
 							<then>
-								<property name="dist.filename" value="${builddir}/${env.JOB_NAME}-${env.BUILD_NUMBER}" />
+								<property name="dist.filename" value="${env.JOB_NAME}-${env.BUILD_NUMBER}" />
 							</then>
 							<else>
-								<property name="dist.filename" value="${builddir}/kohana" />
+								<property name="dist.filename" value="kohana" />
 							</else>
 						</if>
 					</then>
 					<else>
-						<property name="dist.filename" value="${builddir}/kohana" />
+						<property name="dist.filename" value="kohana" />
 					</else>
 				</if>
 			</else>
 		</if>
 
-		<zip destfile="${dist.filename}.zip" prefix="${dist.filename}/">
+		<zip destfile="${builddir}/${dist.filename}.zip" prefix="${dist.filename}/">
 			<fileset dir="${basedir}">
 				<include name="**/**"/>
 				<!-- Build Files -->
@@ -255,8 +255,6 @@
 				<!-- Dev Files -->
 				<exclude name="build.xml" />
 				<exclude name="phpunit.xml" />
-				<exclude name="**/tests/**" />
-				
 				<!-- SCM Files -->
 				<exclude name="**/.git/**" />
 				<exclude name="**/.git*" />
