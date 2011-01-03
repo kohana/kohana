@@ -218,7 +218,14 @@
 
 	<!-- Run PHP Depend and generate jdepend.xml -->
 	<target name="pdepend-log">
-		<exec command="pdepend --jdepend-xml=${builddir}/logs/jdepend.xml ${basedir}"  passthru="true"/>
+		<phpdepend>
+			<fileset dir="${basedir}">
+				<include name="**/*.php" />
+				<exclude name="**/vendor/**" />
+			</fileset>
+			<logger type="jdepend-xml" outfile="${builddir}/logs/jdepend.xml"/>
+			<!--<analyzer type="coderank-mode" value="method"/>-->
+		</phpdepend>
 	</target>
 
 	<!-- Run PHP CodeBrowser and generate output -->
