@@ -207,7 +207,13 @@
 
 	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
 	<target name="phpcpd-log">
-		<exec command="phpcpd --log-pmd ${builddir}/logs/pmd-cpd.xml ${basedir}"  passthru="true"/>
+		<phpcpd>
+			<fileset dir="${basedir}">
+				<include name="**/*.php" />
+				<exclude name="**/vendor/**" />
+			</fileset>
+			<formatter type="pmd" outfile="${builddir}/logs/pmd-cpd.xml"/>
+		</phpcpd>
 	</target>
 
 	<!-- Run PHP Depend and generate jdepend.xml -->
