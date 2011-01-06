@@ -35,6 +35,7 @@
 		<echo message="Misc Targets"/>
 		<echo message="============"/>
 		<echo message="phing ci                Alias task for continuous integration servers"/>
+		<echo message="phing dist              Build a release .zip"/>
 	</target>
 
 	<!-- Clean up -->
