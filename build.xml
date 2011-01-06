@@ -221,6 +221,44 @@
 		<exec command="phpcb --log ${builddir}/logs --source ${basedir} --output ${builddir}/code-browser"  passthru="true"/>
 	</target>
 
+	<!-- Build a release .zip -->
+	<target name="dist">
+		<!-- Pick an appropriate dist filename -->
+		<if>
+			<isset property="dist.filename" />
+			<else>
+				<if>
+					<and>
+						<!-- basically - are we running inside hudson? -->
+						<isset property="env.BUILD_NUMBER" />
+						<isset property="env.JOB_NAME" />
+					</and>
+					<then>
+						<property name="dist.filename" value="${env.JOB_NAME}-${env.BUILD_NUMBER}" />
+					</then>
+					<else>
+						<property name="dist.filename" value="kohana" />
+					</else>
+				</if>
+			</else>
+		</if>
+
+		<zip destfile="${builddir}/${dist.filename}.zip" prefix="${dist.filename}/">
+			<fileset dir="${basedir}">
+				<include name="**/**"/>
+				<!-- Build Files -->
+				<exclude name="*.zip" />
+				<exclude name="build/**" />
+				<!-- Dev Files -->
+				<exclude name="build.xml" />
+				<exclude name="phpunit.xml" />
+				<!-- SCM Files -->
+				<exclude name="**/.git/**" />
+				<exclude name="**/.git*" />
+			</fileset>
+		</zip>
+	</target>
+
 	<!-- Hudson CI target -->
 	<target name="ci" depends="clean">
 		<phingcall target="test-log"/>
