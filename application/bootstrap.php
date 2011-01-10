@@ -58,10 +58,12 @@ I18n::lang('en-us');
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
  *
+ * Note: If you supply an invalid environment name, a PHP warning will be thrown 
+ * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
  */
 if (getenv('KOHANA_ENV') !== FALSE)
 {
-	Kohana::$environment = getenv('KOHANA_ENV');
+	Kohana::$environment = constant('Kohana::'.strtoupper(getenv('KOHANA_ENV')));
 }
 
 /**
