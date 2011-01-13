@@ -58,7 +58,7 @@ I18n::lang('en-us');
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
  *
- * Note: If you supply an invalid environment name, a PHP warning will be thrown 
+ * Note: If you supply an invalid environment name, a PHP warning will be thrown
  * saying "Couldn't find constant Kohana::<INVALID_ENV_NAME>"
  */
 if (getenv('KOHANA_ENV') !== FALSE)
@@ -103,8 +103,6 @@ Kohana::modules(array(
 	// 'database'   => MODPATH.'database',   // Database access
 	// 'image'      => MODPATH.'image',      // Image manipulation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'oauth'      => MODPATH.'oauth',      // OAuth authentication
-	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	));

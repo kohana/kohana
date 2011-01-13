@@ -8,7 +8,7 @@
 	<property name="branch" value="3.1/develop"/>
 	<property name="tag" value="${env.TAG}"/>
 
-	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
+	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/orm,modules/unittest,modules/userguide"/>
 
 	<!-- Shows the help message -->
 	<target name="help">
@@ -149,16 +149,8 @@
 			<property name="dir"        value="${basedir}/modules/image" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
-			<property name="repository" value="git@github.com:kohana/oauth.git" />
-			<property name="dir"        value="${basedir}/modules/oauth" />
-		</phingcall>
-		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/orm.git" />
 			<property name="dir"        value="${basedir}/modules/orm" />
-		</phingcall>
-		<phingcall target="_dev-setup-remote">
-			<property name="repository" value="git@github.com:kohana/pagination.git" />
-			<property name="dir"        value="${basedir}/modules/pagination" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/unittest.git" />
