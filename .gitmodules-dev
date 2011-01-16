@@ -13,9 +13,6 @@
 [submodule "modules/orm"]
 	path = modules/orm
 	url = git@github.com:kohana/orm.git
-[submodule "modules/pagination"]
-	path = modules/pagination
-	url = git@github.com:kohana/pagination.git
 [submodule "modules/auth"]
 	path = modules/auth
 	url = git@github.com:kohana/auth.git
@@ -28,8 +25,3 @@
 [submodule "modules/unittest"]
         path = modules/unittest
         url = git@github.com:kohana/unittest.git
-[submodule "modules/oauth"]
-        path = modules/oauth
-        url = git@github.com:kohana/oauth.git
-
-
