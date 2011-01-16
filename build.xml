@@ -8,11 +8,7 @@
 	<property name="branch" value="3.1/develop"/>
 	<property name="tag" value="${env.TAG}"/>
 
-<<<<<<< HEAD
-	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
-=======
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/orm,modules/unittest,modules/userguide"/>
->>>>>>> 3.1/develop
 
 	<!-- Shows the help message -->
 	<target name="help">
