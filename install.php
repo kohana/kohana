@@ -196,6 +196,14 @@
 			<?php endif ?>
 		</tr>
 		<tr>
+			<th>MySQL Enabled</th>
+			<?php if (function_exists('mysql_connect')): ?>
+				<td class="pass">Pass</td>
+			<?php else: ?>
+				<td class="fail">Kohana can use the <a href="http://php.net/mysql">MySQL</a> extension to support MySQL databases.</td>
+			<?php endif ?>
+		</tr>
+		<tr>
 			<th>PDO Enabled</th>
 			<?php if (class_exists('PDO')): ?>
 				<td class="pass">Pass</td>
