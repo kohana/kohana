@@ -1,12 +1,11 @@
-<project name="kohana" default="help" basedir=".">
+<?xml version="1.0" ?>
+<project name="kohana" default="help">
 	<property environment="env"/>
 
 	<property name="basedir" value="${project.basedir}"/>
 	<property name="builddir" value="${basedir}/build"/>
 
-	<property name="repo" value="git@github.com:kohana/kohana.git"/>
 	<property name="branch" value="3.1.x"/>
-	<property name="tag" value="${env.TAG}"/>
 
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
 	<property name="release-excludes" value="**/.git,**/.git*,build.xml,phpunit.xml,DEVELOPERS.md,phpunitcc,code_coverage.xml,release-tag,TESTING.md,**/tests"/>
