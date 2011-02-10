@@ -5,10 +5,9 @@
 	<property name="basedir" value="${project.basedir}"/>
 	<property name="builddir" value="${basedir}/build"/>
 
-	<property name="branch" value="3.1.x"/>
+	<property name="branch" value="3.0/develop"/>
 
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/oauth,modules/orm,modules/pagination,modules/unittest,modules/userguide"/>
-	<property name="release-excludes" value="**/.git,**/.git*,build.xml,phpunit.xml,DEVELOPERS.md,phpunitcc,code_coverage.xml,release-tag,TESTING.md,**/tests"/>
 
 	<!-- Shows the help message -->
 	<target name="help">
