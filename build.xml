@@ -1,12 +1,11 @@
-<project name="kohana" default="help" basedir=".">
-<!--	<property environment="env"/>-->
+<?xml version="1.0" ?>
+<project name="kohana" default="help">
+	<property environment="env"/>
 
 	<property name="basedir" value="${project.basedir}"/>
 	<property name="builddir" value="${basedir}/build"/>
 
-	<property name="repo" value="git@github.com:kohana/kohana.git"/>
 	<property name="branch" value="3.1/develop"/>
-	<property name="tag" value="${env.TAG}"/>
 
 	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/orm,modules/unittest,modules/userguide"/>
 
@@ -170,12 +169,12 @@
 
 	<!-- Run unit tests -->
 	<target name="test">
-		<exec command="phpunit --bootstrap=modules/unittest/bootstrap.php modules/unittest/tests.php" passthru="true"/>
+		<exec command="phpunit --bootstrap=modules/unittest/bootstrap.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-		<exec command="phpunit --bootstrap=modules/unittest/bootstrap.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml modules/unittest/tests.php" passthru="true"/>
+		<exec command="phpunit --bootstrap=modules/unittest/bootstrap.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->
