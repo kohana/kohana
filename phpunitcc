@@ -1,3 +1,0 @@
-#!/bin/bash
-
-echo -e "`phpunit --configuration code_coverage.xml $@`"

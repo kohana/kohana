@@ -34,6 +34,7 @@
 		<echo message="Misc Targets"/>
 		<echo message="============"/>
 		<echo message="phing ci                Alias task for continuous integration servers"/>
+		<echo message="phing dist              Build a release .zip"/>
 	</target>
 
 	<!-- Clean up -->
@@ -176,22 +177,35 @@
 
 	<!-- Run unit tests -->
 	<target name="test">
-		<exec command="phpunit --bootstrap=application/test_bootstrap.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+		<exec command="phpunit --bootstrap=modules/unittest/bootstrap.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-		<exec command="phpunit --bootstrap=application/test_bootstrap.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+		<exec command="phpunit --bootstrap=modules/unittest/bootstrap.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->
 	<target name="phpcs">
-		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/**,**/tests/** ${basedir}" passthru="true"/>
+		<phpcodesniffer standard="Kohana" showSniffs="true" showWarnings="true">
+			<fileset dir="${basedir}">
+				<include name="**/*.php" />
+				<exclude name="**/vendor/**" />
+			</fileset>
+			<formatter type="default" usefile="false"/>
+		</phpcodesniffer>
 	</target>
 
 	<!-- Run PHP Code Sniffer and generate checkstyle.xml -->
 	<target name="phpcs-log">
-		<exec command="phpcs --standard=Kohana --ignore=*.js,*.css,**/vendor/**,**/tests/** --report=checkstyle --report-file=${builddir}/logs/checkstyle.xml ${basedir}"  passthru="false"/>
+		<phpcodesniffer standard="Kohana" showSniffs="true" showWarnings="true">
+			<fileset dir="${basedir}">
+				<include name="**/*.php" />
+				<exclude name="**/vendor/**" />
+			</fileset>
+			<formatter type="default" usefile="false"/>
+			<formatter type="checkstyle" outfile="${builddir}/logs/checkstyle.xml"/>
+		</phpcodesniffer>
 	</target>
 
 	<!-- Run PHP Mess Detector -->
@@ -206,12 +220,25 @@
 
 	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
 	<target name="phpcpd-log">
-		<exec command="phpcpd --log-pmd ${builddir}/logs/pmd-cpd.xml ${basedir}"  passthru="true"/>
+		<phpcpd>
+			<fileset dir="${basedir}">
+				<include name="**/*.php" />
+				<exclude name="**/vendor/**" />
+			</fileset>
+			<formatter type="pmd" outfile="${builddir}/logs/pmd-cpd.xml"/>
+		</phpcpd>
 	</target>
 
 	<!-- Run PHP Depend and generate jdepend.xml -->
 	<target name="pdepend-log">
-		<exec command="pdepend --jdepend-xml=${builddir}/logs/jdepend.xml ${basedir}"  passthru="true"/>
+		<phpdepend>
+			<fileset dir="${basedir}">
+				<include name="**/*.php" />
+				<exclude name="**/vendor/**" />
+			</fileset>
+			<logger type="jdepend-xml" outfile="${builddir}/logs/jdepend.xml"/>
+			<!--<analyzer type="coderank-mode" value="method"/>-->
+		</phpdepend>
 	</target>
 
 	<!-- Run PHP CodeBrowser and generate output -->
