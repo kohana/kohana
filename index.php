@@ -1,5 +1,13 @@
 <?php
 
+// -- XHPROF enable ------------------------------------------------------------
+if ($xhprof = extension_loaded('xhprof')) 
+{
+    include_once '/usr/local/lib/php/xhprof_lib/utils/xhprof_lib.php';
+    include_once '/usr/local/lib/php/xhprof_lib/utils/xhprof_runs.php';
+    xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+}
+
 /**
  * The directory in which your application specific resources are located.
  * The application directory must contain the bootstrap.php file.
@@ -21,7 +29,7 @@ $modules = 'modules';
  *
  * @see  http://kohanaframework.org/guide/about.install#system
  */
-$system = 'system';
+$system = '../kohana-core';
 
 /**
  * The default extension of resource files. If you change this, all resources
@@ -105,7 +113,21 @@ require APPPATH.'bootstrap'.EXT;
  * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
  * If no source is specified, the URI will be automatically detected.
  */
-echo Request::factory()
+echo Request::factory(TRUE, new HTTP_Cache(array('cache' => Cache::instance('apc'))))
 	->execute()
 	->send_headers()
 	->body();
+
+// -- XHPROF disable -----------------------------------------------------------
+if ($xhprof)
+{
+	$profiler_namespace = 'kohana';  // namespace for your application
+	$xhprof_data = xhprof_disable();
+	$xhprof_runs = new XHProfRuns_Default();
+	$run_id = $xhprof_runs->save_run($xhprof_data, $profiler_namespace);
+
+	// url to the XHProf UI libraries (change the host name and path)
+	$profiler_url = 'http://xhprof.development/index.php?run='.$run_id.'&source='.
+		$profiler_namespace;
+	echo '<a href="'. $profiler_url .'" target="_blank">Profiler output</a>';
+}
