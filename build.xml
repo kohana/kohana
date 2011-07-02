@@ -235,7 +235,7 @@
 
 	<!-- Run PHP CodeBrowser and generate output -->
 	<target name="phpcb-log">
-		<exec command="phpcb --log ${builddir}/logs --source ${basedir} --output ${builddir}/code-browser"  passthru="true"/>
+		<exec command="phpcb --exclude=${builddir}/** --log=${builddir}/logs --source=${basedir} --output=${builddir}/code-browser"  passthru="true"/>
 	</target>
 
 	<!-- Build a release .zip -->
