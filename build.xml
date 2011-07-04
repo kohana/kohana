@@ -203,6 +203,7 @@
 			<fileset dir="${basedir}">
 				<include name="**/*.php" />
 				<exclude name="**/vendor/**" />
+				<exclude name="**/tests/**" />
 			</fileset>
 			<formatter type="default" usefile="false"/>
 			<formatter type="checkstyle" outfile="${builddir}/logs/checkstyle.xml"/>
