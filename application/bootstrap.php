@@ -19,32 +19,32 @@ else
 /**
  * Set the default time zone.
  *
- * @see  http://kohanaframework.org/guide/using.configuration
- * @see  http://php.net/timezones
+ * @link http://kohanaframework.org/guide/using.configuration
+ * @link http://www.php.net/manual/timezones
  */
 date_default_timezone_set('America/Chicago');
 
 /**
  * Set the default locale.
  *
- * @see  http://kohanaframework.org/guide/using.configuration
- * @see  http://php.net/setlocale
+ * @link http://kohanaframework.org/guide/using.configuration
+ * @link http://www.php.net/manual/function.setlocale
  */
 setlocale(LC_ALL, 'en_US.utf-8');
 
 /**
  * Enable the Kohana auto-loader.
  *
- * @see  http://kohanaframework.org/guide/using.autoloading
- * @see  http://php.net/spl_autoload_register
+ * @link http://kohanaframework.org/guide/using.autoloading
+ * @link http://www.php.net/manual/function.spl-autoload-register
  */
 spl_autoload_register(array('Kohana', 'auto_load'));
 
 /**
  * Enable the Kohana auto-loader for unserialization.
  *
- * @see  http://php.net/spl_autoload_call
- * @see  http://php.net/manual/var.configuration.php#unserialize-callback-func
+ * @link http://www.php.net/manual/function.spl-autoload-call
+ * @link http://www.php.net/manual/var.configuration#unserialize-callback-func
  */
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 

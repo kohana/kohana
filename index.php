@@ -4,14 +4,14 @@
  * The directory in which your application specific resources are located.
  * The application directory must contain the bootstrap.php file.
  *
- * @see  http://kohanaframework.org/guide/about.install#application
+ * @link http://kohanaframework.org/guide/about.install#application
  */
 $application = 'application';
 
 /**
  * The directory in which your modules are located.
  *
- * @see  http://kohanaframework.org/guide/about.install#modules
+ * @link http://kohanaframework.org/guide/about.install#modules
  */
 $modules = 'modules';
 
@@ -19,7 +19,7 @@ $modules = 'modules';
  * The directory in which the Kohana resources are located. The system
  * directory must contain the classes/kohana.php file.
  *
- * @see  http://kohanaframework.org/guide/about.install#system
+ * @link http://kohanaframework.org/guide/about.install#system
  */
 $system = 'system';
 
@@ -27,13 +27,13 @@ $system = 'system';
  * The default extension of resource files. If you change this, all resources
  * must be renamed to use the new extension.
  *
- * @see  http://kohanaframework.org/guide/about.install#ext
+ * @link http://kohanaframework.org/guide/about.install#ext
  */
 define('EXT', '.php');
 
 /**
  * Set the PHP error reporting level. If you set this in php.ini, you remove this.
- * @see  http://php.net/error_reporting
+ * @link http://www.php.net/manual/errorfunc.configuration#ini.error-reporting
  *
  * When developing your application, it is highly recommended to enable notices
  * and strict warnings. Enable them by using: E_ALL | E_STRICT
@@ -50,7 +50,7 @@ error_reporting(E_ALL | E_STRICT);
  * End of standard configuration! Changing any of the code below should only be
  * attempted by those with a working knowledge of Kohana internals.
  *
- * @see  http://kohanaframework.org/guide/using.configuration
+ * @link http://kohanaframework.org/guide/using.configuration
  */
 
 // Set the full path to the docroot
