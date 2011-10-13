@@ -107,5 +107,5 @@ require APPPATH.'bootstrap'.EXT;
  */
 echo Request::factory()
 	->execute()
-	->send_headers()
+	->send_headers(TRUE)
 	->body();
