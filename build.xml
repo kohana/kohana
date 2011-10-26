@@ -218,6 +218,7 @@
 			<fileset dir="${basedir}">
 				<include name="**/*.php" />
 				<exclude name="**/vendor/**" />
+				<exclude name="modules/codebench/classes/bench/**" />
 			</fileset>
 			<formatter type="pmd" outfile="${builddir}/logs/pmd-cpd.xml"/>
 		</phpcpd>
