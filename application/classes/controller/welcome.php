@@ -2,9 +2,9 @@
 
 class Controller_Welcome extends Controller {
 
-	public function action_index(Request $request, Response $response)
+	public function action_index()
 	{
-		return $response->body('hello, world!');
+		$this->response->body('hello, world!');
 	}
 
 } // End Welcome
