@@ -39,7 +39,15 @@ setlocale(LC_ALL, 'en_US.utf-8');
  * @link http://www.php.net/manual/function.spl-autoload-register
  */
 spl_autoload_register(array('Kohana', 'auto_load'));
-spl_autoload_register(array('Kohana', 'auto_load_lowercase'));
+
+/**
+ * Optionally, you can enable a compatibility auto-loader for use with
+ * older modules that have not been updated for PSR-0.
+ *
+ * It is recommended to not enable this unless absolutely necessary.
+ */
+//spl_autoload_register(array('Kohana', 'auto_load_lowercase'));
+
 /**
  * Enable the Kohana auto-loader for unserialization.
  *
