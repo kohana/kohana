@@ -1,8 +1,8 @@
 # Kohana PHP Framework
 
-[Kohana](http://kohanaframework.org/) is an elegant, open source, and object oriented HMVC framework built using PHP5, by a team of volunteers. It aims to be swift, secure and small.
+[Kohana](http://kohanaframework.org/) is an elegant, open source, and object oriented HMVC framework built using PHP5, by a team of volunteers. It aims to be swift, secure, and small.
 
-Released under a [BSD license](http://kohanaframework.org/license), Kohana can be used legally for any open source, commercial or personal project.
+Released under a [BSD license](http://kohanaframework.org/license), Kohana can be used legally for any open source, commercial, or personal project.
 
 ## Documentation
 Kohana's documentation can be found at <http://kohanaframework.org/documentation> which also contains an API browser.
