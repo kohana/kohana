@@ -174,7 +174,7 @@
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-		<exec command="phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php --coverage-html=${builddir}/coverage --log-junit=${builddir}/logs/junit.xml --coverage-clover=${builddir}/logs/clover.xml modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+<exec command="phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->
@@ -204,12 +204,12 @@
 
 	<!-- Run PHP Mess Detector -->
 	<target name="phpmd">
-		<exec command="phpmd ${basedir} text codesize,unusedcode --exclude=**/vendor/**"  passthru="true"/>
+		<exec command="phpmd '${basedir}' text codesize,unusedcode --exclude=**/vendor/**"  passthru="true"/>
 	</target>
 
 	<!-- Run PHP Mess Detector and generate pmd.xml -->
 	<target name="phpmd-log">
-		<exec command="phpmd ${basedir} xml codesize,unusedcode --exclude=**/vendor/** --reportfile ${builddir}/logs/pmd.xml"  passthru="true"/>
+		<exec command="phpmd '${basedir}' xml codesize,unusedcode --exclude=**/vendor/** --reportfile '${builddir}/logs/pmd.xml'"  passthru="true"/>
 	</target>
 
 	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
@@ -237,7 +237,7 @@
 
 	<!-- Run PHP CodeBrowser and generate output -->
 	<target name="phpcb-log">
-		<exec command="phpcb --exclude=${builddir}/** --log=${builddir}/logs --source=${basedir} --output=${builddir}/code-browser"  passthru="true"/>
+		<exec command="phpcb --exclude='${builddir}/**' --log='${builddir}/logs' --source='${basedir}' --output='${builddir}/code-browser'"  passthru="true"/>
 	</target>
 
 	<!-- Build a release .zip -->
