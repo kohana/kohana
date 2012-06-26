@@ -183,6 +183,7 @@
 			<fileset dir="${basedir}">
 				<include name="**/*.php" />
 				<exclude name="**/vendor/**" />
+				<exclude name="**/tests/**" />
 			</fileset>
 			<formatter type="default" usefile="false"/>
 		</phpcodesniffer>
@@ -194,6 +195,7 @@
 			<fileset dir="${basedir}">
 				<include name="**/*.php" />
 				<exclude name="**/vendor/**" />
+				<exclude name="**/tests/**" />
 			</fileset>
 			<formatter type="default" usefile="false"/>
 			<formatter type="checkstyle" outfile="${builddir}/logs/checkstyle.xml"/>
@@ -216,6 +218,7 @@
 			<fileset dir="${basedir}">
 				<include name="**/*.php" />
 				<exclude name="**/vendor/**" />
+				<exclude name="modules/codebench/classes/bench/**" />
 			</fileset>
 			<formatter type="pmd" outfile="${builddir}/logs/pmd-cpd.xml"/>
 		</phpcpd>
@@ -235,7 +238,7 @@
 
 	<!-- Run PHP CodeBrowser and generate output -->
 	<target name="phpcb-log">
-		<exec command="phpcb --log ${builddir}/logs --source ${basedir} --output ${builddir}/code-browser"  passthru="true"/>
+		<exec command="phpcb --exclude=${builddir}/** --log=${builddir}/logs --source=${basedir} --output=${builddir}/code-browser"  passthru="true"/>
 	</target>
 
 	<!-- Build a release .zip -->
