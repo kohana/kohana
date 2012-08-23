@@ -16,3 +16,4 @@ script: "phing test"
 
 notifications:
   irc: "irc.freenode.org#kohana"
+  email: false
