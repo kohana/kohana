@@ -10,7 +10,9 @@ before_install:
 before_script:
   - "pear channel-discover pear.phing.info"
   - "pear install phing/phing"
-  - "pear intsall phpunit/phpcpd"
   - "phpenv rehash"
 
 script: "phing test"
+
+notifications:
+  irc: "irc.freenode.org#kohana"
