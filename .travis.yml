@@ -15,5 +15,10 @@ before_script:
 script: "phing test"
 
 notifications:
-  irc: "irc.freenode.org#kohana"
+  irc:
+    channels:
+      - "irc.freenode.org#kohana"
+    template:
+      - "%{repository}/%{branch} (%{commit}) - %{author}: %{message}"
+      - "Build details: %{build_url}"
   email: false
