@@ -19,8 +19,6 @@
 		<echo message="phing phpcs-log         Run phpcs with logging enabled."/>
 		<echo message="phing phpmd             Run phpmd."/>
 		<echo message="phing phpmd-log         Run phpmd with logging enabled."/>
-		<echo message="phing phpcpd-log        Run phpcpd with logging enabled."/>
-		<echo message="phing pdepend-log       Run pdepend with logging enabled."/>
 		<echo message="phing phpcb-log         Run phpcb with logging enabled."/>
 		<echo message=""/>
 		<echo message="Kohana Developer Targets"/>
@@ -172,6 +170,7 @@
 		<exec command="phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
+
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
 <exec command="phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' modules/unittest/tests.php" checkreturn="true" passthru="true"/>
@@ -210,29 +209,6 @@
 	<!-- Run PHP Mess Detector and generate pmd.xml -->
 	<target name="phpmd-log">
 		<exec command="phpmd '${basedir}' xml codesize,unusedcode --exclude=**/vendor/** --reportfile '${builddir}/logs/pmd.xml'"  passthru="true"/>
-	</target>
-
-	<!-- Run PHP Copy/Paste Detector and generate pmd.xml -->
-	<target name="phpcpd-log">
-		<phpcpd>
-			<fileset dir="${basedir}">
-				<include name="**/*.php" />
-				<exclude name="**/vendor/**" />
-			</fileset>
-			<formatter type="pmd" outfile="${builddir}/logs/pmd-cpd.xml"/>
-		</phpcpd>
-	</target>
-
-	<!-- Run PHP Depend and generate jdepend.xml -->
-	<target name="pdepend-log">
-		<phpdepend>
-			<fileset dir="${basedir}">
-				<include name="**/*.php" />
-				<exclude name="**/vendor/**" />
-			</fileset>
-			<logger type="jdepend-xml" outfile="${builddir}/logs/jdepend.xml"/>
-			<!--<analyzer type="coderank-mode" value="method"/>-->
-		</phpdepend>
 	</target>
 
 	<!-- Run PHP CodeBrowser and generate output -->
