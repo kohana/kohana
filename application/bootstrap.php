@@ -61,7 +61,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
  *
  * @link http://www.php.net/manual/function.mb-substitute-character.php
  */
-mb_substitute_character("none");
+mb_substitute_character('none');
 
 // -- Configuration and initialization -----------------------------------------
 
