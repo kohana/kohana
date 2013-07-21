@@ -70,6 +70,12 @@ mb_substitute_character('none');
  */
 I18n::lang('en-us');
 
+if (isset($_SERVER['SERVER_PROTOCOL']))
+{
+	// Replace the default protocol.
+	HTTP::$protocol = $_SERVER['SERVER_PROTOCOL'];
+}
+
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
  *
