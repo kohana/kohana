@@ -56,12 +56,25 @@ spl_autoload_register(array('Kohana', 'auto_load'));
  */
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 
+/**
+ * Set the mb_substitute_character to "none"
+ *
+ * @link http://www.php.net/manual/function.mb-substitute-character.php
+ */
+mb_substitute_character('none');
+
 // -- Configuration and initialization -----------------------------------------
 
 /**
  * Set the default language
  */
 I18n::lang('en-us');
+
+if (isset($_SERVER['SERVER_PROTOCOL']))
+{
+	// Replace the default protocol.
+	HTTP::$protocol = $_SERVER['SERVER_PROTOCOL'];
+}
 
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
