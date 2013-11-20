@@ -13,9 +13,6 @@
 [submodule "modules/orm"]
 	path = modules/orm
 	url = http://github.com/kohana/orm.git
-[submodule "modules/auth"]
-	path = modules/auth
-	url = http://github.com/kohana/auth.git
 [submodule "modules/userguide"]
 	path = modules/userguide
 	url = http://github.com/kohana/userguide.git
