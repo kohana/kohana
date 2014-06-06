@@ -1,4 +1,18 @@
 <?php
+/**
+ * Set the PHP error reporting level. If you set this in php.ini, you remove this.
+ * @link http://www.php.net/manual/errorfunc.configuration#ini.error-reporting
+ *
+ * When developing your application, it is highly recommended to enable notices
+ * and strict warnings. Enable them by using: E_ALL | E_STRICT
+ *
+ * In a production environment, it is safe to ignore notices and strict warnings.
+ * Disable them by using: E_ALL ^ E_NOTICE
+ *
+ * When using a legacy application with PHP >= 5.3, it is recommended to disable
+ * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
+ */
+error_reporting(E_ALL | E_STRICT);
 
 /**
  * The directory in which your application specific resources are located.
@@ -30,21 +44,6 @@ $system = 'system';
  * @link http://kohanaframework.org/guide/about.install#ext
  */
 define('EXT', '.php');
-
-/**
- * Set the PHP error reporting level. If you set this in php.ini, you remove this.
- * @link http://www.php.net/manual/errorfunc.configuration#ini.error-reporting
- *
- * When developing your application, it is highly recommended to enable notices
- * and strict warnings. Enable them by using: E_ALL | E_STRICT
- *
- * In a production environment, it is safe to ignore notices and strict warnings.
- * Disable them by using: E_ALL ^ E_NOTICE
- *
- * When using a legacy application with PHP >= 5.3, it is recommended to disable
- * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
- */
-error_reporting(E_ALL | E_STRICT);
 
 /**
  * End of standard configuration! Changing any of the code below should only be
