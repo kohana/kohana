@@ -76,6 +76,7 @@ foreach ($paths as $key => $path)
 // Clean up the configuration vars
 unset($paths);
 
+// If installation file exists
 if (file_exists('install'.EXT))
 {
 	// Load the installation check
@@ -101,8 +102,12 @@ if ( ! defined('KOHANA_START_MEMORY'))
 // Bootstrap the application
 require APPPATH.'bootstrap'.EXT;
 
-if (PHP_SAPI == 'cli') // Try and load minion
+// If PHP build's server API is CLI
+if (PHP_SAPI == 'cli')
 {
+	/**
+	 * Attempt to load and execute minion.
+	 */
 	class_exists('Minion_Task') OR die('Please enable the Minion module for CLI support.');
 	set_exception_handler(array('Minion_Exception', 'handler'));
 
