@@ -14,6 +14,8 @@ else
 	clearstatcache(TRUE);
 }
 
+$required_php_version = '5.4.0';
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -57,10 +59,10 @@ else
 	<table cellspacing="0">
 		<tr>
 			<th>PHP Version</th>
-			<?php if (version_compare(PHP_VERSION, '5.3.3', '>=')): ?>
+			<?php if (version_compare(PHP_VERSION, $required_php_version, '>=')): ?>
 				<td class="pass"><?php echo PHP_VERSION ?></td>
 			<?php else: $failed = TRUE ?>
-				<td class="fail">Kohana requires PHP 5.3.3 or newer, this version is <?php echo PHP_VERSION ?>.</td>
+				<td class="fail">Kohana requires PHP <?php echo $required_php_version ?> or newer, this version is <?php echo PHP_VERSION ?>.</td>
 			<?php endif ?>
 		</tr>
 		<tr>
