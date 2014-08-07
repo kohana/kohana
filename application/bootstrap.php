@@ -87,6 +87,15 @@ Kohana::modules([
  */
 I18n::lang('en-us');
 
+// Define i18n translate alias function
+if ( ! function_exists('__'))
+{
+	function __($string, array $values = NULL, $lang = 'en-us')
+	{
+		return I18n::translate($string, $values, $lang);
+	}
+}
+
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
  *
