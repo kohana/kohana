@@ -62,17 +62,17 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules([
-	'application' => APPPATH,             // Main application module
-	// 'auth'        => MODPATH.'auth',      // Basic authentication
-	// 'cache'       => MODPATH.'cache',     // Caching with multiple backends
-	// 'codebench'   => MODPATH.'codebench', // Benchmarking tool
-	// 'database'    => MODPATH.'database',  // Database access
-	// 'image'       => MODPATH.'image',     // Image manipulation
-	// 'minion'      => MODPATH.'minion',    // CLI Tasks
-	// 'orm'         => MODPATH.'orm',       // Object Relationship Mapping
-	// 'unittest'    => MODPATH.'unittest',  // Unit testing
-	// 'userguide'   => MODPATH.'userguide', // User guide and API documentation
-	'core'        => SYSPATH,             // Core system
+	'application' => APPPATH,                         // Main application module
+	//'auth'        => $vendor_path.'kohana/auth',      // Basic authentication
+	//'cache'       => $vendor_path.'kohana/cache',     // Caching with multiple backends
+	//'codebench'   => $vendor_path.'kohana/codebench', // Benchmarking tool
+	//'database'    => $vendor_path.'kohana/database',  // Database access
+	//'image'       => $vendor_path.'kohana/image',     // Image manipulation
+	//'minion'      => $vendor_path.'kohana/minion',    // CLI Tasks
+	//'orm'         => $vendor_path.'kohana/orm',       // Object Relationship Mapping
+	//'unittest'    => $vendor_path.'kohana/unittest',  // Unit testing
+	//'userguide'   => $vendor_path.'kohana/userguide', // User guide and API documentation
+	'core'        => SYSPATH,                         // Core system
 ]);
 
 /**
