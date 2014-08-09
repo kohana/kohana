@@ -11,12 +11,10 @@ before_install:
   - "git submodule update --init --recursive"
 
 before_script:
-  - "pear channel-discover pear.phing.info"
-  - "pear install phing/phing"
   - "phpenv rehash"
   - "composer install"
 
-script: "phing test"
+script: "vendor/bin/phing test"
 
 notifications:
   irc:
