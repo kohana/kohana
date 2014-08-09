@@ -12,7 +12,7 @@ before_install:
 
 before_script:
   - "phpenv rehash"
-  - "composer install"
+  - "composer install --prefer-dist"
 
 script: "vendor/bin/phing test"
 
