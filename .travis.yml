@@ -11,7 +11,6 @@ before_install:
   - "git submodule update --init --recursive"
 
 before_script:
-  - "phpenv rehash"
   - "composer install --prefer-dist"
 
 script: "vendor/bin/phing test"
