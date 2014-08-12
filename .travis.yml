@@ -11,10 +11,13 @@ before_install:
   - "git submodule update --init --recursive"
 
 before_script:
-  - "phpenv rehash"
   - "composer install --prefer-dist"
 
-script: "vendor/bin/phing test"
+script:
+  # Standard build script
+  - if [[ $TRAVIS_PHP_VERSION != "hhvm" ]] ; then vendor/bin/phing test; fi
+  # HHVM script (phing not currently supported on hhvm pending http://www.phing.info/trac/ticket/1086)
+  - if [[ $TRAVIS_PHP_VERSION == "hhvm" ]] ; then ./vendor/bin/phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php modules/unittest/tests.php ; fi
 
 notifications:
   irc:
