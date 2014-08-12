@@ -1,13 +1,13 @@
 # Developing locally
 
-Since Kohana maintains many concurrent versions at once, there is no single `master` branch. All versions have branches named with a prefix of it's version:
+Since Kohana maintains many concurrent versions at once, there is no single `master` branch. All versions have branches named with a prefix of its version:
 
  - 3.2/master
  - 3.2/develop
  - 3.3/master
  - 3.3/develop
 
-and so on. All development of versions happens in the develop branch of that version. Before a release, new features are added here. After a major release is actually released, only bugfixes can happen here. New features and api changes must happen in the develop branch of the next version.
+and so on. All development of versions happens in the develop branch of that version. Before a release, new features are added here. After a major release is actually released, only bugfixes can happen here. New features and API changes must happen in the develop branch of the next version.
 
 ## Branch name meanings
 
@@ -17,7 +17,7 @@ and so on. All development of versions happens in the develop branch of that ver
  - **3.3/release/*** - release branches are for maintenance work before a release. This branch should be branched from the develop branch only. Change the version number/code name here, and apply any other maintenance items needed before actually releasing. Merges from master should only come from this branch. It should be merged to develop when it's complete as well. This branch is deleted after it's done.
  - **3.3/feature/*** - Details on these branches are outlined below. This branch is deleted after it's done.
 
-If an bug/issue applies to multiple versions of kohana, it is first fixed in the lowest supported version it applies to, then merged to each higher branch it applies to. Each merge should only happen one version up. 3.1 should merge to 3.2, and 3.2 should merge to 3.3. 3.1 should not merge directly to 3.3.
+If an bug/issue applies to multiple versions of Kohana, it is first fixed in the lowest supported version it applies to, then merged to each higher branch it applies to. Each merge should only happen one version up. 3.1 should merge to 3.2, and 3.2 should merge to 3.3. 3.1 should not merge directly to 3.3.
 
 To work on a specific release branch you need to check it out then check out the appropriate system branch.
 Release branch names follow the same convention in both kohana/kohana and kohana/core.
@@ -37,7 +37,7 @@ To work on 3.3.x you'd do the following:
     > git submodule foreach "git fetch && git checkout 3.3/develop"
     # ...
 
-It's important that you follow the last step, because unlike svn, git submodules point at a
+It's important that you follow the last step, because unlike SVN, Git submodules point at a
 specific commit rather than the tip of a branch.  If you cd into the system folder after
 a `git submodule update` and run `git status` you'll be told:
 
@@ -68,7 +68,7 @@ i.e.
     3.2/feature/4045-rewriting-config-system
 
 When a new feature is complete and fully tested it can be merged into its respective release branch using
-`git pull --no-ff`. The `--no-ff` switch is important as it tells git to always create a commit
+`git pull --no-ff`. The `--no-ff` switch is important as it tells Git to always create a commit
 detailing what branch you're merging from. This makes it a lot easier to analyse a feature's history.
 
 Here's a quick example:
@@ -81,7 +81,7 @@ Here's a quick example:
 
     > git merge --no-ff 3.2/feature/4045-rewriting-everything
 
-**If a change you make intentionally breaks the api then please correct the relevant tests before pushing!**
+**If a change you make intentionally breaks the API then please correct the relevant tests before pushing!**
 
 ## Bug fixing
 
@@ -92,7 +92,7 @@ using the `@ticket` notation in the test to reference the bug's issue number
 If you run the unit tests then the one you've just made should fail.
 
 Once you've written the bugfix, run the tests again before you commit to make sure that the
-fix actually works,then commit both the fix and the test.
+fix actually works, then commit both the fix and the test.
 
 **Bug fixes without tests written will be rejected! There are NO exceptions.**
 
@@ -101,11 +101,11 @@ branch is perfectly acceptable.
 
 ## Tagging releases
 
-Tag names should be prefixed with a `v`, this helps to separate tag references from branch references in git.
+Tag names should be prefixed with a `v`, this helps to separate tag references from branch references in Git.
 
 For example, if you were creating a tag for the `3.1.0` release the tag name would be `v3.1.0`
 
-# Merging Changes from Remote Repositories
+# Merging changes from remote repositories
 
 Now that you have a remote repository, you can pull changes in the remote "kohana" repository
 into your local repository:
@@ -115,14 +115,14 @@ into your local repository:
 **Note:** Before you pull changes you should make sure that any modifications you've made locally
 have been committed.
 
-Sometimes a commit you've made locally will conflict with one made in the "kohana" one.
+Sometimes a commit you've made locally will conflict with one made in the remote "kohana" repo.
 
 There are a couple of scenarios where this might happen:
 
-## The conflict is to do with a few unrelated commits and you want to keep changes made in both commits
+## The conflict is due to a few unrelated commits and you want to keep changes made in both commits
 
 You'll need to manually modify the files to resolve the conflict, see the "Resolving a merge"
-section [in the git-scm book](http://book.git-scm.com/3_basic_branching_and_merging.html) for more info
+section [in the Git SCM book](http://book.git-scm.com/3_basic_branching_and_merging.html) for more info
 
 ## You've fixed something locally which someone else has already done in the remote repo
 
@@ -147,14 +147,14 @@ i.e.
 
     > git rebase -i 57d0b28
 
-A text editor will open with a list of commits, delete the line containing the offending commit
+A text editor will open with a list of commits. Delete the line containing the offending commit
 before saving the file & closing your editor.
 
 Git will remove the commit and you can then pull/merge the remote changes.
 
 # Unit Testing
 
-Kohana currently uses phpunit for unit testing. This is installed with composer.
+Kohana currently uses PHPUnit for unit testing. This is installed with composer.
 
 ## How to run the tests
 
@@ -164,4 +164,4 @@ Kohana currently uses phpunit for unit testing. This is installed with composer.
  * Run `php composer.phar install` from the root of this repository
  * Finally, run `phing test`
 
-This will run the unit tests for core and all the modules and tell you if anything failed. If you haven't changed anything and you get failures, please create a new issue on [the tracker](http://dev.kohanaframework.org) and paste the output (including the error) in the issue.
+This will run the unit tests for core and all the modules and tell you if anything failed. If you haven't changed anything and you get failures, please create a new issue on [the tracker](http://dev.kohanaframework.org) and paste the output (including the error) in the issue.  
