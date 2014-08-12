@@ -87,6 +87,15 @@ Kohana::modules([
  */
 I18n::lang('en-us');
 
+// Define i18n translate alias function
+if ( ! function_exists('__'))
+{
+	function __($string, array $values = NULL, $lang = 'en-us')
+	{
+		return I18n::translate($string, $values, $lang);
+	}
+}
+
 if (isset($_SERVER['SERVER_PROTOCOL']))
 {
 	// Replace the default protocol.
