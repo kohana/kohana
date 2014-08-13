@@ -1,4 +1,53 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+
+/**
+ * Set the PHP error reporting level. If you set this in php.ini, you remove this.
+ * @link http://www.php.net/manual/errorfunc.configuration#ini.error-reporting
+ *
+ * When developing your application, it is highly recommended to enable notices
+ * and strict warnings. Enable them by using: E_ALL | E_STRICT
+ *
+ * In a production environment, it is safe to ignore notices and strict warnings.
+ * Disable them by using: E_ALL ^ E_NOTICE
+ *
+ * When using a legacy application with PHP >= 5.3, it is recommended to disable
+ * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
+ */
+error_reporting(E_ALL | E_STRICT);
+
+/**
+ * The directories in which your application, modules, system and document root (web-accessible files) are located.
+ *
+ * @link http://kohanaframework.org/guide/about.install#application
+ */
+define('APPPATH', realpath(__DIR__).DIRECTORY_SEPARATOR);
+define('MODPATH', realpath(__DIR__.'/../modules').DIRECTORY_SEPARATOR);
+define('SYSPATH', realpath(__DIR__.'/../system').DIRECTORY_SEPARATOR);
+define('DOCROOT', realpath(__DIR__.'/../').DIRECTORY_SEPARATOR);
+
+/**
+ * The default extension of resource files. If you change this, all resources
+ * must be renamed to use the new extension.
+ *
+ * @link http://kohanaframework.org/guide/about.install#ext
+ */
+define('EXT', '.php');
+
+/**
+ * Define the start time of the application, used for profiling.
+ */
+if ( ! defined('KOHANA_START_TIME'))
+{
+	define('KOHANA_START_TIME', microtime(TRUE));
+}
+
+/**
+ * Define the memory usage at the start of the application, used for profiling.
+ */
+if ( ! defined('KOHANA_START_MEMORY'))
+{
+	define('KOHANA_START_MEMORY', memory_get_usage());
+}
 
 // -- Environment setup --------------------------------------------------------
 
