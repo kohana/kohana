@@ -7,7 +7,7 @@
 
 	<property name="branch" value="3.3/develop"/>
 
-	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/orm,modules/unittest,modules/userguide"/>
+	<property name="submodules" value="vendor/kohana/core,vendor/kohana/auth,vendor/kohana/cache,vendor/kohana/codebench,vendor/kohana/database,vendor/kohana/image,vendor/kohana/orm,vendor/kohana/unittest,vendor/kohana/userguide"/>
 
 	<!-- Shows the help message -->
 	<target name="help">
@@ -124,39 +124,39 @@
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/core.git" />
-			<property name="dir"        value="${basedir}/system" />
+			<property name="dir"        value="${basedir}/vendor/kohana/core" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/auth.git" />
-			<property name="dir"        value="${basedir}/modules/auth" />
+			<property name="dir"        value="${basedir}/vendor/kohana/auth" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/cache.git" />
-			<property name="dir"        value="${basedir}/modules/cache" />
+			<property name="dir"        value="${basedir}/vendor/kohana/cache" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/codebench.git" />
-			<property name="dir"        value="${basedir}/modules/codebench" />
+			<property name="dir"        value="${basedir}/vendor/kohana/codebench" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/database.git" />
-			<property name="dir"        value="${basedir}/modules/database" />
+			<property name="dir"        value="${basedir}/vendor/kohana/database" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/image.git" />
-			<property name="dir"        value="${basedir}/modules/image" />
+			<property name="dir"        value="${basedir}/vendor/kohana/image" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/orm.git" />
-			<property name="dir"        value="${basedir}/modules/orm" />
+			<property name="dir"        value="${basedir}/vendor/kohana/orm" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/unittest.git" />
-			<property name="dir"        value="${basedir}/modules/unittest" />
+			<property name="dir"        value="${basedir}/vendor/kohana/unittest" />
 		</phingcall>
 		<phingcall target="_dev-setup-remote">
 			<property name="repository" value="git@github.com:kohana/userguide.git" />
-			<property name="dir"        value="${basedir}/modules/userguide" />
+			<property name="dir"        value="${basedir}/vendor/kohana/userguide" />
 		</phingcall>
 	</target>
 
@@ -167,13 +167,13 @@
 
 	<!-- Run unit tests -->
 	<target name="test">
-		<exec command="./vendor/phpunit/phpunit/composer/bin/phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+		<exec command="./vendor/phpunit/phpunit/composer/bin/phpunit --bootstrap=vendor/kohana/unittest/bootstrap_all_modules.php vendor/kohana/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-<exec command="phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+		<exec command="phpunit --bootstrap=vendor/kohana/unittest/bootstrap_all_modules.php --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' vendor/kohana/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->

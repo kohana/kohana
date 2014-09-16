@@ -17,6 +17,8 @@ error_reporting(E_ALL | E_STRICT);
 /**
  * Set paths
  */
+$vendor_path = 'vendor/';
+
 $paths = array(
 	/**
 	 * The directory in which your application specific resources are located.
@@ -39,7 +41,7 @@ $paths = array(
 	 *
 	 * @link http://kohanaframework.org/guide/about.install#system
 	 */
-	'SYSPATH' => 'system',
+	'SYSPATH' => $vendor_path.'kohana/core',
 );
 
 /**
