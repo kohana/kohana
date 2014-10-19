@@ -66,6 +66,14 @@ $required_php_version = '5.4.0';
 			<?php endif ?>
 		</tr>
 		<tr>
+			<th>Composer Installed</th>
+			<?php if (is_dir($vendor_path) AND is_file($vendor_path.'autoload.php')): ?>
+				<td class="pass"><?php echo $vendor_path ?></td>
+			<?php else: $failed = TRUE ?>
+				<td class="fail">Kohana requires Composer to be installed, <a href="http://getcomposer.org">get it</a> and call <code>composer install</code>.</td>
+			<?php endif ?>
+		</tr>
+		<tr>
 			<th>System Directory</th>
 			<?php if (is_dir(SYSPATH) AND is_file(SYSPATH.'classes/Kohana'.EXT)): ?>
 				<td class="pass"><?php echo SYSPATH ?></td>
