@@ -5,7 +5,7 @@
 	<property name="basedir" value="${project.basedir}"/>
 	<property name="builddir" value="${basedir}/build"/>
 
-	<property name="branch" value="3.3/develop"/>
+	<property name="branch" value="3.4/develop"/>
 
 	<property name="submodules" value="vendor/kohana/core,vendor/kohana/auth,vendor/kohana/cache,vendor/kohana/codebench,vendor/kohana/database,vendor/kohana/image,vendor/kohana/orm,vendor/kohana/unittest,vendor/kohana/userguide"/>
 
