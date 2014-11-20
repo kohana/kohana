@@ -3,16 +3,16 @@
  * Set the PHP error reporting level. If you set this in php.ini, you remove this.
  * @link http://www.php.net/manual/errorfunc.configuration#ini.error-reporting
  *
- * When developing your application, it is highly recommended to enable notices
- * and strict warnings. Enable them by using: E_ALL | E_STRICT
+ * When developing your application, it is highly recommended to enable all
+ * error reporting by using: E_ALL
  *
- * In a production environment, it is safe to ignore notices and strict warnings.
- * Disable them by using: E_ALL ^ E_NOTICE
+ * In a production environment, it is safe to ignore notices and strict
+ * warnings by using: E_ALL ^ E_NOTICE
  *
- * When using a legacy application with PHP >= 5.3, it is recommended to disable
- * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
+ * When using a legacy application, it is recommended to disable deprecated
+ * notices by using: E_ALL & ~E_DEPRECATED
  */
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 /**
  * Set paths
