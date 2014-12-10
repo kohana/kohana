@@ -17,7 +17,7 @@ error_reporting(E_ALL);
 /**
  * Set paths
  */
-$vendor_path = 'vendor/';
+$vendor_path = '../vendor/';
 
 $paths = array(
 	/**
@@ -26,14 +26,14 @@ $paths = array(
 	 *
 	 * @link http://kohanaframework.org/guide/about.install#application
 	 */
-	'APPPATH' => 'application',
+	'APPPATH' => '../application',
 
 	/**
 	 * The directory in which your modules are located.
 	 *
 	 * @link http://kohanaframework.org/guide/about.install#modules
 	 */
-	'MODPATH' => 'modules',
+	'MODPATH' => '../modules',
 
 	/**
 	 * The directory in which the Kohana resources are located. The system
@@ -79,10 +79,10 @@ foreach ($paths as $key => $path)
 unset($paths);
 
 // If installation file exists
-if (file_exists('install'.EXT))
+if (file_exists(DOCROOT.'install'.EXT))
 {
 	// Load the installation check
-	return include 'install'.EXT;
+	return include DOCROOT.'install'.EXT;
 }
 
 /**
