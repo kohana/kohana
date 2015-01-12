@@ -80,9 +80,13 @@ Kohana::modules([
  */
 I18n::lang('en-us');
 
-// Define i18n translate alias function
 if ( ! function_exists('__'))
 {
+	/**
+	 * I18n translate alias function.
+	 * 
+	 * @deprecated 3.4 Use I18n::translate() instead
+	 */
 	function __($string, array $values = NULL, $lang = 'en-us')
 	{
 		return I18n::translate($string, $values, $lang);
