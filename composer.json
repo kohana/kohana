@@ -1,4 +1,22 @@
 {
+	"name": "kohana/kohana",
+	"description": "Kohana framework application skeleton",
+	"homepage": "http://kohanaframework.org",
+	"license": "BSD-3-Clause",
+	"authors": [
+		{
+			"name": "Kohana Team",
+			"email": "team@kohanaframework.org",
+			"homepage": "http://kohanaframework.org/team",
+			"role": "developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/kohana/kohana/issues",
+		"forum": "http://discourse.kohanaframework.org",
+		"irc": "irc://irc.freenode.net/kohana",
+		"source": "http://github.com/kohana/kohana"
+	},
 	"require": {
 		"php": ">=5.4.0",
 		"kohana/core": "3.4.*",
