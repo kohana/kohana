@@ -15,18 +15,14 @@ else
 }
 
 $required_php_version = '5.4.0';
-
+$failed = FALSE;
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta charset="utf-8">
 	<title>Kohana Installation</title>
-
-	<style type="text/css">
+	<style>
 	body { width: 42em; margin: 0 auto; font-family: sans-serif; background: #fff; font-size: 1em; }
 	h1 { letter-spacing: -0.04em; }
 	h1 + p { margin: 0 0 2em; color: #333; font-size: 90%; font-style: italic; }
@@ -53,8 +49,6 @@ $required_php_version = '5.4.0';
 		If any of the tests have failed, consult the <a href="http://kohanaframework.org/guide/about.install">documentation</a>
 		for more information on how to correct the problem.
 	</p>
-
-	<?php $failed = FALSE ?>
 
 	<table cellspacing="0">
 		<tr>
