@@ -8,11 +8,17 @@ php:
   - 7.0
   - hhvm
 
+matrix:
+  include:
+    - php: 5.3
+      env: 'COMPOSER_PHPUNIT="lowest"'
+
 before_install:
   - "git submodule update --init --recursive"
 
 before_script:
   - "composer install --prefer-dist"
+  - if [ "$COMPOSER_PHPUNIT" = "lowest" ]; then composer update --prefer-lowest --with-dependencies phpunit/phpunit; fi;
 
 script:
   - vendor/bin/phing test
