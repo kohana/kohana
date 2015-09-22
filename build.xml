@@ -167,13 +167,13 @@
 
 	<!-- Run unit tests -->
 	<target name="test">
-		<exec command="./vendor/phpunit/phpunit/composer/bin/phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+		<exec command="./vendor/bin/phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 
 	<!-- Run unit tests and generate junit.xml and clover.xml -->
 	<target name="test-log">
-<exec command="phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' modules/unittest/tests.php" checkreturn="true" passthru="true"/>
+		<exec command="./vendor/bin/phpunit --bootstrap=modules/unittest/bootstrap_all_modules.php --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' modules/unittest/tests.php" checkreturn="true" passthru="true"/>
 	</target>
 
 	<!-- Run PHP Code Sniffer -->
