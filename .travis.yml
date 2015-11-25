@@ -1,13 +1,22 @@
+sudo: false
+
 language: php
 
 php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
   - hhvm
+
+matrix:
+  include:
+    - php: 5.4
+      env: 'COMPOSER_PHPUNIT="lowest"'
 
 before_script:
   - "composer install --prefer-dist"
+  - if [ "$COMPOSER_PHPUNIT" = "lowest" ]; then composer update --prefer-lowest --with-dependencies phpunit/phpunit; fi;
 
 script:
   # Standard build script

@@ -48,7 +48,7 @@ a `git submodule update` and run `git status` you'll be told:
 
 # Contributing to the project
 
-All features and bugfixes must be fully tested and reference an issue in the [tracker](http://dev.kohanaframework.org/projects/kohana3), **there are absolutely no exceptions**.
+All features and bugfixes must be fully tested and reference an issue in  [GitHub](https://github.com/kohana/kohana/issues), **there are absolutely no exceptions**.
 
 It's highly recommended that you write/run unit tests during development as it can help you pick up on issues early on.  See the Unit Testing section below.
 
