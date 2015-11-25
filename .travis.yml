@@ -2,6 +2,11 @@ sudo: false
 
 language: php
 
+# Only build the main develop/master branches - feature branches will be covered by PRs
+branches:
+  only:
+    - /^[0-9\.]+\/(develop|master)$/
+
 php:
   - 5.3
   - 5.4
