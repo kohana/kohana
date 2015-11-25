@@ -29,7 +29,6 @@
 		"kohana/orm": "3.4.*"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "3.7.24 - 4",
 		"phing/phing": "dev-master",
 		"kohana/unittest": "3.4.*",
 		"kohana/userguide": "3.4.*"
