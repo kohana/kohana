@@ -7,6 +7,11 @@ branches:
   only:
     - /^[0-9\.]+\/(develop|master)$/
 
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
+
 php:
   - 5.3
   - 5.4
