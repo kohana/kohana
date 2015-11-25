@@ -2,6 +2,16 @@ sudo: false
 
 language: php
 
+# Only build the main develop/master branches - feature branches will be covered by PRs
+branches:
+  only:
+    - /^[0-9\.]+\/(develop|master)$/
+
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
+
 php:
   - 5.4
   - 5.5
