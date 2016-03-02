@@ -33,6 +33,13 @@ date_default_timezone_set('America/Chicago');
 setlocale(LC_ALL, 'en_US.utf-8');
 
 /**
+ * Enable Composer auto-loader.
+ *
+ * @link https://getcomposer.org/doc/00-intro.md#autoloading
+ */
+require __DIR__.'/../vendor/autoload.php';
+
+/**
  * Enable the Kohana auto-loader.
  *
  * @link http://kohanaframework.org/guide/using.autoloading
@@ -84,7 +91,7 @@ if ( ! function_exists('__'))
 {
 	/**
 	 * I18n translate alias function.
-	 * 
+	 *
 	 * @deprecated 3.4 Use I18n::translate() instead
 	 */
 	function __($string, array $values = NULL, $lang = 'en-us')
